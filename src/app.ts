@@ -1,9 +1,7 @@
 import express, {Application ,Request, Response, NextFunction} from 'express';
+import {router as indexRoutes} from './routes/index.routes';
 
 const app:Application = express();
 
-app.get('/', (req: Request, res: Response): void => {
-  res.send({msg:'Hello world!'})
-});
-
+app.use('/', indexRoutes);
 export default app
