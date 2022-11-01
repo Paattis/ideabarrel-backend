@@ -7,7 +7,7 @@
     "test": "npx jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",
-    "build": "npx tsc && npx jest"
+    "build": "npx tsc && npx tslint --project . && npx jest"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "@types/supertest": "^2.0.12",
     "express": "^4.18.2",
     "nodemon": "^2.0.20",
-    "supertest": "^6.3.1"
+    "supertest": "^6.3.1",
+    "tslint": "^6.1.3"
   }
 }
