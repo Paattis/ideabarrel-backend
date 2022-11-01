@@ -4,9 +4,10 @@
   "description": "Backend for the App for the course TX00CK67-3010",
   "main": "dist\\index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
     "start": "ts-node src/index.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "npx tsc && npx jest"
   },
   "repository": {
     "type": "git",
@@ -20,10 +21,16 @@
   "homepage": "https://github.com/Paattis/ideabarrel-backend#readme",
   "devDependencies": {
     "@types/express": "^4.17.14",
+    "@types/jest": "^29.2.1",
+    "jest": "^29.2.2",
+    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "@types/supertest": "^2.0.12",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.1"
   }
 }

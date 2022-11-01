@@ -26,6 +26,8 @@
 node_modules/
 creds.js
 
+dist/
+
 # Logs
 logs
 *.log
@@ -84,5 +86,6 @@ web_modules/
 
 # Optional stylelint cache
 
-
-
+#jest
+coverage
+jest.config.js
