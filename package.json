@@ -31,6 +31,7 @@
     "@types/supertest": "^2.0.12",
     "express": "^4.18.2",
     "nodemon": "^2.0.20",
+    "npx": "^10.2.2",
     "supertest": "^6.3.1",
     "tslint": "^6.1.3"
   }
