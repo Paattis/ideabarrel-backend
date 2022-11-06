@@ -4,9 +4,11 @@
   "description": "Backend for the App for the course TX00CK67-3010",
   "main": "dist\\index.js",
   "scripts": {
-    "test": "npx jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
+    "test": "npx jest --forceExit --detectOpenHandles --watchAll --maxWorkers=1",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",
+    "format" : "npx prettier src __tests__ --write",
+    "checkCodeStyle" : "npx prettier src __tests__ --check",
     "build": "npx tsc && npx tslint --project . && npx jest"
   },
   "repository": {
