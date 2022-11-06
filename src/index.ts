@@ -1,6 +1,8 @@
 import app from './app';
-const port = process.env.PORT || 3000;
+import { log } from './logger/log';
 
-app.listen(port, (): void =>
-  console.log(`Backend listening to on port ${port}`)
-);
+export const port = process.env.PORT || 3000;
+
+app.listen(port, (): void => {
+  log.info(`Backend listening to port ${port}`);
+});
