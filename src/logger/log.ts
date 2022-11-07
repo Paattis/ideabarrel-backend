@@ -1,16 +1,24 @@
-import { createLogger, format } from 'winston';
+import { createLogger, format, transport } from 'winston';
 import expressWinston from 'express-winston';
 import { devConsole, file } from './transports';
 import { NextFunction } from 'express';
+import { getAppEnvVar } from '../utils/env';
 
-// const LOG_LEVEL = 'info'
-const LOG_LEVEL = 'debug';
+// Configure logging based on runtime environment.
+// Console logs are enabled only with dev configs.
+// Production log level is set to 'info'.
+let logLevel = getAppEnvVar('APP_ENV') === 'DEVELOPEMENT' ? 'debug' : 'info';
+const sinks: transport[] = [file];
+
+if (getAppEnvVar('APP_ENV') === 'DEVELOPEMENT') {
+  sinks.push(devConsole);
+}
 
 export const httpBegin = expressWinston.logger({
-  transports: [devConsole, file],
+  transports: sinks,
   msg:
     '[HTTP {{req.httpVersion}}] - [{{req.method}}] - [{{req.ip}}]' +
-    '- {{req.hostname}}{{req.url}}',
+    ' - {{req.hostname}}{{req.url}}',
 });
 
 export const httpEnd = (_: any, res: any, next: NextFunction) => {
@@ -19,11 +27,17 @@ export const httpEnd = (_: any, res: any, next: NextFunction) => {
 };
 
 export const httpError = expressWinston.errorLogger({
-  transports: [devConsole, file],
+  level: logLevel,
   format: format.combine(format.colorize(), format.json()),
+  transports: sinks,
 });
 
 export const log = createLogger({
-  level: LOG_LEVEL,
-  transports: [devConsole, file],
+  level: logLevel,
+  transports: sinks,
 });
+
+if (getAppEnvVar('APP_ENV') === 'CI') {
+  log.silent = true
+  logLevel = 'silly'
+}
