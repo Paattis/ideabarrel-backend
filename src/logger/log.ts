@@ -38,6 +38,6 @@ export const log = createLogger({
 });
 
 if (getAppEnvVar('APP_ENV') === 'CI') {
-  log.silent = true
-  logLevel = 'silly'
+  log.silent = true;
+  logLevel = 'silly';
 }
