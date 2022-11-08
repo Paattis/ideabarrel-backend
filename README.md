@@ -19,9 +19,9 @@ APP_ENV=DEVELOPEMENT
 DATABASE_URL=(your database url)
 ```
 
-* run the Prisma migrations
+* run the Prisma migrations to add the tables to your development database
 ```
-$ npx prisma migrate dev
+$ npx prisma db push
 ```
 * build/test and then run the backend in development mode
 ```
