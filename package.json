@@ -4,12 +4,12 @@
   "description": "Backend for the App for the course TX00CK67-3010",
   "main": "dist\\index.js",
   "scripts": {
-    "test": "npx jest --forceExit --detectOpenHandles --watchAll --maxWorkers=1",
+    "test": "npx jest --forceExit --detectOpenHandles --watchAll --maxWorkers=1 --silent=true --verbose=false",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",
     "format": "npx prettier src __tests__ --write",
     "checkCodeStyle": "npx prettier src __tests__ --check",
-    "build": "npx tsc && npx tslint --project . && npx jest"
+    "build": "npx tsc && npx tslint --project . && npx jest --silent=true --verbose=false"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@types/supertest": "^2.0.12",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-winston": "^4.2.0",
     "nodemon": "^2.0.20",
