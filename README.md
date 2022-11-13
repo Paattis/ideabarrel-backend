@@ -103,3 +103,46 @@ $ npm run dev
 ```
 
 </details>
+    
+    
+<details>
+  <summary><h2>/roles<h2></summary>
+  
+### GET
+#### Response
+```json
+[
+  {
+    "id": 46,
+    "name": "Junior Manager",
+    "created_at": "2022-11-13T15:59:35.818Z",
+    "updated_at": "2022-11-13T15:59:35.818Z"
+  },
+  {
+    "id": 47,
+    "name": "Senior Engineer",
+    "created_at": "2022-11-13T16:02:57.265Z",
+    "updated_at": "2022-11-13T16:02:57.265Z"
+  }
+]
+```
+### POST
+
+#### Request
+```json
+{
+  "name": "Junior Manager",
+}
+```
+
+#### Response
+```json
+{
+  "id": 46,
+  "name": "Junior Manager",
+  "created_at": "2022-11-13T15:59:35.818Z",
+  "updated_at": "2022-11-13T15:59:35.818Z"
+}
+```
+
+</details>
