@@ -146,3 +146,62 @@ $ npm run dev
 ```
 
 </details>
+    
+    
+    
+    
+    
+    
+    
+<details>
+  <summary><h2>/roles/:id<h2></summary>
+  
+### GET
+#### Response
+```json
+{
+  "id": 46,
+  "name": "Junior Manager",
+  "created_at": "2022-11-13T15:59:35.818Z",
+  "updated_at": "2022-11-13T15:59:35.818Z"
+}
+```
+### PUT
+
+#### Request
+```json
+{
+  "name": "Junior Manager",
+}
+```
+
+#### Response
+```json
+{
+  "id": 46,
+  "name": "Junior Manager",
+  "created_at": "2022-11-13T15:59:35.818Z",
+  "updated_at": "2022-11-13T15:59:35.818Z"
+}
+```
+    
+### GET
+#### Response
+```json
+{
+  "id": 46,
+  "name": "Junior Manager",
+  "created_at": "2022-11-13T15:59:35.818Z",
+  "updated_at": "2022-11-13T15:59:35.818Z"
+}
+```
+### DELETE
+
+#### Response
+```json
+{
+  "name": "Junior Manager",
+}
+```
+
+</details>
