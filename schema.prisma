@@ -18,6 +18,7 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   ideas Idea[]
+  comments Comment[]
 }
 
 model Idea {
@@ -28,6 +29,18 @@ model Idea {
   user_id Int @default(0)
   user User @relation(fields: [user_id], references:[id])
   groups IdeaGroup[]
+  comments Comment[]
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  content String @db.VarChar(500)
+  user_id Int
+  user User @relation(fields: [user_id], references:[id])
+  idea_id Int
+  idea Idea @relation(fields: [idea_id], references:[id])
 }
 
 model IdeaGroup {
