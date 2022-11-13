@@ -31,7 +31,9 @@ $ npm run dev
 
 # API Routes
 
-## /user
+<details>
+  <summary><h2>/user</h2></summary>
+  
 ### GET
 #### Response
 ```json
@@ -42,6 +44,7 @@ $ npm run dev
   "created_at" : "2022-11-13T17:08:54.565Z"
   "updated_at" : "2022-11-13T17:08:54.565Z"
 }
+  
 ```
 ### POST
 #### Body
@@ -63,7 +66,11 @@ $ npm run dev
 }
 ```
 
-## /user/:id
+</details>
+
+<details>
+  <summary><h2>/user/:id<h2></summary>
+  
 ### PUT
 #### Body
 ```json
@@ -95,3 +102,4 @@ $ npm run dev
 }
 ```
 
+</details>
