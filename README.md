@@ -29,3 +29,69 @@ $ npm run build
 $ npm run dev
 ```
 
+# API Routes
+
+## /user
+### GET
+#### Response
+```json
+{
+  "id": 1,
+  "name": "User 1"
+  "role_id": 1
+  "created_at" : "2022-11-13T17:08:54.565Z"
+  "updated_at" : "2022-11-13T17:08:54.565Z"
+}
+```
+### POST
+#### Body
+```json
+{
+  "name": "User 1"
+  "role_id": 1
+}
+```
+
+#### Response
+```json
+{
+  "id": 1,
+  "name": "User 1"
+  "role_id": 1
+  "created_at" : "2022-11-13T17:08:54.565Z"
+  "updated_at" : "2022-11-13T17:08:54.565Z"
+}
+```
+
+## /user/:id
+### PUT
+#### Body
+```json
+{
+  "name": "User 1"
+  "role_id": 1
+}
+```
+#### Response
+```json
+{
+  "id": 1,
+  "name": "User 1"
+  "role_id": 1
+  "created_at" : "2022-11-13T17:08:54.565Z"
+  "updated_at" : "2022-11-13T17:08:54.565Z"
+}
+```
+
+### DELETE
+#### Response
+```json
+{
+  "id": 1,
+  "name": "User 1"
+  "role_id": 1
+  "created_at" : "2022-11-13T17:08:54.565Z"
+  "updated_at" : "2022-11-13T17:08:54.565Z"
+}
+```
+
