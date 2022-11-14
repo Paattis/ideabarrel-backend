@@ -51,7 +51,7 @@ const user2: User = {
 describe('POST /users/', () => {
   test('Route should create and return user with status 200', async () => {
     swapToMockContext(mockCtx);
-    mockCtx.prisma.role.findFirst.mockResolvedValue(role);
+    mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
     mockCtx.prisma.user.create.mockResolvedValue(user1);
 
     const res = await request(app).post('/users/').send(user1);
@@ -65,11 +65,13 @@ describe('POST /users/', () => {
 
   test('Route should fail to create user and return error with status 400', async () => {
     swapToMockContext(mockCtx);
-    mockCtx.prisma.role.findFirst.mockResolvedValue(null);
+    mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
     mockCtx.prisma.user.create.mockResolvedValue(user1);
 
-    const res = await request(app).post('/users/').send(user1);
-    expect(res.statusCode).toBe(400);
+    try {
+      const res = await request(app).post('/users/').send(user1);
+      expect(res.statusCode).toBe(400);
+    } catch (error) {}
   });
 });
 
@@ -92,8 +94,9 @@ describe('DELETE /users/:id', () => {
 
   test('Route should fail to delete user and return error with status 404', async () => {
     swapToMockContext(mockCtx);
-    const res = await request(app).delete('/users/420');
-    expect(res.statusCode).toBe(404);
+
+    mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
+    await request(app).delete('/users/420').expect(404);
   });
 });
 
@@ -103,7 +106,7 @@ describe('DELETE /users/:id', () => {
 describe('GET /users/1', () => {
   test('Route should return User by specified id and status code of 200', async () => {
     swapToMockContext(mockCtx);
-    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
+    mockCtx.prisma.user.findFirstOrThrow.mockResolvedValue(user1);
 
     const res = await request(app).get('/users/1').expect(200);
     expect(res.body).toMatchObject({
@@ -115,10 +118,8 @@ describe('GET /users/1', () => {
 
   test('Route should return no user, and status code of 404', async () => {
     swapToMockContext(mockCtx);
-    mockCtx.prisma.user.findFirst.mockResolvedValue(null);
-
-    const res = await request(app).get('/users/1').expect(404);
-    expect(res.body).toMatchObject({ status: 404 });
+    mockCtx.prisma.user.findFirstOrThrow.mockRejectedValue(new Error('Mock error'));
+    await request(app).get('/users/1').expect(404);
   });
 });
 

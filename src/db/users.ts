@@ -1,11 +1,15 @@
-import { Role, User } from '@prisma/client';
+import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
+import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
 
 export interface UserData {
   name: string;
   role_id: number;
 }
+export type UserWithRole = User & { role: Role };
+export type RichUser = UserWithRole & { comments: Comment[]; ideas: Idea[] };
+const everything = { role: true, comments: true, ideas: true };
 
 /**
  * Select all users.
@@ -14,9 +18,7 @@ export interface UserData {
  * @returns Array of all users.
  */
 const all = async (ctx: PrismaContext) => {
-  const users = await ctx.prisma.user.findMany();
-  log.debug(`Found ${users.length} users: [${users.map((it) => it.id)}]`);
-  return users;
+  return await ctx.prisma.user.findMany({ include: everything });
 };
 
 /**
@@ -25,15 +27,17 @@ const all = async (ctx: PrismaContext) => {
  * @param id user id.
  * @param ctx PrismaContext
  * @throws Error on not found.
- * @returns User
+ * @returns User {@link RichUser}
  */
 const select = async (id: number, ctx: PrismaContext) => {
-  const user: User | null = await ctx.prisma.user.findFirst({ where: { id } });
-  if (user == null) {
-    log.error(`No user exists with id of ${id}`);
-    throw new Error('No such user exists.');
+  try {
+    return await ctx.prisma.user.findFirstOrThrow({
+      where: { id: id },
+      include: everything,
+    });
+  } catch (err) {
+    throw new NoSuchResource('user', `No user with id: ${id}`);
   }
-  return user;
 };
 
 /**
@@ -45,13 +49,15 @@ const select = async (id: number, ctx: PrismaContext) => {
  * @returns removed user object.
  */
 const remove = async (id: number, ctx: PrismaContext) => {
-  const user: User | null = await ctx.prisma.user.delete({ where: { id } });
-  if (user != null) {
-    log.info(`Deleted user ${JSON.stringify(user)}`);
+  try {
+    const user: User = await ctx.prisma.user.delete({
+      where: { id: id },
+      include: everything,
+    });
+    if (user === null) throw 'Missing record';
     return user;
-  } else {
-    log.error(`No user with id: ${id}`);
-    throw new Error('No such user exists.');
+  } catch (err) {
+    throw new NoSuchResource('user', `No user with id: ${id}`);
   }
 };
 
@@ -64,15 +70,11 @@ const remove = async (id: number, ctx: PrismaContext) => {
  * @returns Promise<User> Created user object.
  */
 const create = async (from: UserData, ctx: PrismaContext) => {
-  // Check for specified role.
-  const role: Role | null = await ctx.prisma.role.findFirst({
-    where: { id: from.role_id },
-  });
-  if (role == null) {
-    log.error('Invalid role_id: ' + from.role_id);
-    throw new Error('Invalid role_id: ' + from.role_id);
-  } else {
+  try {
+    const role = await ctx.prisma.role.findFirstOrThrow({ where: { id: from.role_id } });
     log.debug(`Role is ${role.name}`);
+  } catch (err) {
+    throw new BadRequest('No role exists with that id, cant create user.');
   }
 
   // Create user and store it to database.
@@ -81,6 +83,7 @@ const create = async (from: UserData, ctx: PrismaContext) => {
       name: from.name,
       role_id: from.role_id,
     },
+    include: everything,
   });
 
   log.info('Created new user: ' + JSON.stringify(user));
@@ -89,11 +92,22 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
 const update = async (from: UserData, id: number, ctx: PrismaContext) => {
   try {
-    const user = await ctx.prisma.user.update({ where: { id }, data: from });
-    log.info('Updated user: ' + JSON.stringify(user));
+    await ctx.prisma.role.findFirstOrThrow({ where: { id: from.role_id } });
+  } catch (err) {
+    throw new BadRequest(
+      'No role with such id. Cant update user.',
+      `Missing role ${from.role_id}`
+    );
+  }
+  try {
+    const user = await ctx.prisma.user.update({
+      where: { id: id },
+      data: from,
+      include: everything,
+    });
     return user;
-  } catch (error) {
-    throw new Error('No such user exists.');
+  } catch (err) {
+    throw new NoSuchResource('user');
   }
 };
 

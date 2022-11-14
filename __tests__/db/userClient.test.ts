@@ -6,6 +6,7 @@ import {
   createMockContext,
   swapToAppContext,
 } from '../../src/db/context';
+import { BadRequest, NoSuchResource } from '../../src/utils/errors';
 
 let mockCtx: MockPrismaContext;
 let ctx: PrismaContext;
@@ -43,12 +44,13 @@ const user2: User = {
 
 describe('Users database access client', () => {
   test('Should return user by its id', async () => {
-    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
+    mockCtx.prisma.user.findFirstOrThrow.mockResolvedValue(user1);
     await expect(usersClient.select(1, ctx)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should throw error when no user is found', async () => {
-    await expect(usersClient.select(1, ctx)).rejects.toThrowError('No such user exists.');
+    mockCtx.prisma.user.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
+    await expect(usersClient.select(1, ctx)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should remove existing user', async () => {
@@ -60,7 +62,8 @@ describe('Users database access client', () => {
   });
 
   test('Should throw error', async () => {
-    expect(usersClient.remove(666, ctx)).rejects.toThrowError('No such user exists.');
+    mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
+    expect(usersClient.remove(666, ctx)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should return existing users', async () => {
@@ -85,7 +88,7 @@ describe('Users database access client', () => {
   test('Should create new user', async () => {
     // This is pretty nasty way of mocking... I have to know what
     // prisma.user.create uses internally.
-    mockCtx.prisma.role.findFirst.mockResolvedValue(role);
+    mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
     mockCtx.prisma.user.create.mockResolvedValue(user1);
 
     await expect(usersClient.create(user1, ctx)).resolves.toMatchObject({
@@ -95,10 +98,8 @@ describe('Users database access client', () => {
   });
 
   test('Should throw when role with specified id does not exist', async () => {
-    mockCtx.prisma.role.findFirst.mockResolvedValue(null);
+    mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error());
     mockCtx.prisma.user.create.mockResolvedValue(user1);
-    await expect(usersClient.create(user1, ctx)).rejects.toThrowError(
-      'Invalid role_id: 1'
-    );
+    await expect(usersClient.create(user1, ctx)).rejects.toThrow(BadRequest);
   });
 });
