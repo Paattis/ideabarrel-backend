@@ -3,19 +3,32 @@ import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
 
+const everything = { role: true, comments: true, ideas: true };
+
+/**
+ * Data to build new user from.
+ */
 export interface UserData {
   name: string;
   role_id: number;
 }
+
+/**
+ * Union type of User and his/her role.
+ */
 export type UserWithRole = User & { role: Role };
+
+/**
+ * Union type containing all of the rows linked to 
+ * the user.
+ */
 export type RichUser = UserWithRole & { comments: Comment[]; ideas: Idea[] };
-const everything = { role: true, comments: true, ideas: true };
 
 /**
  * Select all users.
  *
  * @param ctx PrismaContext
- * @returns Array of all users.
+ * @returns Array of {@link RichUser}s
  */
 const all = async (ctx: PrismaContext) => {
   return await ctx.prisma.user.findMany({ include: everything });
@@ -24,40 +37,40 @@ const all = async (ctx: PrismaContext) => {
 /**
  * Select single user.
  *
- * @param id user id.
+ * @param userId user id.
  * @param ctx PrismaContext
- * @throws Error on not found.
- * @returns User {@link RichUser}
+ * @throws on no user found {@link NoSuchResource}
+ * @returns User as a {@link RichUser}
  */
-const select = async (id: number, ctx: PrismaContext) => {
+const select = async (userId: number, ctx: PrismaContext) => {
   try {
     return await ctx.prisma.user.findFirstOrThrow({
-      where: { id: id },
+      where: { id: userId },
       include: everything,
     });
   } catch (err) {
-    throw new NoSuchResource('user', `No user with id: ${id}`);
+    throw new NoSuchResource('user', `No user with id: ${userId}`);
   }
 };
 
 /**
- * Removes specified user.
+ * Removes specified user and returns that object.
  *
- * @param id user id.
+ * @param userId user id.
  * @param ctx PrismaContext
- * @throws Error on not user found.
- * @returns removed user object.
+ * @throws on no user found {@link NoSuchResource}
+ * @returns removed user as a {@link RichUser}
  */
-const remove = async (id: number, ctx: PrismaContext) => {
+const remove = async (userId: number, ctx: PrismaContext) => {
   try {
     const user: User = await ctx.prisma.user.delete({
-      where: { id: id },
+      where: { id: userId },
       include: everything,
     });
     if (user === null) throw 'Missing record';
     return user;
   } catch (err) {
-    throw new NoSuchResource('user', `No user with id: ${id}`);
+    throw new NoSuchResource('user', `No user with id: ${userId}`);
   }
 };
 
@@ -65,9 +78,9 @@ const remove = async (id: number, ctx: PrismaContext) => {
  * Tries to creates user from specified prototype object.
  *
  * @param from New user prototype
- * @param ctx prisma context
- * @throws Error when role_id does not match with any existing role ids
- * @returns Promise<User> Created user object.
+ * @param ctx Prisma database context
+ * @throws on broken relations {@link BadRequest}
+ * @returns New User as a {@link RichUser}
  */
 const create = async (from: UserData, ctx: PrismaContext) => {
   try {
@@ -86,11 +99,20 @@ const create = async (from: UserData, ctx: PrismaContext) => {
     include: everything,
   });
 
-  log.info('Created new user: ' + JSON.stringify(user));
+  log.debug('Created new user: ' + JSON.stringify(user));
   return user;
 };
 
-const update = async (from: UserData, id: number, ctx: PrismaContext) => {
+/**
+ * Update existing user and return new instance.
+ * 
+ * @param from New user prototype
+ * @param userId Id of the user.
+ * @param ctx Prisma database context
+ * @throws On no user foun {@link NoSuchResource}
+ * @returns User as a {@link RichUser}
+ */
+const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
   try {
     await ctx.prisma.role.findFirstOrThrow({ where: { id: from.role_id } });
   } catch (err) {
@@ -101,7 +123,7 @@ const update = async (from: UserData, id: number, ctx: PrismaContext) => {
   }
   try {
     const user = await ctx.prisma.user.update({
-      where: { id: id },
+      where: { id: userId },
       data: from,
       include: everything,
     });

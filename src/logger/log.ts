@@ -1,6 +1,4 @@
 import { createLogger, format, transport, transports } from 'winston';
-import expressWinston from 'express-winston';
-// import { devConsole, file } from './transports';
 import { NextFunction, Request, Response } from 'express';
 import { getAppEnvVar } from '../utils/env';
 
@@ -48,12 +46,6 @@ export const httpEnd = (req: Request, res: Response, next: NextFunction) => {
   log.info(`Request handled - ${res.statusCode}`);
   next();
 };
-
-export const httpError = expressWinston.errorLogger({
-  level: logLevel,
-  format: format.combine(format.colorize(), format.json()),
-  transports: sinks,
-});
 
 export const log = createLogger({
   level: logLevel,

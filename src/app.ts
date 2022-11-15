@@ -5,7 +5,6 @@ import { router as roleRoutes } from './routes/roles.routes';
 import {
   httpBegin as httpLogger,
   httpEnd as httpEndLogger,
-  httpError as httpErrorLogger,
 } from './logger/log';
 
 const app: Application = express();
@@ -23,8 +22,5 @@ app.use('/roles', roleRoutes);
 // --------------------------------
 
 app.use(httpEndLogger);
-
-// Finally error logger
-app.use(httpErrorLogger);
 
 export default app;
