@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { PrismaClient, Idea } from '@prisma/client'
+import { PrismaClient, Idea } from '@prisma/client';
 import { log } from '../logger/log';
 import { db } from '../db/context';
 import ideasClient, { IdeaData } from '../db/ideas';
@@ -9,13 +9,12 @@ import { respondWithError } from '../utils/errors';
 const ideas = Router();
 
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
-
   try {
-    const pageNum = parseInt((req.query.page_num||"0") as string)
-    log.info(`groups: ${JSON.stringify(req.query.groups)}`)
+    const pageNum = parseInt((req.query.page_num || '0') as string);
+    log.info(`groups: ${JSON.stringify(req.query.groups)}`);
 
-    const groups = req.query.groups as string[]
-    const groupIds = groups ? groups.map(Number) : []
+    const groups = req.query.groups as string[];
+    const groupIds = groups ? groups.map(Number) : [];
 
     const results = await ideasClient.all(db, pageNum, groupIds);
     res.json(results);
@@ -24,7 +23,6 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   } finally {
     next();
   }
-
 });
 
 ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {

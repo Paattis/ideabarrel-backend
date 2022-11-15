@@ -6,7 +6,7 @@ import { PrismaContext } from './context';
 export interface IdeaData {
   name: string;
   content: string;
-  user: User,
+  user: User;
   groups: number[];
 }
 export type IdeaWithGroups = Idea & { groups: Group[] };
@@ -22,29 +22,28 @@ const everything = { groups: true, comments: true };
  * @returns Array of all ideas.
  */
 const all = async (ctx: PrismaContext, page: number, groups?: number[]) => {
-  const resultsPerPage = 20
+  const resultsPerPage = 20;
   // TODO: support for tags
 
   // construct query out of parts
   // have to use the any-type here to keep TS from freaking out when we change the object
-  let query:any = {
+  let query: any = {
     include: everything,
-    skip: page*resultsPerPage,
-    take: resultsPerPage 
-  }
+    skip: page * resultsPerPage,
+    take: resultsPerPage,
+  };
 
-  if(groups) {
+  if (groups) {
     query = {
       ...query,
       where: {
         groups: {
           some: {
-            group_id: { in: groups }
-          }
-        }
-      }
-    }
-
+            group_id: { in: groups },
+          },
+        },
+      },
+    };
   }
 
   return await ctx.prisma.idea.findMany(query);
@@ -78,16 +77,16 @@ const select = async (id: number, ctx: PrismaContext) => {
  * @returns removed idea object.
  */
 const remove = async (id: number, ctx: PrismaContext) => {
-  log.info(`id ${id}`)
+  log.info(`id ${id}`);
   try {
     // delete m2m relationship between Group(s) and the Idea
     const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
-      where: {id: id},
+      where: { id: id },
       data: {
         groups: {
-          deleteMany: {}
-        }
-      }
+          deleteMany: {},
+        },
+      },
     });
 
     const idea: Idea = await ctx.prisma.idea.delete({
@@ -111,31 +110,28 @@ const remove = async (id: number, ctx: PrismaContext) => {
  */
 const create = async (from: IdeaData, ctx: PrismaContext) => {
   try {
-
-    const groups = from.groups.map(x => ({group: {connect: {id: Number(x)}}}))
+    const groups = from.groups.map((x) => ({ group: { connect: { id: Number(x) } } }));
 
     // Create idea and store it to database.
     const idea = await ctx.prisma.idea.create({
       data: {
         content: from.content,
         user: {
-          connect: {id: 3} // TODO: add actual user id when auth feature is finished
+          connect: { id: 3 }, // TODO: add actual user id when auth feature is finished
         },
         groups: {
           create: groups,
         },
       },
-      include: everything
+      include: everything,
     });
-    return idea
+    return idea;
 
     log.info('Created new idea: ' + JSON.stringify(idea));
     return idea;
-
   } catch (err) {
     throw new BadRequest('No group exists with that id, cant create idea.');
   }
-
 };
 
 /**
@@ -148,61 +144,57 @@ const create = async (from: IdeaData, ctx: PrismaContext) => {
  * @returns Promise<Idea> Updated Idea object.
  */
 const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
-
-  if(from.groups) {
+  if (from.groups) {
     try {
       // check that all the groups exist
       const groups = await ctx.prisma.group.findMany({
         where: {
-          id: {in: from.groups.map(Number)}
-        }
-      })
+          id: { in: from.groups.map(Number) },
+        },
+      });
 
-      if(groups.length != from.groups.length) {
-        throw new BadRequest(`One or more of the groups do not exist, cannot update idea`)
+      if (groups.length != from.groups.length) {
+        throw new BadRequest(
+          `One or more of the groups do not exist, cannot update idea`
+        );
       }
-
     } catch (err) {
-      throw err
-      throw new BadRequest(
-        'Unknown error, cannot update Idea'
-      );
+      throw err;
+      throw new BadRequest('Unknown error, cannot update Idea');
     }
   }
 
   try {
-    const groupsConnection = from.groups ? from.groups.map(x => ({group: {connect: {id: Number(x)}}})) : []
+    const groupsConnection = from.groups
+      ? from.groups.map((x) => ({ group: { connect: { id: Number(x) } } }))
+      : [];
 
     // due to how Prisma works, we have to clear out the old m2m connections first
     const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
-      where: {id: id},
+      where: { id: id },
       data: {
         groups: {
-          deleteMany: {}
-        }
-      }
+          deleteMany: {},
+        },
+      },
     });
 
-
     // now we can add the new ones when updating
-    log.info(`groupsConnection ${JSON.stringify(groupsConnection)}`)
+    log.info(`groupsConnection ${JSON.stringify(groupsConnection)}`);
     const idea = await ctx.prisma.idea.update({
-      where: {id: id},
+      where: { id: id },
       data: {
         content: from.content,
         groups: {
-          create: groupsConnection
-        }
+          create: groupsConnection,
+        },
       },
-      include: everything
-    })
-    return idea
+      include: everything,
+    });
+    return idea;
   } catch (err) {
-    throw new BadRequest(
-      'Idea does not exist, cannot update'
-    );
+    throw new BadRequest('Idea does not exist, cannot update');
   }
 };
 
 export default { all, select, create, remove, update };
-
