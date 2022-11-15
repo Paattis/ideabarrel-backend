@@ -21,7 +21,7 @@ users.get('/', async (_, res: Response, next: NextFunction) => {
 users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number.parseInt(req.params.id);
-    const result: User = await usersClient.select(id, db);
+    const result = await usersClient.select(id, db);
     res.json(result);
   } catch (err) {
     respondWithError(res, err);

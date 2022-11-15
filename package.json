@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Paattis/ideabarrel-backend#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.1",
     "install": "^0.13.0",
@@ -37,6 +38,7 @@
   "dependencies": {
     "@prisma/client": "^4.5.0",
     "@types/supertest": "^2.0.12",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-winston": "^4.2.0",

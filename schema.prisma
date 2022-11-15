@@ -13,6 +13,8 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
+  password String @db.VarChar(64)
+  profile_img String @db.VarChar(255)
   role_id Int @default(0)
   role Role @relation(fields: [role_id], references:[id])
   created_at DateTime @default(now())

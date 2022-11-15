@@ -2,8 +2,24 @@ import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
+import secrets from '../utils/secrets';
 
-const everything = { role: true, comments: true, ideas: true };
+export type PublicUser = {
+  comments: Comment[];
+  name: string;
+  role: Role;
+  created_at: string;
+  ideas: Idea[];
+};
+
+const publicFields = {
+  comments: { select: { content: true, id: true, created_at: true, idea: true } },
+  name: true,
+  id: true,
+  role: { select: { name: true, id: true } },
+  created_at: true,
+  ideas: { select: { id: true } },
+};
 
 /**
  * Data to build new user from.
@@ -11,27 +27,21 @@ const everything = { role: true, comments: true, ideas: true };
 export interface UserData {
   name: string;
   role_id: number;
+  password: string;
 }
-
-/**
- * Union type of User and his/her role.
- */
-export type UserWithRole = User & { role: Role };
-
-/**
- * Union type containing all of the rows linked to 
- * the user.
- */
-export type RichUser = UserWithRole & { comments: Comment[]; ideas: Idea[] };
 
 /**
  * Select all users.
  *
  * @param ctx PrismaContext
- * @returns Array of {@link RichUser}s
+ * @returns Array of {@link PublicUser}s
  */
 const all = async (ctx: PrismaContext) => {
-  return await ctx.prisma.user.findMany({ include: everything });
+  return await ctx.prisma.user.findMany({ select: publicFields });
+};
+
+const selectByUsernameSecret = async (username: string, ctx: PrismaContext) => {
+  return await ctx.prisma.user.findFirstOrThrow({ where: { name: username } });
 };
 
 /**
@@ -40,13 +50,13 @@ const all = async (ctx: PrismaContext) => {
  * @param userId user id.
  * @param ctx PrismaContext
  * @throws on no user found {@link NoSuchResource}
- * @returns User as a {@link RichUser}
+ * @returns User as a {@link PublicUser}
  */
 const select = async (userId: number, ctx: PrismaContext) => {
   try {
     return await ctx.prisma.user.findFirstOrThrow({
       where: { id: userId },
-      include: everything,
+      select: publicFields,
     });
   } catch (err) {
     throw new NoSuchResource('user', `No user with id: ${userId}`);
@@ -59,13 +69,13 @@ const select = async (userId: number, ctx: PrismaContext) => {
  * @param userId user id.
  * @param ctx PrismaContext
  * @throws on no user found {@link NoSuchResource}
- * @returns removed user as a {@link RichUser}
+ * @returns removed user as a {@link PublicUser}
  */
 const remove = async (userId: number, ctx: PrismaContext) => {
   try {
-    const user: User = await ctx.prisma.user.delete({
+    const user = await ctx.prisma.user.delete({
       where: { id: userId },
-      include: everything,
+      select: publicFields,
     });
     if (user === null) throw 'Missing record';
     return user;
@@ -80,7 +90,7 @@ const remove = async (userId: number, ctx: PrismaContext) => {
  * @param from New user prototype
  * @param ctx Prisma database context
  * @throws on broken relations {@link BadRequest}
- * @returns New User as a {@link RichUser}
+ * @returns New User as a {@link PublicUser}
  */
 const create = async (from: UserData, ctx: PrismaContext) => {
   try {
@@ -92,11 +102,8 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
   // Create user and store it to database.
   const user = await ctx.prisma.user.create({
-    data: {
-      name: from.name,
-      role_id: from.role_id,
-    },
-    include: everything,
+    data: { ...from, password: await secrets.hash(from.password) },
+    select: publicFields,
   });
 
   log.debug('Created new user: ' + JSON.stringify(user));
@@ -105,12 +112,12 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
 /**
  * Update existing user and return new instance.
- * 
+ *
  * @param from New user prototype
  * @param userId Id of the user.
  * @param ctx Prisma database context
  * @throws On no user foun {@link NoSuchResource}
- * @returns User as a {@link RichUser}
+ * @returns User as a {@link PublicUser}
  */
 const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
   try {
@@ -124,8 +131,11 @@ const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
   try {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
-      data: from,
-      include: everything,
+      data: {
+        name: from.name,
+        role_id: from.role_id,
+      },
+      select: publicFields,
     });
     return user;
   } catch (err) {
@@ -133,4 +143,25 @@ const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
   }
 };
 
-export default { all, remove, create, select, update };
+const updatePassword = async (userId: number, password: string, ctx: PrismaContext) => {
+  try {
+    const user = await ctx.prisma.user.update({
+      where: { id: userId },
+      data: { password: password },
+      select: publicFields,
+    });
+    return user;
+  } catch (err) {
+    throw new NoSuchResource('user');
+  }
+};
+
+export default {
+  all,
+  remove,
+  create,
+  select,
+  update,
+  selectByUsername: selectByUsernameSecret,
+  updatePassword,
+};
