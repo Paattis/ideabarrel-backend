@@ -17,11 +17,37 @@ const everything = { groups: true, comments: true };
  * Select all ideas.
  *
  * @param ctx PrismaContext
+ * @param page the page number for pagination
+ * @param groups the group ids
  * @returns Array of all ideas.
  */
-const all = async (ctx: PrismaContext, page: number) => {
+const all = async (ctx: PrismaContext, page: number, groups?: number[]) => {
   const resultsPerPage = 20
-  return await ctx.prisma.idea.findMany({ include: everything, skip: page*resultsPerPage, take: resultsPerPage });
+  // TODO: support for tags
+
+  // construct query out of parts
+  // have to use the any-type here to keep TS from freaking out when we change the object
+  let query:any = {
+    include: everything,
+    skip: page*resultsPerPage,
+    take: resultsPerPage 
+  }
+
+  if(groups) {
+    query = {
+      ...query,
+      where: {
+        groups: {
+          some: {
+            group_id: { in: groups }
+          }
+        }
+      }
+    }
+
+  }
+
+  return await ctx.prisma.idea.findMany(query);
 };
 
 /**

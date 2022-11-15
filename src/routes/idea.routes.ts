@@ -12,8 +12,12 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const pageNum = parseInt((req.query.page_num||"0") as string)
-    log.info(`pagenum ${pageNum}`)
-    const results = await ideasClient.all(db, pageNum);
+    log.info(`groups: ${JSON.stringify(req.query.groups)}`)
+
+    const groups = req.query.groups as string[]
+    const groupIds = groups ? groups.map(Number) : []
+
+    const results = await ideasClient.all(db, pageNum, groupIds);
     res.json(results);
   } catch (err) {
     return respondWithError(res, err);
