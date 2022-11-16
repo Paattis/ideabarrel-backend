@@ -24,7 +24,7 @@ app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
-app.use('/idea', ideaRoutes);
+app.use('/ideas', ideaRoutes);
 // --------------------------------
 
 app.use(httpErrorHandler);
