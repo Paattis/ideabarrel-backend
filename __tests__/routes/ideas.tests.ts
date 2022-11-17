@@ -35,6 +35,14 @@ const group: Group = {
   name : "Test group"
 }
 
+const group2: Group = {
+  id : 2,
+  description : "Test group2",
+  created_at : timestamp,
+  updated_at : timestamp,
+  name : "Test group2"
+}
+
 // required because the endpoint returns groups with dates as strings
 const expectedGroup = {
   ...group,
@@ -73,6 +81,14 @@ const idea: IdeaWithGroups = {
   groups: [group],
 }
 
+const idea2: IdeaWithGroups = {
+  id: 1,
+  content: 'New content',
+  user_id: 1,
+  created_at: timestamp,
+  updated_at: timestamp,
+  groups: [group2],
+}
 
 
 
@@ -110,7 +126,6 @@ describe('POST /ideas/', () => {
 
   test('Route should fail to create idea if a non-existent group is given', async () => {
     swapToMockContext(mockCtx);
-    //mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
     mockCtx.prisma.group.create.mockResolvedValue(group);
 
     const res = await request(app).post('/ideas/').send({
@@ -130,9 +145,53 @@ describe('POST /ideas/', () => {
 });
 
 /**
+* Tests for PUT method on route /ideas/<idea_id>
+*/
+describe('PUT /ideas/:idea_id', () => {
+  test('Route should update and return idea with status 200 and new data', async () => {
+    swapToMockContext(mockCtx);
+    mockCtx.prisma.idea.update.mockResolvedValue(idea2);
+
+    const res = await request(app).put('/ideas/1').send({
+      content: "New content",
+      "groups[]": [2,]
+    })
+
+    console.log("res body put test: ", res.body)
+    expect(res.body).toMatchObject({
+      content: "New content",
+      groups: [
+        {
+          ...group2,
+          created_at : timestamp.toISOString(),
+          updated_at : timestamp.toISOString(),
+        }
+      ]
+    })
+  });
+
+  test('Route should fail with status 400 and not update the idea if one or more of the given groups doesn\'t exist', async () => {
+    swapToMockContext(mockCtx);
+    //mockCtx.prisma.idea.update.mockResolvedValue(idea);
+    mockCtx.prisma.idea.update.mockResolvedValue(idea);
+    mockCtx.prisma.group.update.mockResolvedValue(group2);
+    //mockCtx.prisma.group.update.mockRejectedValue(group);
+
+    const res = await request(app).put('/ideas/1').send({
+      content: "New content",
+      "groups[]": [33, 2]
+    })
+
+    console.log("res body put test 400: ", res.body)
+    expect(res.statusCode).toBe(400)
+    //expect(res.body).toMatchObject()
+  })
+})
+
+/**
  * Tests for DELETE method on route /ideas
  */
-describe('DELETE /ideas/:id', () => {
+describe('DELETE /ideas/:idea_id', () => {
   test('Route should delete and return idea with status 200', async () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.idea.delete.mockResolvedValue(idea);

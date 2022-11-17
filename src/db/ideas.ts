@@ -144,24 +144,28 @@ const create = async (from: IdeaData, ctx: PrismaContext) => {
  * @returns Promise<Idea> Updated Idea object.
  */
 const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
-  if (from.groups) {
-    try {
-      // check that all the groups exist
+  log.info(`from ${JSON.stringify(from)}`)
+
+  if (from.groups == undefined) {
+    throw new BadRequest('Groups not sent')
+  }
+
+  try {
+
+    // check that all the groups exist
       const groups = await ctx.prisma.group.findMany({
         where: {
           id: { in: from.groups.map(Number) },
         },
       });
-
-      if (groups.length != from.groups.length) {
+      if (!groups || (groups.length != from.groups.length)) {
         throw new BadRequest(
           `One or more of the groups do not exist, cannot update idea`
         );
       }
-    } catch (err) {
-      throw err;
-      throw new BadRequest('Unknown error, cannot update Idea');
-    }
+  } catch (err) {
+    throw err;
+    throw new BadRequest('Unknown error, cannot update Idea');
   }
 
   try {
@@ -178,7 +182,7 @@ const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
         },
       },
     });
-
+    log.info(`groups ${from.groups}`)
     // now we can add the new ones when updating
     log.info(`groupsConnection ${JSON.stringify(groupsConnection)}`);
     const idea = await ctx.prisma.idea.update({

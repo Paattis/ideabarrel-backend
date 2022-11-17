@@ -54,6 +54,7 @@ ideas.put('/:id', async (req: TRequest<IdeaData>, res: Response, next: NextFunct
     const result = await ideasClient.update(req.body, ideaId, db);
     res.json(result);
   } catch (err) {
+    //throw err
     respondWithError(res, err);
   } finally {
     next();
