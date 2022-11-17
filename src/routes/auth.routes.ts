@@ -1,30 +1,34 @@
 import { Router, Response, NextFunction } from 'express';
-import userClient from '../db/users';
-import { db } from '../db/context';
 import { TRequest as TRequest } from '../utils/types';
-import { Forbidden, respondWithError } from '../utils/errors';
-import secrets from '../utils/secrets';
+import { BadRequest, NoSuchResource } from '../utils/errors';
+import auth from '../utils/auth';
+import { db } from '../db/context';
+import usersClient from '../db/users';
 
-const auth = Router();
+const router = Router();
 
 type AuthBody = {
   username: string;
   password: string;
 };
 
-auth.post('/', async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
+router.post('/login', async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
   try {
-    const user = await userClient.selectByUsername(req.body.username, db);
-    if (await secrets.match(req.body.password, user.password)) {
-      res.json({ token: 'jee' });
-    } else {
-      throw new Forbidden(req.body);
+    const user = await usersClient.selectByUsernameSecret(req.body.username, db);
+    if (!user) {
+      throw new NoSuchResource('user');
     }
-  } catch (error) {
-    respondWithError(res, error);
+    if (!await auth.match(req.body.password, user.password)) {
+      throw new BadRequest('Incorrect password');
+    }
+    const {password, ...result} = user;
+    const token = auth.jwt({id: user.id})
+    res.json({result, token})
+  } catch (err) {
+    next(err)
   } finally {
     next();
   }
 });
 
-export { auth as router };
+export { router as router };

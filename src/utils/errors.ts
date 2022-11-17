@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { log } from '../logger/log';
 
 export const ServerError = {
@@ -10,15 +10,26 @@ function isApiError(err: unknown): err is ApiError {
   return (err as ApiError).json !== undefined;
 }
 
+function hasStackTrace(err: unknown): err is Error {
+  return (err as Error).stack !== undefined;
+}
+
 export const respondWithError = (res: Response, err: unknown) => {
   if (isApiError(err)) {
+    log.error(err.message);
+    err.dev && log.error(err.dev);
     res.status(err.code).json(err.json());
   } else {
+    log.error("Error of unknown type: Defaulting to ServerError.")
+    if (hasStackTrace(err)) {
+      log.debug("FIX YOUR CODE. HERE")
+      log.error(err.stack);
+    }
     res.status(ServerError.status).json(ServerError);
   }
 };
 
-abstract class ApiError extends Error {
+export abstract class ApiError extends Error {
   public abstract readonly code: number;
   public readonly dev: any;
 
@@ -31,7 +42,6 @@ abstract class ApiError extends Error {
 
   constructor(msg: string, dev: any) {
     super(msg);
-    log.error(msg);
     if (dev) log.error(JSON.stringify(dev));
     this.dev = dev;
   }
@@ -40,7 +50,14 @@ abstract class ApiError extends Error {
 export class Forbidden extends ApiError {
   public readonly code = 403;
   constructor(dev: any = null) {
-    super('Forbidden resource', dev);
+    super('Forbidden', dev);
+  }
+}
+
+export class Unauthorized extends ApiError {
+  public readonly code = 401;
+  constructor(dev: any = null) {
+    super('Unauthorized', dev);
   }
 }
 
@@ -58,4 +75,10 @@ export class NoSuchResource extends ApiError {
   constructor(type: MissingResource, dev: any = null) {
     super(`No such ${type} exists`, dev);
   }
+}
+
+
+export const httpHandler = (err: ApiError, _: Request, res: Response, next: NextFunction) => {
+  respondWithError(res, err);
+  next()
 }

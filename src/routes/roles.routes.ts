@@ -3,7 +3,6 @@ import { db } from '../db/context';
 import { Router, Response, NextFunction, Request } from 'express';
 import rolesClient, { RoleFields } from '../db/roles';
 import { TRequest as TRequest } from '../utils/types';
-import { respondWithError } from '../utils/errors';
 
 const roles = Router();
 
@@ -21,7 +20,7 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
       res.json(result);
     }
   } catch (err) {
-    respondWithError(res, err);
+    next(err)
   } finally {
     next();
   }
@@ -38,7 +37,7 @@ roles.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
       res.json(result);
     }
   } catch (err) {
-    respondWithError(res, err);
+    next(err)
   } finally {
     next();
   }
@@ -49,7 +48,7 @@ roles.post('/', async (req: TRequest<RoleFields>, res: Response, next: NextFunct
     const result = await rolesClient.create(req.body, db);
     res.json(result);
   } catch (err) {
-    respondWithError(res, err);
+    next(err)
   } finally {
     next();
   }
@@ -61,7 +60,7 @@ roles.put('/:id', async (req:TRequest<RoleFields>, res: Response, next: NextFunc
     const result = await rolesClient.update(id, req.body, db);
     res.json(result);
   } catch (err) {
-    respondWithError(res, err);
+    next(err)
   } finally {
     next();
   }
@@ -73,7 +72,7 @@ roles.delete('/:id',async (req: Request, res: Response, next: NextFunction) => {
     const result = await rolesClient.remove(id, db)
     res.json(result);
   } catch (err) {
-    respondWithError(res, err);
+    next(err)
   } finally {
     next();
   }

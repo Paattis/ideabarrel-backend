@@ -28,6 +28,7 @@ const role: Role = {
   name: 'Test Engineer',
 };
 const user1: User = {
+  profile_img: '',
   id: 1,
   name: 'Test User 1',
   password: 'pw',
@@ -36,6 +37,7 @@ const user1: User = {
   updated_at: timestamp,
 };
 const user2: User = {
+  profile_img: '',
   id: 2,
   name: 'Test User 2',
   password: 'pw',

@@ -3,10 +3,10 @@ import { asserThat } from './assert';
 
 dotenv.config();
 
-type DefinedVars = 'APP_ENV';
+type DefinedVars = 'APP_ENV' | 'ACCESS_TOKEN_SECRET';
 
 export const getAppEnvVar = (envVar: DefinedVars) => {
   const result = process.env[envVar];
   asserThat(result !== undefined).elseFail('undefined env var:', envVar);
-  return result;
+  return result as string;
 };

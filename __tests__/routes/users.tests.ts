@@ -33,6 +33,7 @@ const role: Role = {
 const user1: User = {
   id: 1,
   name: 'Test User 1',
+  profile_img: '',
   password: 'pw',
   role_id: 1,
   created_at: timestamp,
@@ -41,6 +42,7 @@ const user1: User = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  profile_img: '',
   password: 'pw',
   role_id: 1,
   created_at: timestamp,

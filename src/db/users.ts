@@ -2,7 +2,7 @@ import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
-import secrets from '../utils/secrets';
+import auth from '../utils/auth';
 
 export type PublicUser = {
   comments: Comment[];
@@ -41,7 +41,7 @@ const all = async (ctx: PrismaContext) => {
 };
 
 const selectByUsernameSecret = async (username: string, ctx: PrismaContext) => {
-  return await ctx.prisma.user.findFirstOrThrow({ where: { name: username } });
+  return await ctx.prisma.user.findFirst({ where: { name: username }, select : {...publicFields, password: true} });
 };
 
 /**
@@ -59,7 +59,7 @@ const select = async (userId: number, ctx: PrismaContext) => {
       select: publicFields,
     });
   } catch (err) {
-    throw new NoSuchResource('user', `No user with id: ${userId}`);
+    throw new NoSuchResource('user');
   }
 };
 
@@ -80,7 +80,7 @@ const remove = async (userId: number, ctx: PrismaContext) => {
     if (user === null) throw 'Missing record';
     return user;
   } catch (err) {
-    throw new NoSuchResource('user', `No user with id: ${userId}`);
+    throw new NoSuchResource('user');
   }
 };
 
@@ -102,7 +102,7 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
   // Create user and store it to database.
   const user = await ctx.prisma.user.create({
-    data: { ...from, password: await secrets.hash(from.password) },
+    data: { ...from, password: await auth.hash(from.password), profile_img: '' },
     select: publicFields,
   });
 
@@ -162,6 +162,6 @@ export default {
   create,
   select,
   update,
-  selectByUsername: selectByUsernameSecret,
+  selectByUsernameSecret,
   updatePassword,
 };
