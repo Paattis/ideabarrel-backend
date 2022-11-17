@@ -8,7 +8,11 @@ export interface RoleFields {
 }
 
 export type RoleWithUsers = Role & { users: User[] };
-const publicFields = {id: true, name: true, users: {select: {name: true, id: true}}}
+const publicFields = {
+  id: true,
+  name: true,
+  users: { select: { name: true, id: true } },
+};
 
 /**
  * Get all roles.
@@ -76,7 +80,8 @@ const select = async (roleId: number, ctx: PrismaContext) => {
 const create = async (from: RoleFields, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.role.create({
-      data: { name: from.name }, select: publicFields,
+      data: { name: from.name },
+      select: publicFields,
     });
     log.info('Created new role: ' + JSON.stringify(result));
     return result;
@@ -88,26 +93,34 @@ const create = async (from: RoleFields, ctx: PrismaContext) => {
 const remove = async (roleId: number, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.role.delete({
-      where: {id: roleId},
-      select: publicFields
-    })
+      where: { id: roleId },
+      select: publicFields,
+    });
     return result;
   } catch (err) {
     throw new NoSuchResource('user', `No role with id: ${roleId}`);
   }
-}
+};
 
 const update = async (roleId: number, role: RoleFields, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.role.update({
-      where: {id: roleId},
+      where: { id: roleId },
       data: role,
-      select: publicFields
-    })
+      select: publicFields,
+    });
     return result;
   } catch (err) {
     throw new NoSuchResource('user', `No role with id: ${roleId}`);
   }
-}
+};
 
-export default { all, create, select, update, allRolesWithUsers, selectWithUsers, remove };
+export default {
+  all,
+  create,
+  select,
+  update,
+  allRolesWithUsers,
+  selectWithUsers,
+  remove,
+};

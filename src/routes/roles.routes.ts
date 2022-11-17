@@ -20,7 +20,7 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
       res.json(result);
     }
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -28,7 +28,7 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 roles.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = Number.parseInt(req.params.id);
+    const id = Number.parseInt(req.params.id, 10);
     if (queryisPresent(req, 'usr')) {
       const result = await rolesClient.selectWithUsers(id, db);
       res.json(result);
@@ -37,7 +37,7 @@ roles.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
       res.json(result);
     }
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -48,34 +48,37 @@ roles.post('/', async (req: TRequest<RoleFields>, res: Response, next: NextFunct
     const result = await rolesClient.create(req.body, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
 });
 
-roles.put('/:id', async (req:TRequest<RoleFields>, res: Response, next: NextFunction) => {
-  try {
-    const id = Number.parseInt(req.params.id);
-    const result = await rolesClient.update(id, req.body, db);
-    res.json(result);
-  } catch (err) {
-    next(err)
-  } finally {
-    next();
+roles.put(
+  '/:id',
+  async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      const result = await rolesClient.update(id, req.body, db);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-})
+);
 
-roles.delete('/:id',async (req: Request, res: Response, next: NextFunction) => {
+roles.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = Number.parseInt(req.params.id);
-    const result = await rolesClient.remove(id, db)
+    const id = Number.parseInt(req.params.id, 10);
+    const result = await rolesClient.remove(id, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
-})
+});
 
 export { roles as router };

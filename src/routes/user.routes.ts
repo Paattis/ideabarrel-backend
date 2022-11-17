@@ -11,7 +11,7 @@ users.get('/', async (_, res: Response, next: NextFunction) => {
     const results = await usersClient.all(db);
     res.json(results);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -19,11 +19,11 @@ users.get('/', async (_, res: Response, next: NextFunction) => {
 
 users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = Number.parseInt(req.params.id);
+    const id = Number.parseInt(req.params.id, 10);
     const result = await usersClient.select(id, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -31,11 +31,11 @@ users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 
 users.put('/:id', async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
   try {
-    const userId = Number.parseInt(req.params.id);
+    const userId = Number.parseInt(req.params.id, 10);
     const result = await usersClient.update(req.body, userId, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -43,11 +43,11 @@ users.put('/:id', async (req: TRequest<UserData>, res: Response, next: NextFunct
 
 users.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = Number.parseInt(req.params.id);
+    const userId = Number.parseInt(req.params.id, 10);
     const result = await usersClient.remove(userId, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }
@@ -58,7 +58,7 @@ users.post('/', async (req: TRequest<UserData>, res: Response, next: NextFunctio
     const result = await usersClient.create(req.body, db);
     res.json(result);
   } catch (err) {
-    next(err)
+    next(err);
   } finally {
     next();
   }

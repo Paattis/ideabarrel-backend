@@ -41,7 +41,10 @@ const all = async (ctx: PrismaContext) => {
 };
 
 const selectByUsernameSecret = async (username: string, ctx: PrismaContext) => {
-  return await ctx.prisma.user.findFirst({ where: { name: username }, select : {...publicFields, password: true} });
+  return await ctx.prisma.user.findFirst({
+    where: { name: username },
+    select: { ...publicFields, password: true },
+  });
 };
 
 /**
@@ -77,7 +80,7 @@ const remove = async (userId: number, ctx: PrismaContext) => {
       where: { id: userId },
       select: publicFields,
     });
-    if (user === null) throw 'Missing record';
+    if (user === null) throw new NoSuchResource('user');
     return user;
   } catch (err) {
     throw new NoSuchResource('user');
@@ -147,7 +150,7 @@ const updatePassword = async (userId: number, password: string, ctx: PrismaConte
   try {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
-      data: { password: password },
+      data: { password },
       select: publicFields,
     });
     return user;

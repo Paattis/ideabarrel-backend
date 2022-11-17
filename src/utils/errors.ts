@@ -17,12 +17,14 @@ function hasStackTrace(err: unknown): err is Error {
 export const respondWithError = (res: Response, err: unknown) => {
   if (isApiError(err)) {
     log.error(err.message);
-    err.dev && log.error(err.dev);
+    if (err.dev) {
+      log.error(err.dev);
+    }
     res.status(err.code).json(err.json());
   } else {
-    log.error("Error of unknown type: Defaulting to ServerError.")
+    log.error('Error of unknown type: Defaulting to ServerError.');
     if (hasStackTrace(err)) {
-      log.debug("FIX YOUR CODE. HERE")
+      log.debug('FIX YOUR CODE. HERE');
       log.error(err.stack);
     }
     res.status(ServerError.status).json(ServerError);
@@ -77,8 +79,12 @@ export class NoSuchResource extends ApiError {
   }
 }
 
-
-export const httpHandler = (err: ApiError, _: Request, res: Response, next: NextFunction) => {
+export const httpHandler = (
+  err: ApiError,
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
   respondWithError(res, err);
-  next()
-}
+  next();
+};

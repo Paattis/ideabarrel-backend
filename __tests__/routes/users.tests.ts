@@ -75,7 +75,9 @@ describe('POST /users/', () => {
     try {
       const res = await request(app).post('/users/').send(user1);
       expect(res.statusCode).toBe(400);
-    } catch (error) {}
+    } catch (error) {
+      // Error
+    }
   });
 });
 
