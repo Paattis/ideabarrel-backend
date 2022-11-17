@@ -5,7 +5,7 @@ import { router as roleRoutes } from './routes/roles.routes';
 import { router as authRoutes } from './routes/auth.routes';
 import { httpBegin as httpLogger, httpEnd as httpEndLogger, log } from './logger/log';
 import auth from './utils/auth';
-import { ApiError, httpHandler, respondWithError } from './utils/errors';
+import { httpHandler as httpErrorHandler } from './utils/errors';
 
 const app: Application = express();
 
@@ -24,7 +24,7 @@ app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
 // --------------------------------
 
-app.use(httpHandler);
+app.use(httpErrorHandler);
 app.use(httpEndLogger);
 
 export default app;
