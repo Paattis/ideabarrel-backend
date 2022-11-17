@@ -9,8 +9,6 @@ import {
   swapToAppContext,
 } from '../../src/db/context';
 
-jest.setTimeout(15000);
-
 let mockCtx: MockPrismaContext;
 let ctx: PrismaContext;
 

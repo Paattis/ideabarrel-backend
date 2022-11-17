@@ -106,4 +106,19 @@ describe('Users database access client', () => {
     mockCtx.prisma.user.create.mockResolvedValue(user1);
     await expect(usersClient.create(user1, ctx)).rejects.toThrow(BadRequest);
   });
+
+  test('should fetch user from database', async () => {
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
+    await expect(
+      usersClient.selectByUsernameSecret(user1.name, ctx)
+    ).resolves.toMatchObject({
+      name: 'Test User 1',
+      password: 'pw',
+    });
+  });
+
+  test('should fetch user from database', async () => {
+    mockCtx.prisma.user.findFirst.mockResolvedValue(null);
+    await expect(usersClient.selectByUsernameSecret(user1.name, ctx)).resolves.toBeNull();
+  });
 });
