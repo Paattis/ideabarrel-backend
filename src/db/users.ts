@@ -7,6 +7,7 @@ import auth from '../utils/auth';
 export type PublicUser = {
   comments: Comment[];
   name: string;
+  profile_img: string;
   role: Role;
   id: number;
   created_at: string;
@@ -16,6 +17,7 @@ export type PublicUser = {
 const publicFields = {
   comments: { select: { content: true, id: true, created_at: true, idea: true } },
   name: true,
+  profile_img: true,
   id: true,
   role: { select: { name: true, id: true } },
   created_at: true,
@@ -29,6 +31,7 @@ export interface UserData {
   name: string;
   role_id: number;
   password: string;
+  profile_img: string;
 }
 
 /**
@@ -137,12 +140,14 @@ const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
       where: { id: userId },
       data: {
         name: from.name,
+        profile_img: from.profile_img,
         role_id: from.role_id,
       },
       select: publicFields,
     });
     return user;
   } catch (err) {
+    log.error(err);
     throw new NoSuchResource('user');
   }
 };
