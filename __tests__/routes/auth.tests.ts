@@ -6,7 +6,6 @@ import {
   PrismaContext,
   createMockContext,
   swapToMockContext,
-  swapToAppContext,
 } from '../../src/db/context';
 import auth from '../../src/utils/auth';
 
@@ -17,23 +16,6 @@ beforeEach(() => {
   mockCtx = createMockContext();
   ctx = mockCtx as unknown as PrismaContext;
 });
-
-const timestamp = new Date();
-const role: Role = {
-  id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-  name: 'Test Engineer',
-};
-const user1: User = {
-  id: 1,
-  name: 'Test User 1',
-  profile_img: '',
-  password: '',
-  role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-};
 
 describe('', () => {
   test('Route should return 404 when user is not found', async () => {
@@ -55,13 +37,13 @@ describe('', () => {
       profile_img: '',
       password: await auth.hash('password'),
       role_id: 1,
-      created_at: timestamp,
-      updated_at: timestamp,
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     swapToMockContext(mockCtx);
     mockCtx.prisma.user.findFirst.mockResolvedValue(u);
-    const res = await request(app)
+    await request(app)
       .post('/auth/login')
       .send({
         password: 'different',
@@ -77,8 +59,8 @@ describe('', () => {
       profile_img: '',
       password: await auth.hash('password'),
       role_id: 1,
-      created_at: timestamp,
-      updated_at: timestamp,
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     swapToMockContext(mockCtx);

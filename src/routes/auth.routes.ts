@@ -3,7 +3,7 @@ import { TRequest as TRequest } from '../utils/types';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import auth from '../utils/auth';
 import { db } from '../db/context';
-import usersClient from '../db/users';
+import usersClient, { UserData } from '../db/users';
 
 const router = Router();
 
@@ -26,6 +26,20 @@ router.post(
       const { password, ...result } = user;
       const token = auth.jwt({ id: user.id });
       res.json({ result, token });
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
+  }
+);
+
+router.post(
+  '/register',
+  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+    try {
+      const result = await usersClient.create(req.body, db);
+      res.json(result);
     } catch (err) {
       next(err);
     } finally {

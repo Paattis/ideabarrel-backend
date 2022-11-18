@@ -3,6 +3,7 @@ import { db } from '../db/context';
 import { Router, Response, NextFunction, Request } from 'express';
 import rolesClient, { RoleFields } from '../db/roles';
 import { TRequest as TRequest } from '../utils/types';
+import auth from '../utils/auth';
 
 const roles = Router();
 
@@ -26,36 +27,45 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-roles.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = Number.parseInt(req.params.id, 10);
-    if (queryisPresent(req, 'usr')) {
-      const result = await rolesClient.selectWithUsers(id, db);
-      res.json(result);
-    } else {
-      const result: Role = await rolesClient.select(id, db);
-      res.json(result);
+roles.get(
+  '/:id',
+  auth.required,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (queryisPresent(req, 'usr')) {
+        const result = await rolesClient.selectWithUsers(id, db);
+        res.json(result);
+      } else {
+        const result: Role = await rolesClient.select(id, db);
+        res.json(result);
+      }
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
     }
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
   }
-});
+);
 
-roles.post('/', async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
-  try {
-    const result = await rolesClient.create(req.body, db);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
+roles.post(
+  '/',
+  auth.required,
+  async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
+    try {
+      const result = await rolesClient.create(req.body, db);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
 roles.put(
   '/:id',
+  auth.required,
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
@@ -69,16 +79,20 @@ roles.put(
   }
 );
 
-roles.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = Number.parseInt(req.params.id, 10);
-    const result = await rolesClient.remove(id, db);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
+roles.delete(
+  '/:id',
+  auth.admin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      const result = await rolesClient.remove(id, db);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
 export { roles as router };
