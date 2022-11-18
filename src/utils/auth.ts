@@ -28,7 +28,7 @@ passport.use(
       const user = await usersClient.select(payload.id, db);
       return done(null, user);
     } catch (err) {
-      return done(new Unauthorized(), false, 'ASDASDS');
+      return done(new Unauthorized());
     }
   })
 );
@@ -57,20 +57,23 @@ const required = [
   },
 ];
 
-const sameUser = [
-  jwtParse,
-  (req: any, _: any, next: NextFunction) => {
-    const user = req.user as User | null;
-    if (user !== null) {
-      log.info(`User ${user?.id}:${user?.name}`);
-      const id = Number.parseInt(req.params.id);
-      if (user?.id !== id) {
-        return next(new Forbidden());
-      }
-      return next();
+const sameUser = (req: any, _: any, next: NextFunction) => {
+  const user = req.user as User | null;
+  if (user !== null) {
+    log.info(`User ${user?.id}:${user?.name}`);
+    const id = Number.parseInt(req.params.id);
+    if (user?.id !== id) {
+      return next(new Forbidden());
     }
-    next(new Forbidden());
-  },
-];
+    return next();
+  }
+  next(new Forbidden());
+};
 
-export default { hash, match, passport, jwt: jwtSign, required, sameUser };
+const admin = (req: any, _: any, next: NextFunction) => {
+  // TODO: check that user is admin
+  log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
+  next();
+};
+
+export default { hash, match, passport, jwt: jwtSign, required, sameUser, admin };

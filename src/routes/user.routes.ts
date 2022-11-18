@@ -2,9 +2,12 @@ import { Router, Response, NextFunction, Request } from 'express';
 import { db } from '../db/context';
 import usersClient, { UserData } from '../db/users';
 import auth from '../utils/auth';
+// import auth from '../utils/auth';
 import { TRequest as TRequest } from '../utils/types';
 
 const users = Router();
+
+users.use(auth.required);
 
 users.get('/', async (_, res: Response, next: NextFunction) => {
   try {
@@ -29,29 +32,37 @@ users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-users.put('/:id', async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
-  try {
-    const userId = Number.parseInt(req.params.id, 10);
-    const result = await usersClient.update(req.body, userId, db);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
+users.put(
+  '/:id',
+  auth.sameUser,
+  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number.parseInt(req.params.id, 10);
+      const result = await usersClient.update(req.body, userId, db);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
-users.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = Number.parseInt(req.params.id, 10);
-    const result = await usersClient.remove(userId, db);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
+users.delete(
+  '/:id',
+  auth.sameUser,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number.parseInt(req.params.id, 10);
+      const result = await usersClient.remove(userId, db);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
 users.post('/', async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
   try {

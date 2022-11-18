@@ -3,18 +3,18 @@ import request from 'supertest';
 import app from '../../src/app';
 import {
   MockPrismaContext,
-  PrismaContext,
   createMockContext,
   swapToMockContext,
   swapToAppContext,
 } from '../../src/db/context';
+import auth from '../../src/utils/auth';
 
 let mockCtx: MockPrismaContext;
-let ctx: PrismaContext;
 
 beforeEach(() => {
   mockCtx = createMockContext();
-  ctx = mockCtx as unknown as PrismaContext;
+  swapToMockContext(mockCtx);
+  mockJWT();
 });
 
 afterAll(() => {
@@ -28,15 +28,7 @@ const role: Role = {
   updated_at: timestamp,
   name: 'Test Engineer',
 };
-const user1: User = {
-  id: 1,
-  name: 'Test User 1',
-  profile_img: '',
-  password: 'pw',
-  role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-};
+
 const user2: User = {
   id: 2,
   name: 'Test User 2',
@@ -47,16 +39,33 @@ const user2: User = {
   updated_at: timestamp,
 };
 
+const user1: User = {
+  id: 1,
+  name: 'Test User 1',
+  profile_img: '',
+  password: 'pw',
+  role_id: 1,
+  created_at: timestamp,
+  updated_at: timestamp,
+};
+
+const JWT = auth.jwt({ id: user1.id });
+const mockJWT = () => {
+  mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
+};
+
 /**
  * Tests for POST method on route /users
  */
 describe('POST /users/', () => {
   test('Route should create and return user with status 200', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
     mockCtx.prisma.user.create.mockResolvedValue(user1);
 
-    const res = await request(app).post('/users/').send(user1);
+    const res = await request(app)
+      .post('/users/')
+      .auth(JWT, { type: 'bearer' })
+      .send(user1);
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
@@ -66,12 +75,15 @@ describe('POST /users/', () => {
   });
 
   test('Route should fail to create user and return error with status 400', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
     mockCtx.prisma.user.create.mockResolvedValue(user1);
 
     try {
-      const res = await request(app).post('/users/').send(user1);
+      const res = await request(app)
+        .post('/users/')
+        .auth(JWT, { type: 'bearer' })
+        .send(user1);
+
       expect(res.statusCode).toBe(400);
     } catch (error) {
       // Error
@@ -84,10 +96,9 @@ describe('POST /users/', () => {
  */
 describe('DELETE /users/:id', () => {
   test('Route should delete and return user with status 200', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.user.delete.mockResolvedValue(user1);
 
-    const res = await request(app).delete('/users/1');
+    const res = await request(app).delete('/users/1').auth(JWT, { type: 'bearer' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
@@ -96,11 +107,9 @@ describe('DELETE /users/:id', () => {
     });
   });
 
-  test('Route should fail to delete user and return error with status 404', async () => {
-    swapToMockContext(mockCtx);
-
+  test('Route should fail to delete user and return error with status 403', async () => {
     mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
-    await request(app).delete('/users/420').expect(404);
+    await request(app).delete('/users/420').auth(JWT, { type: 'bearer' }).expect(403);
   });
 });
 
@@ -109,10 +118,13 @@ describe('DELETE /users/:id', () => {
  */
 describe('GET /users/1', () => {
   test('Route should return User by specified id and status code of 200', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.user.findFirstOrThrow.mockResolvedValue(user1);
 
-    const res = await request(app).get('/users/1').expect(200);
+    const res = await request(app)
+      .get('/users/1')
+      .auth(JWT, { type: 'bearer' })
+      .expect(200);
+
     expect(res.body).toMatchObject({
       id: 1,
       name: 'Test User 1',
@@ -121,9 +133,8 @@ describe('GET /users/1', () => {
   });
 
   test('Route should return no user, and status code of 404', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.user.findFirstOrThrow.mockRejectedValue(new Error('Mock error'));
-    await request(app).get('/users/1').expect(404);
+    await request(app).get('/users/1').auth(JWT, { type: 'bearer' }).expect(404);
   });
 });
 
@@ -132,18 +143,24 @@ describe('GET /users/1', () => {
  */
 describe('GET /users/', () => {
   test('Route should return array of users and status code of 200', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.user.findMany.mockResolvedValue([user1, user2]);
 
-    const res = await request(app).get('/users/').expect(200);
+    const res = await request(app)
+      .get('/users/')
+      .auth(JWT, { type: 'bearer' })
+      .expect(200);
+
     expect((res.body as any[]).length).toBeGreaterThan(0);
   });
 
   test('Route should return empty array and status code of 200', async () => {
-    swapToMockContext(mockCtx);
     mockCtx.prisma.user.findMany.mockResolvedValue([]);
 
-    const res = await request(app).get('/users/').expect(200);
+    const res = await request(app)
+      .get('/users/')
+      .auth(JWT, { type: 'bearer' })
+      .expect('Content-Type', /json/)
+      .expect(200);
     expect((res.body as any[]).length).toBe(0);
   });
 });
