@@ -22,6 +22,8 @@ app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
+
+app.use('/static/', express.static('uploads'));
 // --------------------------------
 
 app.use(httpErrorHandler);

@@ -28,6 +28,9 @@ creds.js
 
 dist/
 
+uploads/
+!**/.gitkeep
+
 # Logs
 logs
 *.log
