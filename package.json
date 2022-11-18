@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@prisma/client": "^4.5.0",
+    "@types/multer": "^1.4.7",
     "@types/passport": "^1.0.11",
     "@types/passport-jwt": "^3.0.7",
     "@types/passport-local": "^1.0.34",
@@ -45,6 +46,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-winston": "^4.2.0",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.20",
     "npx": "^10.2.2",
     "passport": "^0.6.0",
