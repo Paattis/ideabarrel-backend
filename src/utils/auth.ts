@@ -57,18 +57,20 @@ const required = [
   },
 ];
 
-const sameUser = (req: any, _: any, next: NextFunction) => {
-  const user = req.user as User | null;
-  if (user !== null) {
-    log.info(`User ${user?.id}:${user?.name}`);
-    const id = Number.parseInt(req.params.id);
-    if (user?.id !== id) {
-      return next(new Forbidden());
+const sameUser = [...required,
+  (req: any, _: any, next: NextFunction) => {
+    const user = req.user as User | null;
+    if (user !== null) {
+      log.info(`User ${user?.id}:${user?.name}`);
+      const id = Number.parseInt(req.params.id);
+      if (user?.id !== id) {
+        return next(new Forbidden());
+      }
+      return next();
     }
-    return next();
+    next(new Forbidden());
   }
-  next(new Forbidden());
-};
+]
 
 const admin = (req: any, _: any, next: NextFunction) => {
   // TODO: check that user is admin

@@ -9,9 +9,7 @@ import { TRequest as TRequest } from '../utils/types';
 
 const users = Router();
 
-users.use(auth.required);
-
-users.get('/', async (_, res: Response, next: NextFunction) => {
+users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {
     const results = await usersClient.all(db);
     res.json(results);
@@ -22,7 +20,7 @@ users.get('/', async (_, res: Response, next: NextFunction) => {
   }
 });
 
-users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+users.get('/:id', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number.parseInt(req.params.id, 10);
     const result = await usersClient.select(id, db);
@@ -82,6 +80,7 @@ users.post('/', async (req: TRequest<UserData>, res: Response, next: NextFunctio
 users.post(
   '/:id/img',
   img.upload.single('avatar'),
+  auth.sameUser,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = Number.parseInt(req.params.id, 10);
@@ -104,7 +103,7 @@ users.post(
   }
 );
 
-users.delete('/:id/img', async (req: Request, res: Response, next: NextFunction) => {
+users.delete('/:id/img', auth.sameUser, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number.parseInt(req.params.id, 10);
     const user = req.user as PublicUser;
