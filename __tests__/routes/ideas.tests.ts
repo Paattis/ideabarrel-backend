@@ -60,6 +60,8 @@ const role: Role = {
 const user1: User = {
   id: 1,
   name: 'Test User 1',
+  profile_img: '',
+  password: '',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -67,6 +69,8 @@ const user1: User = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  profile_img: '',
+  password: '',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -91,7 +95,9 @@ const idea2: IdeaWithGroups = {
 }
 
 
-
+/**
+General note: Every time we send
+**/
 
 
 /**
@@ -126,12 +132,13 @@ describe('POST /ideas/', () => {
 
   test('Route should fail to create idea if a non-existent group is given', async () => {
     swapToMockContext(mockCtx);
+    mockCtx.prisma.idea.create.mockRejectedValue(idea);
     mockCtx.prisma.group.create.mockResolvedValue(group);
 
     const res = await request(app).post('/ideas/').send({
       content: "This will fail",
       user: 1,
-      "groups[]": [444,]
+      groups: [444,]
     });
     console.log("Res code", res.statusCode)
     console.log("Res body", res.body)
@@ -151,10 +158,11 @@ describe('PUT /ideas/:idea_id', () => {
   test('Route should update and return idea with status 200 and new data', async () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.idea.update.mockResolvedValue(idea2);
+    mockCtx.prisma.group.findMany.mockResolvedValue([group2]);
 
     const res = await request(app).put('/ideas/1').send({
       content: "New content",
-      "groups[]": [2,]
+      "groups": [2]
     })
 
     console.log("res body put test: ", res.body)
@@ -179,7 +187,7 @@ describe('PUT /ideas/:idea_id', () => {
 
     const res = await request(app).put('/ideas/1').send({
       content: "New content",
-      "groups[]": [33, 2]
+      "groups": [33, 2]
     })
 
     console.log("res body put test 400: ", res.body)

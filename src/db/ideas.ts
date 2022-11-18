@@ -152,12 +152,17 @@ const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
 
   try {
 
+    log.info(`db groups: ${
+      await ctx.prisma.group.findMany()
+    }`)
     // check that all the groups exist
       const groups = await ctx.prisma.group.findMany({
         where: {
-          id: { in: from.groups.map(Number) },
+          id: { in: from.groups },
         },
       });
+      log.info(`groups ${JSON.stringify(groups)}`)
+      log.info(`from.groups ${JSON.stringify(from.groups)}, ids ${from.groups.map(Number)}`)
       if (!groups || (groups.length != from.groups.length)) {
         throw new BadRequest(
           `One or more of the groups do not exist, cannot update idea`
