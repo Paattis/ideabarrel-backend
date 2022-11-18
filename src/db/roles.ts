@@ -98,7 +98,7 @@ const remove = async (roleId: number, ctx: PrismaContext) => {
     });
     return result;
   } catch (err) {
-    throw new NoSuchResource('user', `No role with id: ${roleId}`);
+    throw new NoSuchResource('role', `No role with id: ${roleId}`);
   }
 };
 
@@ -111,7 +111,7 @@ const update = async (roleId: number, role: RoleFields, ctx: PrismaContext) => {
     });
     return result;
   } catch (err) {
-    throw new NoSuchResource('user', `No role with id: ${roleId}`);
+    throw new NoSuchResource('role', `No role with id: ${roleId}`);
   }
 };
 

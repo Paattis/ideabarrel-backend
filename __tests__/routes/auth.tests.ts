@@ -21,7 +21,7 @@ describe('', () => {
   test('Route should return 404 when user is not found', async () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.user.findFirst.mockResolvedValue(null);
-    const res = await request(app)
+    await request(app)
       .post('/auth/login')
       .send({
         password: 'asd',

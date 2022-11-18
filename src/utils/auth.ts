@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { getAppEnvVar } from './env';
 import { db } from '../db/context';
-import usersClient from '../db/users';
+import usersClient, { PublicUser } from '../db/users';
 import passport, { AuthenticateOptions } from 'passport';
 import jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
@@ -43,11 +43,8 @@ const match = async (password: string, hash: string) => {
   return await bcrypt.compare(password, hash);
 };
 
-const NO_SESSION: AuthenticateOptions = { session: false };
-const jwtParse = passport.authenticate('jwt', NO_SESSION);
-
 const required = [
-  jwtParse,
+  passport.authenticate('jwt', { session: false }),
   (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
     if (user !== null) {
@@ -58,19 +55,16 @@ const required = [
 ];
 
 const sameUser = (req: any, _: any, next: NextFunction) => {
-  const user = req.user as User | null;
-  if (user !== null) {
-    log.info(`User ${user?.id}:${user?.name}`);
-    const id = Number.parseInt(req.params.id);
-    if (user?.id !== id) {
-      return next(new Forbidden());
-    }
-    return next();
+  const user = req.user as PublicUser;
+  log.info(`User ${user?.id}:${user?.name}`);
+  if (user.id !== Number.parseInt(req.params.id)) {
+    return next(new Forbidden());
   }
-  next(new Forbidden());
+  return next();
 };
 
 const admin = (req: any, _: any, next: NextFunction) => {
+  const user = req.user as PublicUser;
   // TODO: check that user is admin
   log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
   next();

@@ -2,7 +2,6 @@ import { Router, Response, NextFunction, Request } from 'express';
 import { db } from '../db/context';
 import usersClient, { UserData } from '../db/users';
 import auth from '../utils/auth';
-// import auth from '../utils/auth';
 import { TRequest as TRequest } from '../utils/types';
 
 const users = Router();
