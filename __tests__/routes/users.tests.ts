@@ -9,8 +9,6 @@ import {
   swapToAppContext,
 } from '../../src/db/context';
 
-jest.setTimeout(15000);
-
 let mockCtx: MockPrismaContext;
 let ctx: PrismaContext;
 
@@ -33,6 +31,8 @@ const role: Role = {
 const user1: User = {
   id: 1,
   name: 'Test User 1',
+  profile_img: '',
+  password: 'pw',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -40,6 +40,8 @@ const user1: User = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  profile_img: '',
+  password: 'pw',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -71,7 +73,9 @@ describe('POST /users/', () => {
     try {
       const res = await request(app).post('/users/').send(user1);
       expect(res.statusCode).toBe(400);
-    } catch (error) {}
+    } catch (error) {
+      // Error
+    }
   });
 });
 

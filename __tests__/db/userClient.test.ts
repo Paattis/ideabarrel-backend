@@ -28,15 +28,19 @@ const role: Role = {
   name: 'Test Engineer',
 };
 const user1: User = {
+  profile_img: '',
   id: 1,
   name: 'Test User 1',
+  password: 'pw',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
 };
 const user2: User = {
+  profile_img: '',
   id: 2,
   name: 'Test User 2',
+  password: 'pw',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -101,5 +105,20 @@ describe('Users database access client', () => {
     mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error());
     mockCtx.prisma.user.create.mockResolvedValue(user1);
     await expect(usersClient.create(user1, ctx)).rejects.toThrow(BadRequest);
+  });
+
+  test('should fetch user from database', async () => {
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
+    await expect(
+      usersClient.selectByUsernameSecret(user1.name, ctx)
+    ).resolves.toMatchObject({
+      name: 'Test User 1',
+      password: 'pw',
+    });
+  });
+
+  test('should fetch user from database', async () => {
+    mockCtx.prisma.user.findFirst.mockResolvedValue(null);
+    await expect(usersClient.selectByUsernameSecret(user1.name, ctx)).resolves.toBeNull();
   });
 });

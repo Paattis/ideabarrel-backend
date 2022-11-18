@@ -1,72 +1,90 @@
-import { Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { log } from '../logger/log';
-
-export type MissingResource = 'role' | 'user' | 'idea' | 'comment';
-
-const noSuch = (str: MissingResource) => `No such ${str} exists`;
-
-export interface IApiError {
-  details: string | null;
-  code: number;
-  json(): { status: number; msg: string };
-}
 
 export const ServerError = {
   status: 500,
   msg: 'Internal server error',
 };
 
-function isApiError(err: unknown): err is IApiError {
-  return (err as IApiError).json !== undefined;
+function isApiError(err: unknown): err is ApiError {
+  return (err as ApiError).json !== undefined;
+}
+
+function hasStackTrace(err: unknown): err is Error {
+  return (err as Error).stack !== undefined;
 }
 
 export const respondWithError = (res: Response, err: unknown) => {
   if (isApiError(err)) {
+    log.error(err.message);
+    if (err.dev) {
+      log.error(err.dev);
+    }
     res.status(err.code).json(err.json());
   } else {
-    res.status(500).json(ServerError);
+    log.error('Error of unknown type: Defaulting to ServerError.');
+    if (hasStackTrace(err)) {
+      log.debug('FIX YOUR CODE. HERE');
+      log.error(err.stack);
+    }
+    res.status(ServerError.status).json(ServerError);
   }
 };
 
-export class BadRequest extends Error implements IApiError {
+export abstract class ApiError extends Error {
+  public abstract readonly code: number;
+  public readonly dev: any;
+
+  public json() {
+    return {
+      status: this.code,
+      msg: this.message,
+    };
+  }
+
+  constructor(msg: string, dev: any) {
+    super(msg);
+    if (dev) log.error(JSON.stringify(dev));
+    this.dev = dev;
+  }
+}
+
+export class Forbidden extends ApiError {
+  public readonly code = 403;
+  constructor(dev: any = null) {
+    super('Forbidden', dev);
+  }
+}
+
+export class Unauthorized extends ApiError {
+  public readonly code = 401;
+  constructor(dev: any = null) {
+    super('Unauthorized', dev);
+  }
+}
+
+export class BadRequest extends ApiError {
   public readonly code = 400;
-  public readonly details: string | null;
-
-  constructor(msg: string, devDetails: string | null = null) {
-    log.error(msg);
-    if (devDetails) {
-      log.error(devDetails);
-    }
-    super(msg);
-    this.details = devDetails;
-  }
-
-  public json() {
-    return {
-      status: this.code,
-      msg: this.message,
-    };
+  constructor(msg: string, dev: any = null) {
+    super(msg, dev);
   }
 }
 
-export class NoSuchResource extends Error implements IApiError {
+export type MissingResource = 'role' | 'user' | 'idea' | 'comment';
+
+export class NoSuchResource extends ApiError {
   public readonly code = 404;
-  public readonly details: string | null;
-
-  constructor(type: MissingResource, devDetails: string | null = null) {
-    const msg = noSuch(type);
-    log.error(msg);
-    if (devDetails) {
-      log.error(devDetails);
-    }
-    super(msg);
-    this.details = devDetails;
-  }
-
-  public json() {
-    return {
-      status: this.code,
-      msg: this.message,
-    };
+  constructor(type: MissingResource, dev: any = null) {
+    super(`No such ${type} exists`, dev);
   }
 }
+
+export const httpHandler = (
+  err: ApiError,
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  respondWithError(res, err);
+  next();
+};

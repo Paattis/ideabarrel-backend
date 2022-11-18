@@ -4,6 +4,7 @@
 name: Node.js CI
 env:
   APP_ENV: CI
+  ACCESS_TOKEN_SECRET: NOT_A_REAL_SECRET
 on:
   push:
     branches: [ "master", "dev" ]
