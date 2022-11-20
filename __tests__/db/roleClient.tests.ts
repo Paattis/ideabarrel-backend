@@ -31,27 +31,32 @@ const role: Role = {
 describe('Roles client remove', () => {
   test('Should remove existing user', async () => {
     mockCtx.prisma.role.delete.mockResolvedValue(role);
-    expect(await rolesClient.remove(1, ctx))
-        .toMatchObject({id: 1, name: 'Test Engineer'})
+    expect(await rolesClient.remove(1, ctx)).toMatchObject({
+      id: 1,
+      name: 'Test Engineer',
+    });
   });
 
   test('Should throw error when role is not found', async () => {
     mockCtx.prisma.role.delete.mockRejectedValue(new Error('Mock Error'));
     expect(rolesClient.remove(1, ctx)).rejects.toThrow(NoSuchResource);
   });
-})
+});
 
 describe('Roles client get by id', () => {
   test('Should return role by its id', async () => {
     mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
-    await expect(rolesClient.select(1, ctx)).resolves.toMatchObject({ id: 1, name: 'Test Engineer' });
+    await expect(rolesClient.select(1, ctx)).resolves.toMatchObject({
+      id: 1,
+      name: 'Test Engineer',
+    });
   });
 
   test('Should throw error when no role is found', async () => {
     mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
     await expect(rolesClient.select(1, ctx)).rejects.toThrow(NoSuchResource);
   });
-})
+});
 
 describe('Roles client get all', () => {
   test('Should return existing roles', async () => {
@@ -69,16 +74,16 @@ describe('Roles client get all', () => {
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(0);
   });
-})
+});
 
 describe('Roles client create', () => {
   test('Should create new user', async () => {
-    mockCtx.prisma.role.create.mockResolvedValue({...role, name: 'asd'});
+    mockCtx.prisma.role.create.mockResolvedValue({ ...role, name: 'asd' });
     const fields = {
-      name: 'asd'
-    }
+      name: 'asd',
+    };
     await expect(rolesClient.create(fields, ctx)).resolves.toMatchObject({
-      name: 'asd'
+      name: 'asd',
     });
   });
-})
+});
