@@ -2,7 +2,6 @@ import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
-import auth from '../utils/auth';
 
 export type PublicUser = {
   comments: Comment[];
@@ -109,7 +108,7 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
   // Create user and store it to database.
   const user = await ctx.prisma.user.create({
-    data: { ...from, password: await auth.hash(from.password), profile_img: '' },
+    data: from,
     select: publicFields,
   });
 

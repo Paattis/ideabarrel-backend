@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { log } from '../logger/log';
+import img from './img';
 
 export const ServerError = {
   status: 500,
@@ -70,7 +71,7 @@ export class BadRequest extends ApiError {
   }
 }
 
-export type MissingResource = 'role' | 'user' | 'idea' | 'comment';
+export type MissingResource = 'role' | 'user' | 'idea' | 'comment' | 'avatar';
 
 export class NoSuchResource extends ApiError {
   public readonly code = 404;
@@ -79,12 +80,15 @@ export class NoSuchResource extends ApiError {
   }
 }
 
-export const httpHandler = (
+export const httpHandler = async (
   err: ApiError,
-  _: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  if (req.file) {
+    await img.remove(req.file?.filename ?? '');
+  }
   respondWithError(res, err);
-  next();
+  next(err);
 };
