@@ -1,4 +1,4 @@
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import request from 'supertest';
 import app from '../../src/app';
 import {
@@ -54,12 +54,15 @@ describe('', () => {
   });
 
   test('Route should return 200 when user password is right', async () => {
-    const u: User = {
+    const u = {
       id: 1,
       name: 'Test User 1',
       email: 'user@app.com',
       profile_img: '',
       password: await auth.hash('password'),
+      role: {
+        id: 1
+      },
       role_id: 1,
       created_at: new Date(),
       updated_at: new Date(),
@@ -71,7 +74,7 @@ describe('', () => {
       .post('/auth/login')
       .send({
         password: 'password',
-        username: 'Test User 1',
+        email: u.email,
       })
       .expect(200);
 

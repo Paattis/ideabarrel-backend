@@ -33,6 +33,7 @@ const user: User = {
   name: 'Test User 1',
   profile_img: '',
   password: 'pw',
+  email: 'user@app.com',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
