@@ -109,6 +109,11 @@ describe('DELETE /users/:id', () => {
     });
   });
 
+  test('Route should return 401 on invalid JWT', async () => {
+    mockJWT();
+    await request(app).delete('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
+  });
+
   test('Route should fail to delete user and return error with status 403', async () => {
     mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
     await request(app).delete('/users/420').auth(JWT, { type: 'bearer' }).expect(403);
@@ -132,6 +137,11 @@ describe('GET /users/1', () => {
       name: 'Test User 1',
       role_id: 1,
     });
+  });
+
+  test('Route should return 401 on invalid JWT', async () => {
+    mockJWT();
+    await request(app).get('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 
   test('Route should return no user, and status code of 404', async () => {
@@ -164,5 +174,46 @@ describe('GET /users/', () => {
       .expect('Content-Type', /json/)
       .expect(200);
     expect((res.body as any[]).length).toBe(0);
+  });
+});
+
+/**
+ * Tests for PUT method on route /users
+ */
+describe('PUT /users/:id', () => {
+  test('Route should 404 with missing user', async () => {
+    mockJWT();
+    mockCtx.prisma.user.update.mockRejectedValue(new Error());
+
+    const res = await request(app)
+      .put('/users/1')
+      .send(user2)
+      .auth(JWT, { type: 'bearer' })
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(res.body).toMatchObject({
+      msg: 'No such user exists',
+      status: 404,
+    });
+  });
+
+  test('Route should return new user with status 200', async () => {
+    mockJWT();
+    mockCtx.prisma.user.update.mockResolvedValue(user2);
+
+    const res = await request(app)
+      .put('/users/1')
+      .send(user2)
+      .auth(JWT, { type: 'bearer' })
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toMatchObject({ id: 2 });
+  });
+
+  test('Route should return 401 on invalid JWT', async () => {
+    mockJWT();
+    await request(app).delete('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });
