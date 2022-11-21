@@ -26,6 +26,7 @@ const user1: User = {
   id: 1,
   name: 'Test User 1',
   profile_img: '',
+  email: 'user@app.com',
   password: 'p455w0rd',
   role_id: 1,
   created_at: timestamp,
@@ -34,6 +35,7 @@ const user1: User = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  email: 'user2@app.com',
   profile_img: '',
   password: '',
   role_id: 1,
