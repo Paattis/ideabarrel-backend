@@ -12,196 +12,403 @@ To run the backend in development mode
 ```
 $ npm install
 ```
+
 * create a local MySQL or MariaDB development database
 * populate the .env file
-```
-APP_ENV=DEVELOPEMENT
+```properties
+#App variables
+APP_ENV=DEVELOPEMENT | PRODUCTION | CI
 DATABASE_URL=(your database url)
+PORT=(port)
+ACCESS_TOKEN_SECRET=(JWT signing secret)
+
+# Admin user created with seeding script (/src/db/seed.ts)
+ADMIN_EMAIL=(your admin email)
+ADMIN_PW=(your admin password)
 ```
 
 * run the Prisma migrations to add the tables to your development database
 ```
-$ npx prisma db push
+$ npx prisma db migrate dev
+$ npx prisma generate
 ```
+
+* Run seed script
+
+```bash
+$ npx prisma db seed
+```
+
 * build/test and then run the backend in development mode
 ```
 $ npm run build
 $ npm run dev
 ```
 
-# API Routes
+<br>
+<br>
 
-<details>
-  <summary><h2>/user</h2></summary>
-  
-### GET
-#### Response
-```json
-{
-  "id": 1,
-  "name": "User 1"
-  "role_id": 1
-  "created_at" : "2022-11-13T17:08:54.565Z"
-  "updated_at" : "2022-11-13T17:08:54.565Z"
-}
-  
-```
-### POST
-#### Body
-```json
-{
-  "name": "User 1"
-  "role_id": 1
-}
-```
-
-#### Response
-```json
-{
-  "id": 1,
-  "name": "User 1"
-  "role_id": 1
-  "created_at" : "2022-11-13T17:08:54.565Z"
-  "updated_at" : "2022-11-13T17:08:54.565Z"
-}
-```
-
-</details>
-
-<details>
-  <summary><h2>/user/:id<h2></summary>
-  
-### PUT
-#### Body
-```json
-{
-  "name": "User 1"
-  "role_id": 1
-}
-```
-#### Response
-```json
-{
-  "id": 1,
-  "name": "User 1"
-  "role_id": 1
-  "created_at" : "2022-11-13T17:08:54.565Z"
-  "updated_at" : "2022-11-13T17:08:54.565Z"
-}
-```
-
-### DELETE
-#### Response
-```json
-{
-  "id": 1,
-  "name": "User 1"
-  "role_id": 1
-  "created_at" : "2022-11-13T17:08:54.565Z"
-  "updated_at" : "2022-11-13T17:08:54.565Z"
-}
-```
-
-</details>
-    
-    
-<details>
-  <summary><h2>/roles<h2></summary>
-  
-### GET
-#### Response
+# Users
+## <span style="color: #6ec3d4">`GET`</span> - `/users`
+### Response
+`application/json`
 ```json
 [
   {
-    "id": 46,
-    "name": "Junior Manager",
-    "created_at": "2022-11-13T15:59:35.818Z",
-    "updated_at": "2022-11-13T15:59:35.818Z"
+    "comments": [],
+    "name": "User",
+    "profile_img": "",
+    "email": "user@app.com",
+    "id": 1,
+    "role": {
+      "name": "admin",
+      "id": 1
+    },
+    "created_at": "2022-11-21T14:54:32.887Z",
+    "ideas": []
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/users/:id`
+### Response
+`application/json`
+```json
+{
+  "comments": [],
+  "name": "User",
+  "profile_img": "",
+  "email": "user@app.com",
+  "id": 1,
+  "role": {
+    "name": "admin",
+    "id": 1
+  },
+  "created_at": "2022-11-21T14:54:32.887Z",
+  "ideas": []
+},
+```
+
+
+
+
+## <span style="color: #87d65a">`POST`</span> - `/users`
+### Request
+`multipart/form-data`
+```
+name:     User,
+role_id:  2,
+password: password,
+email:    user@app.com,
+avatar:   image file
+```
+
+### Response
+`application/json`
+```json
+{
+  "comments": [],
+  "name": "User",
+  "profile_img": "1669052777822-668015599.jpg",
+  "email": "user@nokia.com",
+  "id": 1,
+  "role": {
+    "name": "Senior Engineer",
+    "id": 2
+  },
+  "created_at": "2022-11-21T17:46:18.001Z",
+  "ideas": []
+}
+```
+
+
+## <span style="color: #1589F0">`PUT`</span> - `/users/:id`
+### Request
+`application/json`
+```json
+  {
+    "name": "New Name",
+    "email": "new.email@app.com",
+    "role_id": 8,
+    "password": "newpassword"
+  }
+```
+
+### Response
+`application/json`
+```json
+{
+  "comments": [],
+  "name": "New Name",
+  "profile_img": "1669050855379-231410051.jpg",
+  "email": "new.email@app.com",
+  "id": 2,
+  "role": {
+    "name": "New Role",
+    "id":8
+  },
+  "created_at": "2022-11-21T15:02:10.929Z",
+  "ideas": []
+}
+```
+
+
+
+
+
+
+## <span style="color: #1589F0">`PUT`</span> - `/users/:id/img`
+#### Adds image file as specified users avatar.
+### Privileges
+- same user as action target
+- admin
+### Request
+`multipart/form-data`
+```
+avatar: image file
+```
+
+### Response
+`application/json`
+```json
+{
+  "comments": [],
+  "name": "User",
+  "profile_img": "1669050855379-231410051.jpg",
+  "email": "user@nokia.com",
+  "id": 1,
+  "role": {
+    "name": "Senior Engineer",
+    "id": 2
+  },
+  "created_at": "2022-11-21T15:02:10.929Z",
+  "ideas": []
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/users/:id/img`
+
+#### Deletes profile avatar from specified user, and returns that user.
+
+### Privileges
+- same user as action target
+- admin
+
+### Response
+`application/json`
+```json
+{
+  "comments": [],
+  "name": "User",
+  "profile_img": "",
+  "email": "niklas@nokia.com",
+  "id": 2,
+  "role": {
+    "name": "Senior Engineer",
+    "id": 2
+  },
+  "created_at": "2022-11-21T15:02:10.929Z",
+  "ideas": []
+}
+```
+
+
+# Authentication
+
+## <span style="color: #87d65a">`POST`</span> - `/auth/login`
+
+### Privileges
+- all users
+
+### Request
+`application/json`
+```json
+{
+  "email": "user@app.com",
+  "password": "password"
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "result": {
+    "comments": [],
+    "name": "User",
+    "profile_img": "1669050855379-231410051.jpg",
+    "email": "user@app.com",
+    "id": 1,
+    "role": {
+      "name": "Senior Engineer",
+      "id": 1
+    },
+    "created_at": "2022-11-21T15:02:10.929Z",
+    "ideas": []
+  },
+  "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
+}
+```
+
+
+# Roles
+
+## <span style="color: #87d65a">`POST`</span> - `/roles`
+
+### Required privileges
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "name": "Senior Engineer"
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Senior Engineer",
+  "users": []
+}
+```
+
+
+## <span style="color: #1589F0">`PUT`</span> - `/roles/:id`
+
+### Required privileges
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "name": "New name for role"
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "New name for role",
+  "users": []
+}
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/roles`
+### Required privileges
+- authenticated user
+- admin
+### Request
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Senior Developer",
+    "created_at": "2022-11-21T14:54:32.790Z",
   },
   {
-    "id": 47,
+    "id": 2,
     "name": "Senior Engineer",
-    "created_at": "2022-11-13T16:02:57.265Z",
-    "updated_at": "2022-11-13T16:02:57.265Z"
+    "created_at": "2022-11-21T14:59:22.391Z",
   }
 ]
 ```
-### POST
 
-#### Request
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Senior Developer",
+  },
+  {
+    "id": 2,
+    "name": "Senior Engineer",
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/roles?usr=1`
+### Required privileges
+- authenticated user
+- admin
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Senior Developer",
+    "users": [
+      {
+        "name": "User 1",
+        "id": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Senior Engineer",
+    "users": [
+      {
+        "name": "User 2",
+        "id": 3
+      }
+    ]
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/roles/:id`
+### Required privileges
+- authenticated user
+- admin
+### Response
+`application/json`
 ```json
 {
-  "name": "Junior Manager",
+  "id": 1,
+  "name": "Senior Developer",
 }
 ```
 
-#### Response
+## <span style="color: #6ec3d4">`GET`</span> - `/roles/:id?usr=1`
+### Required privileges
+- authenticated user
+- admin
+### Response
+`application/json`
 ```json
 {
-  "id": 46,
-  "name": "Junior Manager",
-  "created_at": "2022-11-13T15:59:35.818Z",
-  "updated_at": "2022-11-13T15:59:35.818Z"
+  "id": 1,
+  "name": "Senior Developer",
+  "users": [
+    {
+      "name": "User 1",
+      "id": 1
+    }
+  ]
 }
 ```
 
-</details>
-    
-    
-    
-    
-    
-    
-    
-<details>
-  <summary><h2>/roles/:id<h2></summary>
-  
-### GET
-#### Response
-```json
-{
-  "id": 46,
-  "name": "Junior Manager",
-  "created_at": "2022-11-13T15:59:35.818Z",
-  "updated_at": "2022-11-13T15:59:35.818Z"
-}
-```
-### PUT
+## <span style="color: #e85141">`DELETE`</span> - `/roles/:id`
+### Required privileges
+- admin
 
-#### Request
+### Response
+`application/json`
 ```json
 {
-  "name": "Junior Manager",
-}
+  "id": 1,
+  "name": "Senior Developer",
+},
 ```
-
-#### Response
-```json
-{
-  "id": 46,
-  "name": "Junior Manager",
-  "created_at": "2022-11-13T15:59:35.818Z",
-  "updated_at": "2022-11-13T15:59:35.818Z"
-}
-```
-    
-### GET
-#### Response
-```json
-{
-  "id": 46,
-  "name": "Junior Manager",
-  "created_at": "2022-11-13T15:59:35.818Z",
-  "updated_at": "2022-11-13T15:59:35.818Z"
-}
-```
-### DELETE
-
-#### Response
-```json
-{
-  "name": "Junior Manager",
-}
-```
-
-</details>
