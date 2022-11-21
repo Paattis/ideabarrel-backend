@@ -8,7 +8,7 @@ import usersClient, { UserData } from '../db/users';
 const router = Router();
 
 type AuthBody = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -16,7 +16,7 @@ router.post(
   '/login',
   async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
     try {
-      const user = await usersClient.selectByUsernameSecret(req.body.username, db);
+      const user = await usersClient.selectByEmailSecret(req.body.email, db);
       if (!user) {
         throw new NoSuchResource('user');
       }
@@ -24,7 +24,7 @@ router.post(
         throw new BadRequest('Incorrect password');
       }
       const { password, ...result } = user;
-      const token = auth.jwt({ id: user.id });
+      const token = auth.jwt({ id: user.id, role: user.role.id });
       res.json({ result, token });
     } catch (err) {
       next(err);

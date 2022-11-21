@@ -79,16 +79,9 @@ users.put(
     try {
       const userId = Number.parseInt(req.params.id, 10);
       if (req.file) {
-        log.debug(`File in request: ${req.file.filename}`);
-        const fields = req.user as UserData;
-        const old = fields.profile_img;
-        fields.profile_img = req.file.filename;
-        const result = await usersClient.update({ ...fields }, userId, db);
+        const user = req.user as UserData;
+        const result = await usersClient.updateAvatar(userId, user.profile_img, req.file.filename, db);
         log.debug('Updated avatar for user ' + userId);
-        // Remove old file
-        if (old !== req?.file?.filename) {
-          await img.remove(old);
-        }
         return res.json(result);
       } else throw ServerError;
     } catch (err) {
@@ -104,19 +97,11 @@ users.delete(
   auth.sameUser,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = Number.parseInt(req.params.id, 10);
       const user = req.user as PublicUser;
-      const oldImg = user.profile_img;
-      if (!oldImg) {
+      if (!user.profile_img) {
         throw new NoSuchResource('avatar');
       }
-
-      const result = await usersClient.update(
-        { ...(user as unknown as UserData), profile_img: '' },
-        id,
-        db
-      );
-      await img.remove(oldImg);
+      const result = await usersClient.updateAvatar(user.id, user.profile_img, '', db);
       return res.json(result);
     } catch (err) {
       next(err);
@@ -133,6 +118,7 @@ users.post(
   async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
     try {
       const fields: UserData = {
+        email: req.body.email,
         name: req.body.name,
         password: await auth.hash(req.body.password),
         profile_img: req.file?.filename ?? '',

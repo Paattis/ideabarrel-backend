@@ -32,6 +32,7 @@ const role: Role = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  email: 'user2@app.com',
   profile_img: '',
   password: 'pw',
   role_id: 1,
@@ -42,6 +43,7 @@ const user2: User = {
 const user1: User = {
   id: 1,
   name: 'Test User 1',
+  email: 'user@app.com',
   profile_img: '',
   password: 'pw',
   role_id: 1,

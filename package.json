@@ -11,6 +11,9 @@
     "checkCodeStyle": "npx prettier src __tests__ --check",
     "build": "npx tsc && npx tslint --project . && npx jest --silent=true --verbose=false "
   },
+  "prisma": {
+    "seed": "ts-node src/db/seed.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Paattis/ideabarrel-backend.git"

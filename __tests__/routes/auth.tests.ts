@@ -34,6 +34,7 @@ describe('', () => {
     const u: User = {
       id: 1,
       name: 'Test User 1',
+      email: 'user@app.com',
       profile_img: '',
       password: await auth.hash('password'),
       role_id: 1,
@@ -56,6 +57,7 @@ describe('', () => {
     const u: User = {
       id: 1,
       name: 'Test User 1',
+      email: 'user@app.com',
       profile_img: '',
       password: await auth.hash('password'),
       role_id: 1,
