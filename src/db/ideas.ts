@@ -2,7 +2,7 @@ import { Comment, Idea, Prisma, Role, User, Group } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
-import {Unauthorized} from '../utils/errors';
+import { Unauthorized } from '../utils/errors';
 
 export interface IdeaData {
   content: string;
@@ -14,20 +14,22 @@ export type RichIdea = IdeaWithGroups & { comments: Comment[] };
 const everything = { groups: true, comments: true };
 
 /**
-* Checks if the idea with the idea id is a valid idea the user can access
-* @param user the user to check against
-* @param idea_id the id of the idea to check
-* @returns true if the access rights are valid
-* @throws Unauthorized
-*/
+ * Checks if the idea with the idea id is a valid idea the user can access
+ * @param user the user to check against
+ * @param idea_id the id of the idea to check
+ * @returns true if the access rights are valid
+ * @throws Unauthorized
+ */
 const checkRights = async (ctx: PrismaContext, user: User, idea_id: number) => {
   // TODO: add admin check
   // TODO: make into middleware
-  const idea: Idea = await ctx.prisma.idea.findFirstOrThrow({where: {id: idea_id, user_id: user.id } })
-  log.info(`idea id ${idea_id} ${idea}`)
-  if (!idea) throw new Unauthorized()
-  return true
-}
+  const idea: Idea = await ctx.prisma.idea.findFirstOrThrow({
+    where: { id: idea_id, user_id: user.id },
+  });
+  log.info(`idea id ${idea_id} ${idea}`);
+  if (!idea) throw new Unauthorized();
+  return true;
+};
 
 /**
  * Select all ideas.
@@ -93,10 +95,9 @@ const select = async (id: number, user: User, ctx: PrismaContext) => {
  * @returns removed idea object.
  */
 const remove = async (id: number, user: User, ctx: PrismaContext) => {
-
   log.info(`id ${id} user.id ${user.id}`);
   try {
-    await checkRights(ctx,user, id)
+    await checkRights(ctx, user, id);
 
     // delete m2m relationship between Group(s) and the Idea
     const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
@@ -110,7 +111,7 @@ const remove = async (id: number, user: User, ctx: PrismaContext) => {
 
     const ideaDeleteResult: Idea = await ctx.prisma.idea.delete({
       where: {
-          id: id,
+        id: id,
       },
       include: everything,
     });
@@ -133,13 +134,13 @@ const remove = async (id: number, user: User, ctx: PrismaContext) => {
 const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
   try {
     const groups = from.groups.map((x) => ({ group: { connect: { id: Number(x) } } }));
-    log.info(`groups ${JSON.stringify(groups)}`)
+    log.info(`groups ${JSON.stringify(groups)}`);
     // Create idea and store it to database.
     const idea = await ctx.prisma.idea.create({
       data: {
         content: from.content,
         user: {
-          connect: { id: user.id }, 
+          connect: { id: user.id },
         },
         groups: {
           create: groups,
@@ -166,29 +167,24 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
  * @returns Promise<Idea> Updated Idea object.
  */
 const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext) => {
-  log.info(`from ${JSON.stringify(from)}`)
-  await checkRights(ctx,user, id)
+  log.info(`from ${JSON.stringify(from)}`);
+  await checkRights(ctx, user, id);
   if (from.groups == undefined) {
-    throw new BadRequest('Groups not sent')
+    throw new BadRequest('Groups not sent');
   }
 
-
-  log.info(`db groups: ${
-    await ctx.prisma.group.findMany()
-  }`)
+  log.info(`db groups: ${await ctx.prisma.group.findMany()}`);
   // check that all the groups exist
-    const groups = await ctx.prisma.group.findMany({
-      where: {
-        id: { in: from.groups },
-      },
-    });
-    log.info(`groups ${JSON.stringify(groups)}`)
-    log.info(`from.groups ${JSON.stringify(from.groups)}, ids ${from.groups.map(Number)}`)
-    if (!groups || (groups.length != from.groups.length)) {
-      throw new BadRequest(
-        `One or more of the groups do not exist, cannot update idea`
-      );
-    }
+  const groups = await ctx.prisma.group.findMany({
+    where: {
+      id: { in: from.groups },
+    },
+  });
+  log.info(`groups ${JSON.stringify(groups)}`);
+  log.info(`from.groups ${JSON.stringify(from.groups)}, ids ${from.groups.map(Number)}`);
+  if (!groups || groups.length != from.groups.length) {
+    throw new BadRequest(`One or more of the groups do not exist, cannot update idea`);
+  }
 
   try {
     const groupsConnection = from.groups
@@ -204,7 +200,7 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
         },
       },
     });
-    log.info(`groups ${from.groups}`)
+    log.info(`groups ${from.groups}`);
     // now we can add the new ones when updating
     log.info(`groupsConnection ${JSON.stringify(groupsConnection)}`);
     const idea = await ctx.prisma.idea.update({

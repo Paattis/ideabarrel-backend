@@ -8,7 +8,6 @@ import { respondWithError } from '../utils/errors';
 
 const ideas = Router();
 
-
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pageNum = parseInt((req.query.page_num || '0') as string);
