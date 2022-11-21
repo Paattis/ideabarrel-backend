@@ -1,12 +1,15 @@
 import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
-import { BadRequest, NoSuchResource } from '../utils/errors';
-import { PrismaContext } from './context';
 import auth from '../utils/auth';
+import { BadRequest, NoSuchResource } from '../utils/errors';
+import img from '../utils/img';
+import { PrismaContext } from './context';
 
 export type PublicUser = {
   comments: Comment[];
   name: string;
+  profile_img: string;
+  email: string;
   role: Role;
   id: number;
   created_at: string;
@@ -16,6 +19,8 @@ export type PublicUser = {
 const publicFields = {
   comments: { select: { content: true, id: true, created_at: true, idea: true } },
   name: true,
+  profile_img: true,
+  email: true,
   id: true,
   role: { select: { name: true, id: true } },
   created_at: true,
@@ -29,6 +34,8 @@ export interface UserData {
   name: string;
   role_id: number;
   password: string;
+  email: string;
+  profile_img: string;
 }
 
 /**
@@ -41,9 +48,9 @@ const all = async (ctx: PrismaContext) => {
   return await ctx.prisma.user.findMany({ select: publicFields });
 };
 
-const selectByUsernameSecret = async (username: string, ctx: PrismaContext) => {
+const selectByEmailSecret = async (email: string, ctx: PrismaContext) => {
   return await ctx.prisma.user.findFirst({
-    where: { name: username },
+    where: { email: email },
     select: { ...publicFields, password: true },
   });
 };
@@ -106,7 +113,7 @@ const create = async (from: UserData, ctx: PrismaContext) => {
 
   // Create user and store it to database.
   const user = await ctx.prisma.user.create({
-    data: { ...from, password: await auth.hash(from.password), profile_img: '' },
+    data: from,
     select: publicFields,
   });
 
@@ -132,17 +139,16 @@ const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
       `Missing role ${from.role_id}`
     );
   }
+  from.password = await auth.hash(from.password);
   try {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
-      data: {
-        name: from.name,
-        role_id: from.role_id,
-      },
+      data: from,
       select: publicFields,
     });
     return user;
   } catch (err) {
+    log.error(err);
     throw new NoSuchResource('user');
   }
 };
@@ -160,12 +166,34 @@ const updatePassword = async (userId: number, password: string, ctx: PrismaConte
   }
 };
 
+const updateAvatar = async (
+  userId: number,
+  oldAvatar: string,
+  newAvatar: string,
+  ctx: PrismaContext
+) => {
+  try {
+    const user = await ctx.prisma.user.update({
+      where: { id: userId },
+      data: { profile_img: newAvatar },
+      select: publicFields,
+    });
+    if (oldAvatar !== newAvatar) {
+      await img.remove(oldAvatar);
+    }
+    return user;
+  } catch (err) {
+    throw new BadRequest('');
+  }
+};
+
 export default {
   all,
   remove,
   create,
   select,
   update,
-  selectByUsernameSecret,
+  selectByEmailSecret,
   updatePassword,
+  updateAvatar,
 };

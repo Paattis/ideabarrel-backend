@@ -31,6 +31,7 @@ const user1: User = {
   profile_img: '',
   id: 1,
   name: 'Test User 1',
+  email: 'user@app.com',
   password: 'pw',
   role_id: 1,
   created_at: timestamp,
@@ -39,6 +40,7 @@ const user1: User = {
 const user2: User = {
   profile_img: '',
   id: 2,
+  email: 'user2@app.com',
   name: 'Test User 2',
   password: 'pw',
   role_id: 1,
@@ -109,16 +111,16 @@ describe('Users database access client', () => {
 
   test('should fetch user from database', async () => {
     mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
-    await expect(
-      usersClient.selectByUsernameSecret(user1.name, ctx)
-    ).resolves.toMatchObject({
-      name: 'Test User 1',
-      password: 'pw',
-    });
+    await expect(usersClient.selectByEmailSecret(user1.name, ctx)).resolves.toMatchObject(
+      {
+        name: 'Test User 1',
+        password: 'pw',
+      }
+    );
   });
 
   test('should fetch user from database', async () => {
     mockCtx.prisma.user.findFirst.mockResolvedValue(null);
-    await expect(usersClient.selectByUsernameSecret(user1.name, ctx)).resolves.toBeNull();
+    await expect(usersClient.selectByEmailSecret(user1.name, ctx)).resolves.toBeNull();
   });
 });

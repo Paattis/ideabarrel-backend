@@ -25,6 +25,7 @@ app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
 app.use('/ideas', auth.required, ideaRoutes);
+app.use('/static/', express.static('uploads'));
 // --------------------------------
 
 app.use(httpErrorHandler);

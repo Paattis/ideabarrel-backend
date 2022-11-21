@@ -3,7 +3,7 @@ import { asserThat } from './assert';
 
 dotenv.config();
 
-type DefinedVars = 'APP_ENV' | 'ACCESS_TOKEN_SECRET';
+type DefinedVars = 'APP_ENV' | 'ACCESS_TOKEN_SECRET' | 'ADMIN_PW' | 'ADMIN_EMAIL';
 
 export const getAppEnvVar = (envVar: DefinedVars) => {
   const result = process.env[envVar];

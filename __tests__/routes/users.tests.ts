@@ -32,6 +32,7 @@ const role: Role = {
 const user2: User = {
   id: 2,
   name: 'Test User 2',
+  email: 'user2@app.com',
   profile_img: '',
   password: 'pw',
   role_id: 1,
@@ -42,6 +43,7 @@ const user2: User = {
 const user1: User = {
   id: 1,
   name: 'Test User 1',
+  email: 'user@app.com',
   profile_img: '',
   password: 'pw',
   role_id: 1,
@@ -72,15 +74,6 @@ describe('POST /users/', () => {
       name: 'Test User 1',
       role_id: 1,
     });
-  });
-
-  test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    await request(app)
-      .post('/users/1')
-      .auth('NOT_JWT', { type: 'bearer' })
-      .send(user1)
-      .expect(401);
   });
 
   test('Route should fail to create user and return error with status 400', async () => {
