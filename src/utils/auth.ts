@@ -54,14 +54,15 @@ const required = [
   },
 ];
 
-const sameUser = (req: any, _: any, next: NextFunction) => {
+const sameUser = [...required, (req: any, _: any, next: NextFunction) => {
   const user = req.user as PublicUser;
   log.info(`User ${user?.id}:${user?.name}`);
   if (user.id !== Number.parseInt(req.params.id)) {
     return next(new Forbidden());
   }
   return next();
-};
+}
+]
 
 const admin = (req: any, _: any, next: NextFunction) => {
   const user = req.user as PublicUser;

@@ -74,15 +74,6 @@ describe('POST /users/', () => {
     });
   });
 
-  test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    await request(app)
-      .post('/users/1')
-      .auth('NOT_JWT', { type: 'bearer' })
-      .send(user1)
-      .expect(401);
-  });
-
   test('Route should fail to create user and return error with status 400', async () => {
     mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
     mockCtx.prisma.user.create.mockResolvedValue(user1);
