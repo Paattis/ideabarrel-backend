@@ -2,16 +2,32 @@ import { Comment, Idea, Prisma, Role, User, Group } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
+import {Unauthorized} from '../utils/errors';
 
 export interface IdeaData {
-  name: string;
   content: string;
-  user: User;
+  //user: User;
   groups: number[];
 }
 export type IdeaWithGroups = Idea & { groups: Group[] };
 export type RichIdea = IdeaWithGroups & { comments: Comment[] };
 const everything = { groups: true, comments: true };
+
+/**
+* Checks if the idea with the idea id is a valid idea the user can access
+* @param user the user to check against
+* @param idea_id the id of the idea to check
+* @returns true if the access rights are valid
+* @throws Unauthorized
+*/
+const checkRights = async (ctx: PrismaContext, user: User, idea_id: number) => {
+  // TODO: add admin check
+  // TODO: make into middleware
+  const idea: Idea = await ctx.prisma.idea.findFirstOrThrow({where: {id: idea_id, user_id: user.id } })
+  log.info(`idea id ${idea_id} ${idea}`)
+  if (!idea) throw new Unauthorized()
+  return true
+}
 
 /**
  * Select all ideas.
@@ -21,7 +37,7 @@ const everything = { groups: true, comments: true };
  * @param groups the group ids
  * @returns Array of all ideas.
  */
-const all = async (ctx: PrismaContext, page: number, groups?: number[]) => {
+const all = async (ctx: PrismaContext, page: number, user: User, groups?: number[]) => {
   const resultsPerPage = 20;
   // TODO: support for tags
 
@@ -57,7 +73,7 @@ const all = async (ctx: PrismaContext, page: number, groups?: number[]) => {
  * @throws Error on not found.
  * @returns Idea {@link RichIdea}
  */
-const select = async (id: number, ctx: PrismaContext) => {
+const select = async (id: number, user: User, ctx: PrismaContext) => {
   try {
     return await ctx.prisma.idea.findFirstOrThrow({
       where: { id: id },
@@ -76,9 +92,12 @@ const select = async (id: number, ctx: PrismaContext) => {
  * @throws Error on not idea found.
  * @returns removed idea object.
  */
-const remove = async (id: number, ctx: PrismaContext) => {
-  log.info(`id ${id}`);
+const remove = async (id: number, user: User, ctx: PrismaContext) => {
+
+  log.info(`id ${id} user.id ${user.id}`);
   try {
+    await checkRights(ctx,user, id)
+
     // delete m2m relationship between Group(s) and the Idea
     const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
       where: { id: id },
@@ -89,12 +108,14 @@ const remove = async (id: number, ctx: PrismaContext) => {
       },
     });
 
-    const idea: Idea = await ctx.prisma.idea.delete({
-      where: { id: id },
+    const ideaDeleteResult: Idea = await ctx.prisma.idea.delete({
+      where: {
+          id: id,
+      },
       include: everything,
     });
-    if (idea === null) throw 'Missing record';
-    return idea;
+    if (ideaDeleteResult === null) throw 'Missing record';
+    return ideaDeleteResult;
   } catch (err) {
     throw new NoSuchResource('idea', `No idea with id: ${id}`);
   }
@@ -104,20 +125,21 @@ const remove = async (id: number, ctx: PrismaContext) => {
  * Tries to creates idea from specified prototype object.
  *
  * @param from New idea prototype
+ * @param user_id the id of the currently logged in user
  * @param ctx prisma context
  * @throws Error when one of the group ids doesn't match with the existing group ids
  * @returns Promise<Idea> Created idea object.
  */
-const create = async (from: IdeaData, ctx: PrismaContext) => {
+const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
   try {
     const groups = from.groups.map((x) => ({ group: { connect: { id: Number(x) } } }));
-
+    log.info(`groups ${JSON.stringify(groups)}`)
     // Create idea and store it to database.
     const idea = await ctx.prisma.idea.create({
       data: {
         content: from.content,
         user: {
-          connect: { id: 3 }, // TODO: add actual user id when auth feature is finished
+          connect: { id: user.id }, 
         },
         groups: {
           create: groups,
@@ -125,9 +147,9 @@ const create = async (from: IdeaData, ctx: PrismaContext) => {
       },
       include: everything,
     });
+    log.info('Created new idea: ' + JSON.stringify(idea));
     return idea;
 
-    log.info('Created new idea: ' + JSON.stringify(idea));
     return idea;
   } catch (err) {
     throw new BadRequest('No group exists with that id, cant create idea.');
@@ -143,35 +165,30 @@ const create = async (from: IdeaData, ctx: PrismaContext) => {
  * @throws Error when one of the group ids does not match with any existing group ids
  * @returns Promise<Idea> Updated Idea object.
  */
-const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
+const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext) => {
   log.info(`from ${JSON.stringify(from)}`)
-
+  await checkRights(ctx,user, id)
   if (from.groups == undefined) {
     throw new BadRequest('Groups not sent')
   }
 
-  try {
 
-    log.info(`db groups: ${
-      await ctx.prisma.group.findMany()
-    }`)
-    // check that all the groups exist
-      const groups = await ctx.prisma.group.findMany({
-        where: {
-          id: { in: from.groups },
-        },
-      });
-      log.info(`groups ${JSON.stringify(groups)}`)
-      log.info(`from.groups ${JSON.stringify(from.groups)}, ids ${from.groups.map(Number)}`)
-      if (!groups || (groups.length != from.groups.length)) {
-        throw new BadRequest(
-          `One or more of the groups do not exist, cannot update idea`
-        );
-      }
-  } catch (err) {
-    throw err;
-    throw new BadRequest('Unknown error, cannot update Idea');
-  }
+  log.info(`db groups: ${
+    await ctx.prisma.group.findMany()
+  }`)
+  // check that all the groups exist
+    const groups = await ctx.prisma.group.findMany({
+      where: {
+        id: { in: from.groups },
+      },
+    });
+    log.info(`groups ${JSON.stringify(groups)}`)
+    log.info(`from.groups ${JSON.stringify(from.groups)}, ids ${from.groups.map(Number)}`)
+    if (!groups || (groups.length != from.groups.length)) {
+      throw new BadRequest(
+        `One or more of the groups do not exist, cannot update idea`
+      );
+    }
 
   try {
     const groupsConnection = from.groups
