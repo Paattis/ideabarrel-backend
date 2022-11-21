@@ -2,7 +2,9 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { router as indexRoutes } from './routes/index.routes';
 import { router as userRoutes } from './routes/user.routes';
 import { router as roleRoutes } from './routes/roles.routes';
+
 import { router as authRoutes } from './routes/auth.routes';
+import { router as ideaRoutes } from './routes/idea.routes';
 import { httpBegin as httpLogger, httpEnd as httpEndLogger, log } from './logger/log';
 import auth from './utils/auth';
 import { httpHandler as httpErrorHandler } from './utils/errors';
@@ -22,7 +24,7 @@ app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
-
+app.use('/ideas', auth.required, ideaRoutes);
 app.use('/static/', express.static('uploads'));
 // --------------------------------
 
