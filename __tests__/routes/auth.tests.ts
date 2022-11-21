@@ -61,7 +61,7 @@ describe('', () => {
       profile_img: '',
       password: await auth.hash('password'),
       role: {
-        id: 1
+        id: 1,
       },
       role_id: 1,
       created_at: new Date(),

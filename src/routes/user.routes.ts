@@ -80,7 +80,12 @@ users.put(
       const userId = Number.parseInt(req.params.id, 10);
       if (req.file) {
         const user = req.user as UserData;
-        const result = await usersClient.updateAvatar(userId, user.profile_img, req.file.filename, db);
+        const result = await usersClient.updateAvatar(
+          userId,
+          user.profile_img,
+          req.file.filename,
+          db
+        );
         log.debug('Updated avatar for user ' + userId);
         return res.json(result);
       } else throw ServerError;

@@ -139,7 +139,7 @@ const update = async (from: UserData, userId: number, ctx: PrismaContext) => {
       `Missing role ${from.role_id}`
     );
   }
-  from.password = await auth.hash(from.password)
+  from.password = await auth.hash(from.password);
   try {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
@@ -166,21 +166,26 @@ const updatePassword = async (userId: number, password: string, ctx: PrismaConte
   }
 };
 
-const updateAvatar = async (userId: number, oldAvatar:string, newAvatar: string, ctx: PrismaContext) => {
+const updateAvatar = async (
+  userId: number,
+  oldAvatar: string,
+  newAvatar: string,
+  ctx: PrismaContext
+) => {
   try {
     const user = await ctx.prisma.user.update({
-      where: {id: userId},
-      data: {profile_img: newAvatar},
-      select: publicFields
-    })
+      where: { id: userId },
+      data: { profile_img: newAvatar },
+      select: publicFields,
+    });
     if (oldAvatar !== newAvatar) {
       await img.remove(oldAvatar);
     }
     return user;
   } catch (err) {
-    throw new BadRequest('')
+    throw new BadRequest('');
   }
-}
+};
 
 export default {
   all,
@@ -190,5 +195,5 @@ export default {
   update,
   selectByEmailSecret,
   updatePassword,
-  updateAvatar
+  updateAvatar,
 };

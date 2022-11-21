@@ -111,12 +111,12 @@ describe('Users database access client', () => {
 
   test('should fetch user from database', async () => {
     mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
-    await expect(
-      usersClient.selectByEmailSecret(user1.name, ctx)
-    ).resolves.toMatchObject({
-      name: 'Test User 1',
-      password: 'pw',
-    });
+    await expect(usersClient.selectByEmailSecret(user1.name, ctx)).resolves.toMatchObject(
+      {
+        name: 'Test User 1',
+        password: 'pw',
+      }
+    );
   });
 
   test('should fetch user from database', async () => {
