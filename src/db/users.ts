@@ -8,6 +8,7 @@ export type PublicUser = {
   comments: Comment[];
   name: string;
   role: Role;
+  id: number;
   created_at: string;
   ideas: Idea[];
 };
