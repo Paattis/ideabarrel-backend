@@ -24,8 +24,8 @@ export const publicFields = {
   id: true,
   role: { select: { name: true, id: true } },
   created_at: true,
-  ideas:true,
-  likes: true
+  ideas: true,
+  likes: true,
 };
 
 /**

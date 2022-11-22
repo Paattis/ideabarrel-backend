@@ -10,9 +10,9 @@ export interface LikeFields {
 
 export type RoleWithUsers = Role & { users: User[] };
 export const publicFields = {
-  user: { select: { id: true, name:true } },
+  user: { select: { id: true, name: true } },
   id: true,
-  idea: {select: {id:true, user_id:true}},
+  idea: { select: { id: true, user_id: true } },
   created_at: true,
 };
 
@@ -67,7 +67,7 @@ const create = async (from: LikeFields, ctx: PrismaContext) => {
 
 /**
  * Removes specified user and returns that object.
- * 
+ *
  * @param likeId Id of the like
  * @param ctx Prisma database context
  * @returns deleted Like object
@@ -84,21 +84,32 @@ const remove = async (likeId: number, ctx: PrismaContext) => {
   }
 };
 
-const userOwnsLike = async (userId: number, likeId: number, ctx: PrismaContext) => {
+/**
+ * 
+ * @param user 
+ * @param likeId 
+ * @param ctx 
+ * @returns 
+ */
+const userOwns = async (user: User, likeId: number, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.like.findFirst({
-      where: {id: likeId, AND: {user: {id: userId}}}
-    })
-    return (result !== null) 
+      where: { id: likeId },
+    });
+    if (result) {
+      return result.user_id === user.id;
+    } else {
+      throw new NoSuchResource('like', `No like with id: ${likeId}`)
+    }
   } catch (err: any) {
-    throw new err;
+    throw err;
   }
-}
+};
 
 export default {
   all,
   create,
   select,
   remove,
-  userOwnsLike
+  userOwns,
 };

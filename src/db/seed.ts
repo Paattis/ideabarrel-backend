@@ -28,13 +28,12 @@ const seed = async () => {
   console.log(`Admin email: ${admin.email}   --   password: ${password}`);
 
   const tag = await prisma.group.upsert({
-    where: {id: 1},
+    where: { id: 1 },
     update: {},
-    create: {name: "admin", description: "none"},
+    create: { name: 'admin', description: 'none' },
   });
 
-  console.log(`Created tag: ${JSON.stringify(tag)}`)
-
+  console.log(`Created tag: ${JSON.stringify(tag)}`);
 };
 
 seed()

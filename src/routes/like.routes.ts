@@ -7,6 +7,7 @@ import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
 
 const likes = Router();
+const like = async (user: User, id: number) => likesClient.userOwns(user, id, db)
 
 likes.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -57,7 +58,7 @@ likes.post(
 likes.delete(
   '/:id',
   auth.required,
-  auth.userOwnsResource(async (user: User, id:number) => likesClient.userOwnsLike(user.id, id, db)),
+  auth.userOwns(like),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const likeId = Number.parseInt(req.params.id, 10);

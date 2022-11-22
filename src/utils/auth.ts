@@ -69,24 +69,26 @@ const sameUser = [
   },
 ];
 
-export type Predicate = (user: User, idParam: number) => Promise<boolean>
+export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
-const userOwnsResource = (predicate: Predicate) => {
+const userOwns = (predicate: Predicate) => {
   return async (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
-    
     if (user) {
       const id = Number.parseInt(req.params.id);
-      if (await predicate(user as User, id)) {
-        return next();
-      }
-      else {
-        return next(new Forbidden())
+      try {
+        if (await predicate(user as User, id)) {
+          return next();
+        } else {
+          return next(new Forbidden());
+        }
+      } catch (error) {
+        next(error)
       }
     }
     next(new Forbidden());
-  }
-}
+  };
+};
 
 const admin = (req: any, _: any, next: NextFunction) => {
   const user = req.user as PublicUser;
@@ -95,4 +97,13 @@ const admin = (req: any, _: any, next: NextFunction) => {
   next();
 };
 
-export default { hash, match, passport, jwt: jwtSign, required, sameUser, admin, userOwnsResource };
+export default {
+  hash,
+  match,
+  passport,
+  jwt: jwtSign,
+  required,
+  sameUser,
+  admin,
+  userOwns,
+};
