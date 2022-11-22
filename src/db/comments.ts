@@ -90,13 +90,17 @@ const remove = async (commentId: number, ctx: PrismaContext) => {
 };
 
 /**
- * 
- * @param commentId 
- * @param from 
- * @param ctx 
- * @returns 
+ *
+ * @param commentId
+ * @param from
+ * @param ctx
+ * @returns
  */
-const update = async (commentId: number, from: CommentUpdateFields, ctx: PrismaContext) => {
+const update = async (
+  commentId: number,
+  from: CommentUpdateFields,
+  ctx: PrismaContext
+) => {
   try {
     const result = await ctx.prisma.comment.update({
       where: { id: commentId },
@@ -110,11 +114,11 @@ const update = async (commentId: number, from: CommentUpdateFields, ctx: PrismaC
 };
 
 /**
- * 
+ *
  * @param commentId Id of the Comment
- * @param user 
- * @param ctx 
- * @returns 
+ * @param user
+ * @param ctx
+ * @returns
  */
 const userOwned = async (user: User, commentId: number, ctx: PrismaContext) => {
   try {
@@ -124,7 +128,7 @@ const userOwned = async (user: User, commentId: number, ctx: PrismaContext) => {
     if (result) {
       return result.user_id === user.id;
     } else {
-      throw new NoSuchResource('comment', `No comment with id: ${commentId}`)
+      throw new NoSuchResource('comment', `No comment with id: ${commentId}`);
     }
   } catch (err: any) {
     throw err;

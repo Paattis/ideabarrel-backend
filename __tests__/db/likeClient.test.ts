@@ -23,17 +23,17 @@ const like: Like = {
   created_at: timestamp,
   id: 1,
   idea_id: 1,
-  user_id: 1
-}
+  user_id: 1,
+};
 
 describe('Likes client remove', () => {
   test('Should remove existing like', async () => {
     mockCtx.prisma.like.delete.mockResolvedValue(like);
     expect(await likesClient.remove(1, ctx)).toMatchObject({
-        id: 1,
-        idea_id: 1,
-        user_id: 1
-      });
+      id: 1,
+      idea_id: 1,
+      user_id: 1,
+    });
   });
 
   test('Should throw error when like is not found', async () => {
@@ -46,9 +46,9 @@ describe('Likes client get by id', () => {
   test('Should return like by its id', async () => {
     mockCtx.prisma.like.findFirstOrThrow.mockResolvedValue(like);
     await expect(likesClient.select(1, ctx)).resolves.toMatchObject({
-        id: 1,
-        idea_id: 1,
-        user_id: 1
+      id: 1,
+      idea_id: 1,
+      user_id: 1,
     });
   });
 
@@ -81,12 +81,12 @@ describe('Likes client create', () => {
     mockCtx.prisma.like.create.mockResolvedValue({ ...like });
     const fields: LikeFields = {
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     };
 
     await expect(likesClient.create(fields, ctx)).resolves.toMatchObject({
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     });
   });
 });

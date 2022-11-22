@@ -9,7 +9,7 @@ import { User } from '@prisma/client';
 const comments = Router();
 
 const toComment = async (user: User, id: number) =>
-commentsClient.userOwned(user, id, db)
+  commentsClient.userOwned(user, id, db);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -22,20 +22,17 @@ comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-comments.get(
-  '/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const commentId = Number.parseInt(req.params.id, 10);
-      const result = await commentsClient.select(commentId, db);
-      return res.json(result);
-    } catch (err) {
-      next(err);
-    } finally {
-      next();
-    }
+comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const commentId = Number.parseInt(req.params.id, 10);
+    const result = await commentsClient.select(commentId, db);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  } finally {
+    next();
   }
-);
+});
 
 comments.post(
   '/',
@@ -72,19 +69,19 @@ comments.delete(
 );
 
 comments.put(
-    '/:id',
-    auth.userHasAccess(toComment),
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const commentId = Number.parseInt(req.params.id, 10);
-        const result = await commentsClient.update(commentId, req.body, db);
-        return res.json(result);
-      } catch (err) {
-        next(err);
-      } finally {
-        next();
-      }
+  '/:id',
+  auth.userHasAccess(toComment),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const commentId = Number.parseInt(req.params.id, 10);
+      const result = await commentsClient.update(commentId, req.body, db);
+      return res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
     }
-  );
+  }
+);
 
 export { comments as router };

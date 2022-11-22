@@ -34,18 +34,18 @@ const user: User = {
 };
 
 const like: Like = {
-    id: 1,
-    idea_id: 1,
-    user_id: 1,
-    created_at: timestamp,
-  };
+  id: 1,
+  idea_id: 1,
+  user_id: 1,
+  created_at: timestamp,
+};
 
-  const like2: Like = {
-    id: 2,
-    idea_id: 2,
-    user_id: 1,
-    created_at: timestamp,
-  };
+const like2: Like = {
+  id: 2,
+  idea_id: 2,
+  user_id: 1,
+  created_at: timestamp,
+};
 
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = () => {
@@ -68,9 +68,9 @@ describe('POST /likes/', () => {
       .expect(200);
 
     expect(res.body).toMatchObject({
-        id: 1,
-        idea_id: 1,
-        user_id: 1,
+      id: 1,
+      idea_id: 1,
+      user_id: 1,
     });
   });
 
@@ -101,11 +101,11 @@ describe('GET /likes/', () => {
       .expect(200);
 
     expect(res.body).toMatchObject([
-        {
-            id: 1,
-            idea_id: 1,
-            user_id: 1,
-        },
+      {
+        id: 1,
+        idea_id: 1,
+        user_id: 1,
+      },
     ]);
   });
 });
@@ -142,8 +142,8 @@ describe('GET /likes/:id', () => {
 
     expect(res.body).toMatchObject({
       id: 1,
-            idea_id: 1,
-            user_id: 1,
+      idea_id: 1,
+      user_id: 1,
     });
   });
 
@@ -189,7 +189,7 @@ describe('DELETE /likes/:id', () => {
     expect(res.body).toMatchObject({
       id: 1,
       user_id: 1,
-      idea_id: 1
+      idea_id: 1,
     });
   });
 

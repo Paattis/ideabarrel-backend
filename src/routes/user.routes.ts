@@ -10,7 +10,7 @@ import { TRequest as TRequest } from '../utils/types';
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => usersClient.userOwns(user, id, db)
+const toUser = async (user: User, id: number) => usersClient.userOwns(user, id, db);
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {

@@ -85,12 +85,12 @@ const userHasAccess = (predicate: Predicate) => {
             return next(new Forbidden());
           }
         } catch (error) {
-          next(error)
+          next(error);
         }
       }
       next(new Forbidden());
-    }
-  ]
+    },
+  ];
 };
 
 const admin = [
@@ -100,7 +100,7 @@ const admin = [
     // TODO: check that user is admin
     log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
     next();
-  }
+  },
 ];
 
 export default {

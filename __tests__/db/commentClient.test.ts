@@ -20,13 +20,13 @@ afterAll(() => swapToAppContext());
 
 const timestamp = new Date();
 const comment: Comment = {
-    created_at: timestamp,
-    updated_at: timestamp,
-    id: 1,
-  content: "content",
+  created_at: timestamp,
+  updated_at: timestamp,
+  id: 1,
+  content: 'content',
   idea_id: 1,
-  user_id: 1
-}
+  user_id: 1,
+};
 
 describe('Comments client remove', () => {
   test('Should remove existing comment', async () => {
@@ -35,7 +35,7 @@ describe('Comments client remove', () => {
       id: 1,
       content: 'content',
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     });
   });
 
@@ -52,7 +52,7 @@ describe('Comments client get by id', () => {
       id: 1,
       content: 'content',
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     });
   });
 
@@ -86,13 +86,13 @@ describe('Comments client create', () => {
     const fields: CommentFields = {
       content: 'content',
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     };
 
     await expect(commentsClient.create(fields, ctx)).resolves.toMatchObject({
       content: 'content',
       idea_id: 1,
-      user_id: 1
+      user_id: 1,
     });
   });
 });

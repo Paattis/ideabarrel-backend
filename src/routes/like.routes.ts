@@ -7,7 +7,7 @@ import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
 
 const likes = Router();
-const toLike = async (user: User, id: number) => likesClient.userOwns(user, id, db)
+const toLike = async (user: User, id: number) => likesClient.userOwns(user, id, db);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,38 +20,32 @@ likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-likes.get(
-  '/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const likeId = Number.parseInt(req.params.id, 10);
-      const result = await likesClient.select(likeId, db);
-      return res.json(result);
-    } catch (err) {
-      next(err);
-    } finally {
-      next();
-    }
+likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const likeId = Number.parseInt(req.params.id, 10);
+    const result = await likesClient.select(likeId, db);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  } finally {
+    next();
   }
-);
+});
 
-likes.post(
-  '/',
-  async (req: TRequest<LikeFields>, res: Response, next: NextFunction) => {
-    try {
-      const user = req.user as PublicUser;
-      const result = await likesClient.create(
-        { idea_id: req.body.idea_id, user_id: user.id },
-        db
-      );
-      return res.json(result);
-    } catch (err) {
-      next(err);
-    } finally {
-      next();
-    }
+likes.post('/', async (req: TRequest<LikeFields>, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as PublicUser;
+    const result = await likesClient.create(
+      { idea_id: req.body.idea_id, user_id: user.id },
+      db
+    );
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  } finally {
+    next();
   }
-);
+});
 
 likes.delete(
   '/:id',

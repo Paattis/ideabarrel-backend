@@ -196,7 +196,7 @@ const userOwns = async (user: User, userId: number, ctx: PrismaContext) => {
     if (result) {
       return result.id === user.id;
     } else {
-      throw new NoSuchResource('user', `No user with id: ${userId}`)
+      throw new NoSuchResource('user', `No user with id: ${userId}`);
     }
   } catch (err) {
     throw err;
@@ -212,5 +212,5 @@ export default {
   selectByEmailSecret,
   updatePassword,
   updateAvatar,
-  userOwns
+  userOwns,
 };

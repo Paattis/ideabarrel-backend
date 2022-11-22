@@ -85,11 +85,11 @@ const remove = async (likeId: number, ctx: PrismaContext) => {
 };
 
 /**
- * 
- * @param user 
- * @param likeId 
- * @param ctx 
- * @returns 
+ *
+ * @param user
+ * @param likeId
+ * @param ctx
+ * @returns
  */
 const userOwns = async (user: User, likeId: number, ctx: PrismaContext) => {
   try {
@@ -99,7 +99,7 @@ const userOwns = async (user: User, likeId: number, ctx: PrismaContext) => {
     if (result) {
       return result.user_id === user.id;
     } else {
-      throw new NoSuchResource('like', `No like with id: ${likeId}`)
+      throw new NoSuchResource('like', `No like with id: ${likeId}`);
     }
   } catch (err: any) {
     throw err;

@@ -34,12 +34,12 @@ const user: User = {
 };
 
 const comment: Comment = {
-    id: 1,
-    idea_id: 1,
-    user_id: 1,
-    content: 'content',
-    updated_at: timestamp,
-    created_at: timestamp,
+  id: 1,
+  idea_id: 1,
+  user_id: 1,
+  content: 'content',
+  updated_at: timestamp,
+  created_at: timestamp,
 };
 
 const JWT = auth.jwt({ id: user.id });
@@ -63,10 +63,10 @@ describe('POST /comments/', () => {
       .expect(200);
 
     expect(res.body).toMatchObject({
-        id: 1,
-        idea_id: 1,
-        user_id: 1,
-        content: 'content',
+      id: 1,
+      idea_id: 1,
+      user_id: 1,
+      content: 'content',
     });
   });
 
@@ -97,12 +97,12 @@ describe('GET /comments/', () => {
       .expect(200);
 
     expect(res.body).toMatchObject([
-        {
-            id: 1,
-            idea_id: 1,
-            user_id: 1,
-            content: 'content',
-        },
+      {
+        id: 1,
+        idea_id: 1,
+        user_id: 1,
+        content: 'content',
+      },
     ]);
   });
 });
@@ -139,9 +139,9 @@ describe('GET /comments/:id', () => {
 
     expect(res.body).toMatchObject({
       id: 1,
-            idea_id: 1,
-            user_id: 1,
-            content: 'content',
+      idea_id: 1,
+      user_id: 1,
+      content: 'content',
     });
   });
 
@@ -196,6 +196,9 @@ describe('DELETE /comments/:id', () => {
     mockJWT();
     mockCtx.prisma.comment.delete.mockResolvedValue(comment);
 
-    await request(app).delete('/comments/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
+    await request(app)
+      .delete('/comments/1')
+      .auth('NOT_JWT', { type: 'bearer' })
+      .expect(401);
   });
 });
