@@ -1,5 +1,5 @@
-import { Role, User, Idea, Group } from '@prisma/client';
-import ideasClient, { IdeaWithGroups } from '../../src/db/ideas';
+import { Role, User, Idea, Tag } from '@prisma/client';
+import ideasClient, { IdeaWithTags } from '../../src/db/ideas';
 import {
   MockPrismaContext,
   PrismaContext,
@@ -21,25 +21,25 @@ afterAll(() => {
 });
 
 const timestamp = new Date();
-const group: Group = {
+const tag: Tag = {
   id: 1,
-  description: 'Test group',
+  description: 'Test tag',
   created_at: timestamp,
   updated_at: timestamp,
-  name: 'Test group',
+  name: 'Test tag',
 };
 
-const group2: Group = {
+const tag2: Tag = {
   id: 2,
-  description: 'Test group2',
+  description: 'Test tag2',
   created_at: timestamp,
   updated_at: timestamp,
-  name: 'Test group2',
+  name: 'Test tag2',
 };
 
-// required because the endpoint returns groups with dates as strings
-const expectedGroup = {
-  ...group,
+// required because the endpoint returns tags with dates as strings
+const expectedTag = {
+  ...tag,
   created_at: timestamp.toISOString(),
   updated_at: timestamp.toISOString(),
 };
@@ -71,31 +71,31 @@ const user2: User = {
   updated_at: timestamp,
 };
 
-const idea: IdeaWithGroups = {
+const idea: IdeaWithTags = {
   id: 1,
   content: 'Lorem ipsum dolor sit amet',
   user_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
-  groups: [group],
+  tags: [tag],
 };
 
-const updatedIdea: IdeaWithGroups = {
+const updatedIdea: IdeaWithTags = {
   id: 1,
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
-  groups: [group2],
+  tags: [tag2],
 };
 
-const idea2: IdeaWithGroups = {
+const idea2: IdeaWithTags = {
   id: 2,
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
-  groups: [group2],
+  tags: [tag2],
 };
 
 describe('Ideas database access client', () => {
@@ -106,11 +106,11 @@ describe('Ideas database access client', () => {
 
   test('Should create idea', async () => {
     mockCtx.prisma.idea.create.mockResolvedValue(idea);
-    mockCtx.prisma.group.findMany.mockResolvedValue([group]);
+    mockCtx.prisma.tag.findMany.mockResolvedValue([tag]);
     const res = ideasClient.create(
       {
         content: 'Lorem ipsum dolor sit amet',
-        groups: [1],
+        tags: [1],
       },
       user1,
       ctx
@@ -156,11 +156,11 @@ describe('Ideas database access client', () => {
   test('Should update existing idea', async () => {
     mockCtx.prisma.idea.update.mockResolvedValue(updatedIdea);
     mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(updatedIdea);
-    mockCtx.prisma.group.findMany.mockResolvedValue([group2]);
+    mockCtx.prisma.tag.findMany.mockResolvedValue([tag2]);
     const res = await ideasClient.update(
       {
         content: 'New content',
-        groups: [2],
+        tags: [2],
       },
       1,
       user1,
@@ -170,9 +170,9 @@ describe('Ideas database access client', () => {
     expect(res).not.toBeNull();
     expect(res).toMatchObject({
       content: 'New content',
-      groups: [
+      tags: [
         {
-          ...group2,
+          ...tag2,
           created_at: timestamp,
           updated_at: timestamp,
         },
@@ -180,14 +180,14 @@ describe('Ideas database access client', () => {
     });
   });
 
-  test('Should fail to update existing idea if the given group doesnt exist', async () => {
+  test('Should fail to update existing idea if the given tag doesnt exist', async () => {
     mockCtx.prisma.idea.update.mockResolvedValue(idea);
     mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
 
     const res = ideasClient.update(
       {
         content: 'New content',
-        groups: [123],
+        tags: [123],
       },
       1,
       user1,

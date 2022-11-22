@@ -1,5 +1,5 @@
-import { Idea, User, Group, Role, Comment } from '@prisma/client';
-import { IdeaWithGroups } from '../../src/db/ideas';
+import { Idea, User, Tag, Role, Comment } from '@prisma/client';
+import { IdeaWithTags } from '../../src/db/ideas';
 import request from 'supertest';
 import app from '../../src/app';
 import auth from '../../src/utils/auth';
@@ -57,25 +57,25 @@ beforeEach(() => {
   ctx = mockCtx as unknown as PrismaContext;
 });
 
-const group: Group = {
+const tag: Tag = {
   id: 1,
-  description: 'Test group',
+  description: 'Test tag',
   created_at: timestamp,
   updated_at: timestamp,
-  name: 'Test group',
+  name: 'Test tag',
 };
 
-const group2: Group = {
+const tag2: Tag = {
   id: 2,
-  description: 'Test group2',
+  description: 'Test tag2',
   created_at: timestamp,
   updated_at: timestamp,
-  name: 'Test group2',
+  name: 'Test tag2',
 };
 
-// required because the endpoint returns groups with dates as strings
-const expectedGroup = {
-  ...group,
+// required because the endpoint returns tags with dates as strings
+const expectedTag = {
+  ...tag,
   created_at: timestamp.toISOString(),
   updated_at: timestamp.toISOString(),
 };
@@ -87,22 +87,22 @@ const role: Role = {
   name: 'Test Engineer',
 };
 
-const idea: IdeaWithGroups = {
+const idea: IdeaWithTags = {
   id: 1,
   content: 'Lorem ipsum dolor sit amet',
   user_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
-  groups: [group],
+  tags: [tag],
 };
 
-const idea2: IdeaWithGroups = {
+const idea2: IdeaWithTags = {
   id: 1,
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
-  groups: [group2],
+  tags: [tag2],
 };
 
 /**
@@ -115,7 +115,7 @@ describe('POST /ideas/', () => {
       .send({
         content: 'Lorem ipsum dolor sit amet',
         //user: 1,
-        groups: [1],
+        tags: [1],
       });
 
     expect(res.statusCode).toBe(401);
@@ -123,7 +123,7 @@ describe('POST /ideas/', () => {
     test('Route should create and return idea with status 200', async () => {
       mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
       mockCtx.prisma.idea.create.mockResolvedValue(idea);
-      mockCtx.prisma.group.findMany.mockRejectedValue([group]);
+      mockCtx.prisma.tag.findMany.mockRejectedValue([tag]);
 
       console.log(JSON.stringify(idea));
 
@@ -133,7 +133,7 @@ describe('POST /ideas/', () => {
         .send({
           content: 'Lorem ipsum dolor sit amet',
           //user: 1,
-          groups: [1],
+          tags: [1],
         });
 
       expect(res.statusCode).toBe(200);
@@ -142,15 +142,15 @@ describe('POST /ideas/', () => {
         id: 1,
         content: 'Lorem ipsum dolor sit amet',
         //user_id: 1, // TODO: remove when the auth endpoints are finished
-        groups: [expectedGroup],
+        tags: [expectedTag],
       });
     });
 
-  test('Route should fail to create idea if a non-existent group is given', async () => {
+  test('Route should fail to create idea if a non-existent tag is given', async () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.idea.create.mockRejectedValue(idea);
     mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
-    mockCtx.prisma.group.create.mockResolvedValue(group);
+    mockCtx.prisma.tag.create.mockResolvedValue(tag);
 
     const res = await request(app)
       .post('/ideas/')
@@ -158,13 +158,13 @@ describe('POST /ideas/', () => {
       .send({
         content: 'This will fail',
         //user: 1,
-        groups: [444],
+        tags: [444],
       });
     console.log('Res code', res.statusCode);
     console.log('Res body', res.body);
     expect(res.body).toMatchObject({
       status: 400,
-      msg: 'No group exists with that id, cant create idea.',
+      msg: 'No tag exists with that id, cant create idea.',
     });
     expect(res.statusCode).toBe(400);
   });
@@ -179,7 +179,7 @@ describe('PUT /ideas/:idea_id', () => {
       .put('/ideas/1')
       .send({
         content: 'New content',
-        groups: [2],
+        tags: [2],
       });
 
     expect(res.statusCode).toBe(401);
@@ -188,22 +188,22 @@ describe('PUT /ideas/:idea_id', () => {
       swapToMockContext(mockCtx);
       mockCtx.prisma.idea.update.mockResolvedValue(idea2);
       mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea2);
-      mockCtx.prisma.group.findMany.mockResolvedValue([group2]);
+      mockCtx.prisma.tag.findMany.mockResolvedValue([tag2]);
 
       const res = await request(app)
         .put('/ideas/1')
         .auth(JWT, { type: 'bearer' })
         .send({
           content: 'New content',
-          groups: [2],
+          tags: [2],
         });
 
       console.log('res body put test: ', res.body);
       expect(res.body).toMatchObject({
         content: 'New content',
-        groups: [
+        tags: [
           {
-            ...group2,
+            ...tag2,
             created_at: timestamp.toISOString(),
             updated_at: timestamp.toISOString(),
           },
@@ -211,18 +211,18 @@ describe('PUT /ideas/:idea_id', () => {
       });
     });
 
-  test("Route should fail with status 400 and not update the idea if one or more of the given groups doesn't exist", async () => {
+  test("Route should fail with status 400 and not update the idea if one or more of the given tags doesn't exist", async () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.idea.update.mockResolvedValue(idea);
     mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
-    mockCtx.prisma.group.update.mockResolvedValue(group2);
+    mockCtx.prisma.tag.update.mockResolvedValue(tag2);
 
     const res = await request(app)
       .put('/ideas/1')
       .auth(JWT, { type: 'bearer' })
       .send({
         content: 'New content',
-        groups: [33, 2],
+        tags: [33, 2],
       });
 
     console.log('res body put test 400: ', res.body);
