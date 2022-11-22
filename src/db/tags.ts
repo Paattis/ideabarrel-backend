@@ -1,4 +1,4 @@
-import { Tag, User, TagUser, Prisma  } from '@prisma/client';
+import { Tag, User, TagUser, Prisma } from '@prisma/client';
 import { log } from '../logger/log';
 import { NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
@@ -83,7 +83,7 @@ const create = async (from: TagFields, ctx: PrismaContext) => {
     const result = await ctx.prisma.tag.create({
       data: {
         name: from.name,
-        description: from.description
+        description: from.description,
       },
       //select: publicFields,
     });
@@ -95,59 +95,55 @@ const create = async (from: TagFields, ctx: PrismaContext) => {
 };
 
 /**
-* Add a user to a tag
-* @param tagId the tag to which to add the user to
-* @param userId the user who is added to the tag
-* @returns the updated tag
-*/
+ * Add a user to a tag
+ * @param tagId the tag to which to add the user to
+ * @param userId the user who is added to the tag
+ * @returns the updated tag
+ */
 const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) => {
   try {
-
     const result = await ctx.prisma.tag.update({
-      where: {id: tagId},
+      where: { id: tagId },
       data: {
         users: {
-            create: [ {user: {connect: {id: userId}}} ],
-        }
+          create: [{ user: { connect: { id: userId } } }],
+        },
       },
-      include: {users:true},
-    })
+      include: { users: true },
+    });
 
-    return result
-  }
-  catch(err) {
-    if(err instanceof Prisma.PrismaClientKnownRequestError && err.code == "P2002") {
+    return result;
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code == 'P2002') {
       // just return since this error signifies that the relation already
       // exists and checking this with a query is distractingly difficult
-      return {}
+      return {};
     }
 
-    throw new Error('Something went wrong')
+    throw new Error('Something went wrong');
   }
-}
+};
 
 /**
-* Add a user to a tag
-* @param tagId the tag to which to add the user to
-* @param userId the user who is removed from the tag
-* @returns the updated tag
-*/
+ * Add a user to a tag
+ * @param tagId the tag to which to add the user to
+ * @param userId the user who is removed from the tag
+ * @returns the updated tag
+ */
 const removeUserFromTag = async (tagId: number, userId: number, ctx: PrismaContext) => {
   try {
-
     const m2mDeleteResult: TagUser = await ctx.prisma.tagUser.delete({
       where: {
         user_id_tag_id: {
           user_id: userId,
           tag_id: tagId,
-        }
-      }
+        },
+      },
     });
+  } catch (err) {
+    throw new Error('Something went wrong');
   }
-  catch(err) {
-    throw new Error('Something went wrong')
-  }
-}
+};
 
 const remove = async (TagId: number, ctx: PrismaContext) => {
   try {
@@ -183,5 +179,5 @@ export default {
   selectWithUsers,
   remove,
   addUserToTag,
-  removeUserFromTag
+  removeUserFromTag,
 };

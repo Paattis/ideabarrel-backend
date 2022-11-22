@@ -13,10 +13,9 @@ const queryisPresent = (req: Request, param: QueryParam): boolean =>
 
 tags.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-      const result = await tagsClient.all(db);
-      res.json(result);
-    }
-  catch (err) {
+    const result = await tagsClient.all(db);
+    res.json(result);
+  } catch (err) {
     next(err);
   } finally {
     next();
@@ -73,7 +72,7 @@ tags.post(
       );
       res.json(result);
     } catch (err) {
-      throw err
+      throw err;
       next(err);
     } finally {
       next();
@@ -94,7 +93,7 @@ tags.delete(
       );
       res.json(result);
     } catch (err) {
-      throw err
+      throw err;
       next(err);
     } finally {
       next();

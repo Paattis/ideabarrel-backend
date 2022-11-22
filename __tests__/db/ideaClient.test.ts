@@ -140,7 +140,7 @@ describe('Ideas database access client', () => {
 
   test('Should return existing ideas', async () => {
     mockCtx.prisma.idea.findMany.mockResolvedValue([idea, idea2]);
-    const result = await ideasClient.all(ctx, 0, user1);
+    const result = await ideasClient.all(ctx, 0, user1, []);
 
     expect(result).toBeInstanceOf(Array<Idea>);
     expect(result.length).toBe(2);

@@ -26,7 +26,7 @@ const tag: Tag = {
   created_at: timestamp,
   updated_at: timestamp,
   name: 'Cafeteria',
-  description: 'Food is good'
+  description: 'Food is good',
 };
 
 describe('Tags client remove', () => {
@@ -35,7 +35,7 @@ describe('Tags client remove', () => {
     expect(await tagsClient.remove(1, ctx)).toMatchObject({
       id: 1,
       name: 'Cafeteria',
-      description: 'Food is good'
+      description: 'Food is good',
     });
   });
 
@@ -51,7 +51,7 @@ describe('Tags client get by id', () => {
     await expect(tagsClient.select(1, ctx)).resolves.toMatchObject({
       id: 1,
       name: 'Cafeteria',
-      description: 'Food is good'
+      description: 'Food is good',
     });
   });
 
@@ -84,11 +84,11 @@ describe('Tags client create', () => {
     mockCtx.prisma.tag.create.mockResolvedValue({ ...tag, name: 'Cafeteria' });
     const fields = {
       name: 'Cafeteria',
-      description: 'Food is good'
+      description: 'Food is good',
     };
     await expect(tagsClient.create(fields, ctx)).resolves.toMatchObject({
       name: 'Cafeteria',
-      description: 'Food is good'
+      description: 'Food is good',
     });
   });
 });

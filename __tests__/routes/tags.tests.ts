@@ -26,7 +26,7 @@ const tag: Tag = {
   created_at: timestamp,
   updated_at: timestamp,
   name: 'Cafeteria',
-  description: 'Food is good'
+  description: 'Food is good',
 };
 
 const user: User = {
@@ -221,7 +221,7 @@ describe('PUT /tags/:id', () => {
       created_at: timestamp,
       updated_at: timestamp,
       name: 'Restaurant',
-      description: 'Food is great'
+      description: 'Food is great',
     };
     const newTag = { name: 'Restaurant' };
     mockCtx.prisma.tag.update.mockResolvedValue(updateResult);

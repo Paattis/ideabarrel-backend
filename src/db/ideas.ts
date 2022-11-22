@@ -51,7 +51,6 @@ const all = async (ctx: PrismaContext, page: number, user: User, tags: number[])
   };
 
   if (tags.length > 0) {
-
     query = {
       ...query,
       where: {
@@ -63,7 +62,7 @@ const all = async (ctx: PrismaContext, page: number, user: User, tags: number[])
       },
     };
   }
-  log.info(`query ${JSON.stringify(query)} tags: ${tags}`)
+  log.info(`query ${JSON.stringify(query)} tags: ${tags}`);
   return await ctx.prisma.idea.findMany(query);
 };
 
