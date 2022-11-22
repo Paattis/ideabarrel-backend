@@ -39,9 +39,8 @@ const checkRights = async (ctx: PrismaContext, user: User, idea_id: number) => {
  * @param tags the tag ids
  * @returns Array of all ideas.
  */
-const all = async (ctx: PrismaContext, page: number, user: User, tags?: number[]) => {
+const all = async (ctx: PrismaContext, page: number, user: User, tags: number[]) => {
   const resultsPerPage = 20;
-  // TODO: support for tags
 
   // construct query out of parts
   // have to use the any-type here to keep TS from freaking out when we change the object
@@ -51,7 +50,8 @@ const all = async (ctx: PrismaContext, page: number, user: User, tags?: number[]
     take: resultsPerPage,
   };
 
-  if (tags) {
+  if (tags.length > 0) {
+
     query = {
       ...query,
       where: {
@@ -63,7 +63,7 @@ const all = async (ctx: PrismaContext, page: number, user: User, tags?: number[]
       },
     };
   }
-
+  log.info(`query ${JSON.stringify(query)} tags: ${tags}`)
   return await ctx.prisma.idea.findMany(query);
 };
 
