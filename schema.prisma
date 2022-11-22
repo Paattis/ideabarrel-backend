@@ -22,6 +22,7 @@ model User {
   updated_at DateTime @updatedAt
   ideas Idea[]
   comments Comment[]
+  tags TagUser[]
 }
 
 model Idea {
@@ -31,7 +32,7 @@ model Idea {
   content String @db.VarChar(1000)
   user_id Int @default(0)
   user User @relation(fields: [user_id], references:[id])
-  groups IdeaGroup[]
+  tags IdeaTag[]
   comments Comment[]
 }
 
@@ -46,26 +47,39 @@ model Comment {
   idea Idea @relation(fields: [idea_id], references:[id])
 }
 
-model IdeaGroup {
+model IdeaTag {
   //id Int @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   idea_id Int
   idea Idea @relation(fields: [idea_id], references:[id])
-  group_id Int
-  group Group @relation(fields: [group_id], references:[id])
+  tag_id Int
+  tag Tag @relation(fields: [tag_id], references:[id])
 
-  @@id([idea_id, group_id])
+  @@id([idea_id, tag_id])
 }
 
-model Group {
+model TagUser {
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user_id Int
+  user User @relation(fields: [user_id], references:[id])
+  tag_id Int
+  tag Tag @relation(fields: [tag_id], references:[id])
+
+  @@id([user_id, tag_id])
+}
+
+model Tag {
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
   description String? @db.VarChar(500)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  ideas IdeaGroup[]
+  ideas IdeaTag[]
+  users TagUser[]
 }
 
 model Role {

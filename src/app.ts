@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { router as indexRoutes } from './routes/index.routes';
 import { router as userRoutes } from './routes/user.routes';
 import { router as roleRoutes } from './routes/roles.routes';
+import { router as tagRoutes } from './routes/tags.routes';
 
 import { router as authRoutes } from './routes/auth.routes';
 import { router as ideaRoutes } from './routes/idea.routes';
@@ -23,6 +24,7 @@ app.use(auth.passport.initialize());
 app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
+app.use('/tags', tagRoutes);
 app.use('/auth', authRoutes);
 app.use('/ideas', auth.required, ideaRoutes);
 app.use('/static/', express.static('uploads'));
