@@ -188,6 +188,21 @@ const updateAvatar = async (
   }
 };
 
+const userOwns = async (user: User, userId: number, ctx: PrismaContext) => {
+  try {
+    const result = await ctx.prisma.user.findFirst({
+      where: { id: userId },
+    });
+    if (result) {
+      return result.id === user.id;
+    } else {
+      throw new NoSuchResource('user', `No user with id: ${userId}`)
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 export default {
   all,
   remove,
@@ -197,4 +212,5 @@ export default {
   selectByEmailSecret,
   updatePassword,
   updateAvatar,
+  userOwns
 };

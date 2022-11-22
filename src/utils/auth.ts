@@ -71,31 +71,37 @@ const sameUser = [
 
 export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
-const userOwns = (predicate: Predicate) => {
-  return async (req: any, _: any, next: NextFunction) => {
-    const user = req.user as User | null;
-    if (user) {
-      const id = Number.parseInt(req.params.id);
-      try {
-        if (await predicate(user as User, id)) {
-          return next();
-        } else {
-          return next(new Forbidden());
+const userHasAccess = (predicate: Predicate) => {
+  return [
+    // ...required,
+    async (req: any, _: any, next: NextFunction) => {
+      const user = req.user as User | null;
+      if (user) {
+        const id = Number.parseInt(req.params.id);
+        try {
+          if (await predicate(user as User, id)) {
+            return next();
+          } else {
+            return next(new Forbidden());
+          }
+        } catch (error) {
+          next(error)
         }
-      } catch (error) {
-        next(error)
       }
+      next(new Forbidden());
     }
-    next(new Forbidden());
-  };
+  ]
 };
 
-const admin = (req: any, _: any, next: NextFunction) => {
-  const user = req.user as PublicUser;
-  // TODO: check that user is admin
-  log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
-  next();
-};
+const admin = [
+  ...required,
+  (req: any, _: any, next: NextFunction) => {
+    const user = req.user as PublicUser;
+    // TODO: check that user is admin
+    log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
+    next();
+  }
+];
 
 export default {
   hash,
@@ -105,5 +111,5 @@ export default {
   required,
   sameUser,
   admin,
-  userOwns,
+  userHasAccess,
 };

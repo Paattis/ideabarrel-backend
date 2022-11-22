@@ -1,4 +1,4 @@
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import rolesClient from '../../src/db/roles';
 import {
   MockPrismaContext,
@@ -63,7 +63,7 @@ describe('Roles client get all', () => {
     mockCtx.prisma.role.findMany.mockResolvedValue([role]);
     const result = await rolesClient.all(ctx);
 
-    expect(result).toBeInstanceOf(Array<User>);
+    expect(result).toBeInstanceOf(Array<Role>);
     expect(result.length).toBe(1);
   });
 
@@ -71,13 +71,13 @@ describe('Roles client get all', () => {
     mockCtx.prisma.role.findMany.mockResolvedValue([]);
     const result = await rolesClient.all(ctx);
 
-    expect(result).toBeInstanceOf(Array<User>);
+    expect(result).toBeInstanceOf(Array<Role>);
     expect(result.length).toBe(0);
   });
 });
 
 describe('Roles client create', () => {
-  test('Should create new user', async () => {
+  test('Should create new role', async () => {
     mockCtx.prisma.role.create.mockResolvedValue({ ...role, name: 'asd' });
     const fields = {
       name: 'asd',

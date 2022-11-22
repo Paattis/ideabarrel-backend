@@ -26,8 +26,8 @@ app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
 app.use('/ideas', auth.required, ideaRoutes);
-app.use('/likes', likeRoutes);
-app.use('/comments', commentRoutes);
+app.use('/likes', auth.required, likeRoutes);
+app.use('/comments', auth.required, commentRoutes);
 app.use('/static/', express.static('uploads'));
 // --------------------------------
 

@@ -98,6 +98,8 @@ describe('POST /users/', () => {
  */
 describe('DELETE /users/:id', () => {
   test('Route should delete and return user with status 200', async () => {
+    mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
     mockCtx.prisma.user.delete.mockResolvedValue(user1);
 
     const res = await request(app).delete('/users/1').auth(JWT, { type: 'bearer' });
@@ -115,8 +117,9 @@ describe('DELETE /users/:id', () => {
   });
 
   test('Route should fail to delete user and return error with status 403', async () => {
-    mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
-    await request(app).delete('/users/420').auth(JWT, { type: 'bearer' }).expect(403);
+    mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValueOnce(user2);
+    await request(app).delete('/users/2').auth(JWT, { type: 'bearer' }).expect(403);
   });
 });
 
@@ -200,6 +203,7 @@ describe('PUT /users/:id', () => {
 
   test('Route should return new user with status 200', async () => {
     mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
     mockCtx.prisma.user.update.mockResolvedValue(user2);
 
     const res = await request(app)

@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { db } from '../db/context';
 import usersClient, { PublicUser, UserData } from '../db/users';
@@ -8,6 +9,8 @@ import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 
 const users = Router();
+
+const toUser = async (user: User, id: number) => usersClient.userOwns(user, id, db)
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,7 +41,8 @@ users.get(
 
 users.put(
   '/:id',
-  auth.sameUser,
+  auth.required,
+  auth.userHasAccess(toUser),
   async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
     try {
       const userId = Number.parseInt(req.params.id, 10);
@@ -54,7 +58,8 @@ users.put(
 
 users.delete(
   '/:id',
-  auth.sameUser,
+  auth.required,
+  auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = Number.parseInt(req.params.id, 10);
@@ -72,7 +77,8 @@ users.delete(
 
 users.put(
   '/:id/img',
-  auth.sameUser,
+  auth.required,
+  auth.userHasAccess(toUser),
   img.upload.single('avatar'),
   img.resize,
   async (req: Request, res: Response, next: NextFunction) => {
@@ -99,7 +105,8 @@ users.put(
 
 users.delete(
   '/:id/img',
-  auth.sameUser,
+  auth.required,
+  auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user as PublicUser;

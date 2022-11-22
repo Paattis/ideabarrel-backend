@@ -50,7 +50,7 @@ roles.get(
 
 roles.post(
   '/',
-  auth.required,
+  auth.admin,
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
       const result = await rolesClient.create(req.body, db);
@@ -65,7 +65,6 @@ roles.post(
 
 roles.put(
   '/:id',
-  auth.required,
   auth.admin,
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
@@ -82,7 +81,6 @@ roles.put(
 
 roles.delete(
   '/:id',
-  auth.required,
   auth.admin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {

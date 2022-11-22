@@ -8,10 +8,10 @@ import { User } from '@prisma/client';
 
 const comments = Router();
 
-const comment = async (user: User, id: number) =>
+const toComment = async (user: User, id: number) =>
 commentsClient.userOwned(user, id, db)
 
-comments.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
+comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await commentsClient.all(db);
     res.json(result);
@@ -24,7 +24,6 @@ comments.get('/', auth.required, async (req: Request, res: Response, next: NextF
 
 comments.get(
   '/:id',
-  auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
@@ -40,7 +39,6 @@ comments.get(
 
 comments.post(
   '/',
-  auth.required,
   async (req: TRequest<CommentFields>, res: Response, next: NextFunction) => {
     try {
       const user = req.user as PublicUser;
@@ -59,10 +57,7 @@ comments.post(
 
 comments.delete(
   '/:id',
-  auth.required,
-  auth.userOwns(async (user: User, id: number) =>
-    commentsClient.userOwned(user, id, db)
-  ),
+  auth.userHasAccess(toComment),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
@@ -78,8 +73,7 @@ comments.delete(
 
 comments.put(
     '/:id',
-    auth.required,
-    auth.userOwns(comment),
+    auth.userHasAccess(toComment),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const commentId = Number.parseInt(req.params.id, 10);
