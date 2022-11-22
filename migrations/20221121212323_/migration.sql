@@ -67,6 +67,17 @@ CREATE TABLE `Role` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Like` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `user_id` INTEGER NOT NULL,
+    `idea_id` INTEGER NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `Like_user_id_idea_id_key`(`user_id`, `idea_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -84,3 +95,9 @@ ALTER TABLE `IdeaGroup` ADD CONSTRAINT `IdeaGroup_idea_id_fkey` FOREIGN KEY (`id
 
 -- AddForeignKey
 ALTER TABLE `IdeaGroup` ADD CONSTRAINT `IdeaGroup_group_id_fkey` FOREIGN KEY (`group_id`) REFERENCES `Group`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Like` ADD CONSTRAINT `Like_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Like` ADD CONSTRAINT `Like_idea_id_fkey` FOREIGN KEY (`idea_id`) REFERENCES `Idea`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

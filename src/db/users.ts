@@ -16,7 +16,7 @@ export type PublicUser = {
   ideas: Idea[];
 };
 
-const publicFields = {
+export const publicFields = {
   comments: { select: { content: true, id: true, created_at: true, idea: true } },
   name: true,
   profile_img: true,
@@ -24,7 +24,8 @@ const publicFields = {
   id: true,
   role: { select: { name: true, id: true } },
   created_at: true,
-  ideas: { select: { id: true } },
+  ideas:true,
+  likes: true
 };
 
 /**

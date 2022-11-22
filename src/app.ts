@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { router as indexRoutes } from './routes/index.routes';
 import { router as userRoutes } from './routes/user.routes';
 import { router as roleRoutes } from './routes/roles.routes';
+import { router as likeRoutes } from './routes/like.routes';
 
 import { router as authRoutes } from './routes/auth.routes';
 import { router as ideaRoutes } from './routes/idea.routes';
@@ -25,6 +26,7 @@ app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/auth', authRoutes);
 app.use('/ideas', auth.required, ideaRoutes);
+app.use('/likes', likeRoutes);
 app.use('/static/', express.static('uploads'));
 // --------------------------------
 

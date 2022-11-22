@@ -22,6 +22,7 @@ model User {
   updated_at DateTime @updatedAt
   ideas Idea[]
   comments Comment[]
+  likes Like[]
 }
 
 model Idea {
@@ -33,6 +34,7 @@ model Idea {
   user User @relation(fields: [user_id], references:[id])
   groups IdeaGroup[]
   comments Comment[]
+  likes Like[]
 }
 
 model Comment {
@@ -74,4 +76,14 @@ model Role {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   users User[]
+}
+
+model Like {
+  id Int @id @default(autoincrement())
+  user_id Int
+  idea_id Int
+  user User @relation(fields: [user_id], references:[id])
+  idea Idea @relation(fields: [idea_id], references:[id])
+  created_at DateTime @default(now())
+  @@unique([user_id, idea_id], name: "likeIdentifier")
 }
