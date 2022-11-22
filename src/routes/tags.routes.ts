@@ -47,6 +47,7 @@ tags.get(
 tags.post(
   '/',
   auth.required,
+  auth.admin,
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.create(req.body, db);
@@ -62,6 +63,7 @@ tags.post(
 tags.post(
   '/:tagId/user/:userId',
   auth.required,
+  auth.admin,
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.addUserToTag(
@@ -82,6 +84,7 @@ tags.post(
 tags.delete(
   '/:tagId/user/:userId',
   auth.required,
+  auth.admin,
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.removeUserFromTag(

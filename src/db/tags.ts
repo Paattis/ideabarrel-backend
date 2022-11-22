@@ -94,6 +94,12 @@ const create = async (from: TagFields, ctx: PrismaContext) => {
   }
 };
 
+/**
+* Add a user to a tag
+* @param tagId the tag to which to add the user to
+* @param userId the user who is added to the tag
+* @returns the updated tag
+*/
 const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) => {
   try {
 
@@ -120,6 +126,12 @@ const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) =
   }
 }
 
+/**
+* Add a user to a tag
+* @param tagId the tag to which to add the user to
+* @param userId the user who is removed from the tag
+* @returns the updated tag
+*/
 const removeUserFromTag = async (tagId: number, userId: number, ctx: PrismaContext) => {
   try {
 
@@ -133,7 +145,6 @@ const removeUserFromTag = async (tagId: number, userId: number, ctx: PrismaConte
     });
   }
   catch(err) {
-    throw err
     throw new Error('Something went wrong')
   }
 }
