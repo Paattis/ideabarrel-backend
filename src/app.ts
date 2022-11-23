@@ -1,5 +1,4 @@
 import express, { Application } from 'express';
-import { router as indexRoutes } from './routes/index.routes';
 import { router as userRoutes } from './routes/user.routes';
 import { router as roleRoutes } from './routes/roles.routes';
 import { router as likeRoutes } from './routes/like.routes';
@@ -22,7 +21,6 @@ app.use(httpLogger);
 app.use(auth.passport.initialize());
 
 // ----------- Routes -------------
-app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/tags', tagRoutes);

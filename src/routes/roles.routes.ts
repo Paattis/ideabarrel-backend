@@ -50,7 +50,8 @@ roles.get(
 
 roles.post(
   '/',
-  auth.admin,
+  auth.required,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
       const result = await rolesClient.create(req.body, db);
@@ -65,7 +66,8 @@ roles.post(
 
 roles.put(
   '/:id',
-  auth.admin,
+  auth.required,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
       const roleId = Number.parseInt(req.params.id, 10);
@@ -81,7 +83,8 @@ roles.put(
 
 roles.delete(
   '/:id',
-  auth.admin,
+  auth.required,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roleId = Number.parseInt(req.params.id, 10);

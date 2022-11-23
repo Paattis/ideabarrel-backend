@@ -18,6 +18,8 @@ const options: StrategyOptions = {
   secretOrKey: SECRET,
 };
 
+const ADMIN_ID = 1;
+
 export type UserPayload = {
   id: number;
 };
@@ -72,36 +74,29 @@ const sameUser = [
 export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
 const userHasAccess = (predicate: Predicate) => {
-  return [
-    // ...required,
-    async (req: any, _: any, next: NextFunction) => {
-      const user = req.user as User | null;
-      if (user) {
-        const id = Number.parseInt(req.params.id);
-        try {
-          if (await predicate(user as User, id)) {
-            return next();
-          } else {
-            return next(new Forbidden());
-          }
-        } catch (error) {
-          next(error);
-        }
+  return async (req: any, _: any, next: NextFunction) => {
+    const user = req.user as User | null;
+    if (user) {
+      if (user.id === ADMIN_ID) {
+        return next();
       }
-      next(new Forbidden());
-    },
-  ];
+
+      const id = Number.parseInt(req.params.id);
+      try {
+        if (await predicate(user as User, id)) {
+          return next();
+        } else {
+          return next(new Forbidden());
+        }
+      } catch (error) {
+        next(error);
+      }
+    }
+    next(new Forbidden());
+  };
 };
 
-const admin = [
-  ...required,
-  (req: any, _: any, next: NextFunction) => {
-    const user = req.user as PublicUser;
-    // TODO: check that user is admin
-    log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
-    next();
-  },
-];
+const onlyAdmin = async () => false;
 
 export default {
   hash,
@@ -110,6 +105,6 @@ export default {
   jwt: jwtSign,
   required,
   sameUser,
-  admin,
   userHasAccess,
+  onlyAdmin,
 };

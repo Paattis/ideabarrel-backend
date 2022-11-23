@@ -57,7 +57,7 @@ describe('POST /tags/', () => {
       .post('/tags/')
       .auth(JWT, { type: 'bearer' })
       .send(tag)
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toMatchObject({
@@ -89,7 +89,7 @@ describe('GET /tags/', () => {
     const res = await request(app)
       .get('/tags/')
       .send(tag)
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toMatchObject([
@@ -113,7 +113,7 @@ describe('GET /tags/:id', () => {
     const res = await request(app)
       .get('/tags/1')
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(404);
 
     expect(res.body).toMatchObject({
@@ -129,7 +129,7 @@ describe('GET /tags/:id', () => {
     const res = await request(app)
       .get('/tags/1')
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toMatchObject({
@@ -158,7 +158,7 @@ describe('DELETE /tags/:id', () => {
     const res = await request(app)
       .delete('/tags/1')
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(404);
 
     expect(res.body).toMatchObject({
@@ -205,7 +205,7 @@ describe('PUT /tags/:id', () => {
       .put('/tags/1')
       .send(newTag)
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(404);
 
     expect(res.body).toMatchObject({
@@ -230,7 +230,7 @@ describe('PUT /tags/:id', () => {
       .put('/tags/1')
       .send(newTag)
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
+      // .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toMatchObject({

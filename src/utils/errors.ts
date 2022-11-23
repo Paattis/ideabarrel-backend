@@ -78,7 +78,7 @@ export type MissingResource =
   | 'comment'
   | 'avatar'
   | 'like'
-  |'tag'
+  | 'tag'
   | 'comment';
 
 export class NoSuchResource extends ApiError {
