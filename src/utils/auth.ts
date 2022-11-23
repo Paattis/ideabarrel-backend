@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs';
 import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { getAppEnvVar } from './env';
 import { db } from '../db/context';
-import usersClient, { PublicUser } from '../db/users';
-import passport, { AuthenticateOptions } from 'passport';
+import usersClient from '../db/users';
+import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextFunction } from 'express';
@@ -37,7 +37,7 @@ passport.use(
 
 const jwtSign = (object: any) => jwt.sign(object, SECRET);
 
-const hash = async (password: string) => {
+const createHash = async (password: string) => {
   return await bcrypt.hash(password, SALT).then((it) => it);
 };
 
@@ -61,7 +61,7 @@ const sameUser = [
   (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
     if (user !== null) {
-      const id = Number.parseInt(req.params.id);
+      const id = Number.parseInt(req.params.id, 10);
       if (user.id !== id) {
         return next(new Forbidden());
       }
@@ -81,7 +81,7 @@ const userHasAccess = (predicate: Predicate) => {
         return next();
       }
 
-      const id = Number.parseInt(req.params.id);
+      const id = Number.parseInt(req.params.id, 10);
       try {
         if (await predicate(user as User, id)) {
           return next();
@@ -99,7 +99,7 @@ const userHasAccess = (predicate: Predicate) => {
 const onlyAdmin = async () => false;
 
 export default {
-  hash,
+  hash: createHash,
   match,
   passport,
   jwt: jwtSign,

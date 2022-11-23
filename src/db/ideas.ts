@@ -1,14 +1,14 @@
-import { Comment, Idea, Prisma, Role, User, Tag } from '@prisma/client';
+import { Idea, Tag, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
 
 export interface IdeaData {
   content: string;
+  title: string;
   tags: number[];
 }
 export type IdeaWithTags = Idea & { tags: Tag[] };
-export type RichIdea = IdeaWithTags & { comments: Comment[] };
 const everything = { tags: true, comments: true };
 
 /**
@@ -77,7 +77,7 @@ const remove = async (id: number, user: User, ctx: PrismaContext) => {
   log.info(`id ${id} user.id ${user.id}`);
   try {
     // delete m2m relationship between Tag(s) and the Idea
-    const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
+    await ctx.prisma.idea.update({
       where: { id },
       data: {
         tags: {
@@ -113,6 +113,7 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
     // Create idea and store it to database.
     const idea = await ctx.prisma.idea.create({
       data: {
+        title: from.title,
         content: from.content,
         user: {
           connect: { id: user.id },
@@ -139,7 +140,7 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
  * @throws Error when one of the tag ids does not match with any existing tag ids
  * @returns Promise<Idea> Updated Idea object.
  */
-const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext) => {
+const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
   log.info(`from ${JSON.stringify(from)}`);
   if (from.tags === undefined) {
     throw new BadRequest('Tags not sent');
@@ -164,7 +165,7 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
       : [];
 
     // due to how Prisma works, we have to clear out the old m2m connections first
-    const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
+    await ctx.prisma.idea.update({
       where: { id },
       data: {
         tags: {
@@ -178,6 +179,7 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
     const idea = await ctx.prisma.idea.update({
       where: { id },
       data: {
+        title: from.title,
         content: from.content,
         tags: {
           create: tagsConnection,

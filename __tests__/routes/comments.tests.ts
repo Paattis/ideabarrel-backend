@@ -1,4 +1,4 @@
-import { Comment, Like, User } from '@prisma/client';
+import { Comment, User } from '@prisma/client';
 import request from 'supertest';
 import app from '../../src/app';
 import {

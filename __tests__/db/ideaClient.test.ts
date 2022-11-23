@@ -1,4 +1,4 @@
-import { Role, User, Idea, Tag } from '@prisma/client';
+import { User, Idea, Tag } from '@prisma/client';
 import ideasClient, { IdeaWithTags } from '../../src/db/ideas';
 import {
   MockPrismaContext,
@@ -7,6 +7,7 @@ import {
   swapToAppContext,
 } from '../../src/db/context';
 import { BadRequest, NoSuchResource } from '../../src/utils/errors';
+import { log } from '../../src/logger/log';
 
 let mockCtx: MockPrismaContext;
 let ctx: PrismaContext;
@@ -16,9 +17,7 @@ beforeEach(() => {
   ctx = mockCtx as unknown as PrismaContext;
 });
 
-afterAll(() => {
-  swapToAppContext();
-});
+afterAll(() => swapToAppContext());
 
 const timestamp = new Date();
 const tag: Tag = {
@@ -37,19 +36,6 @@ const tag2: Tag = {
   name: 'Test tag2',
 };
 
-// required because the endpoint returns tags with dates as strings
-const expectedTag = {
-  ...tag,
-  created_at: timestamp.toISOString(),
-  updated_at: timestamp.toISOString(),
-};
-
-const role: Role = {
-  id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-  name: 'Test Engineer',
-};
 const user1: User = {
   profile_img: '',
   id: 1,
@@ -60,19 +46,10 @@ const user1: User = {
   created_at: timestamp,
   updated_at: timestamp,
 };
-const user2: User = {
-  profile_img: '',
-  id: 2,
-  name: 'Test User 2',
-  email: 'user2@app.com',
-  password: 'pw',
-  role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-};
 
 const idea: IdeaWithTags = {
   id: 1,
+  title: 'title',
   content: 'Lorem ipsum dolor sit amet',
   user_id: 1,
   created_at: timestamp,
@@ -82,6 +59,7 @@ const idea: IdeaWithTags = {
 
 const updatedIdea: IdeaWithTags = {
   id: 1,
+  title: 'title',
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
@@ -91,6 +69,7 @@ const updatedIdea: IdeaWithTags = {
 
 const idea2: IdeaWithTags = {
   id: 2,
+  title: 'title',
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
@@ -109,6 +88,7 @@ describe('Ideas database access client', () => {
     mockCtx.prisma.tag.findMany.mockResolvedValue([tag]);
     const res = ideasClient.create(
       {
+        title: 'title',
         content: 'Lorem ipsum dolor sit amet',
         tags: [1],
       },
@@ -144,7 +124,7 @@ describe('Ideas database access client', () => {
 
     expect(result).toBeInstanceOf(Array<Idea>);
     expect(result.length).toBe(2);
-    console.log(`result ${JSON.stringify(result.map((x) => x.id))}`);
+    log.info(`result ${JSON.stringify(result.map((x) => x.id))}`);
     expect(result.find((it) => it.id === 1)).toMatchObject({
       id: 1,
     });
@@ -159,11 +139,11 @@ describe('Ideas database access client', () => {
     mockCtx.prisma.tag.findMany.mockResolvedValue([tag2]);
     const res = await ideasClient.update(
       {
+        title: 'title',
         content: 'New content',
         tags: [2],
       },
       1,
-      user1,
       ctx
     );
 
@@ -186,11 +166,11 @@ describe('Ideas database access client', () => {
 
     const res = ideasClient.update(
       {
+        title: 'title',
         content: 'New content',
         tags: [123],
       },
       1,
-      user1,
       ctx
     );
 

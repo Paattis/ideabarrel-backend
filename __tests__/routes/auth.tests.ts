@@ -3,19 +3,14 @@ import request from 'supertest';
 import app from '../../src/app';
 import {
   MockPrismaContext,
-  PrismaContext,
   createMockContext,
   swapToMockContext,
 } from '../../src/db/context';
 import auth from '../../src/utils/auth';
 
 let mockCtx: MockPrismaContext;
-let ctx: PrismaContext;
 
-beforeEach(() => {
-  mockCtx = createMockContext();
-  ctx = mockCtx as unknown as PrismaContext;
-});
+beforeEach(() => mockCtx = createMockContext());
 
 describe('', () => {
   test('Route should return 404 when user is not found', async () => {

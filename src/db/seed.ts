@@ -1,4 +1,5 @@
 import { PrismaClient, Role, User } from '@prisma/client';
+import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { getAppEnvVar } from '../utils/env';
 
@@ -14,10 +15,10 @@ const seed = async () => {
   });
 
   const admin: User = await prisma.user.upsert({
-    where: { email: email },
+    where: { email },
     update: {},
     create: {
-      email: email,
+      email,
       password: await auth.hash(password),
       name: 'admin',
       profile_img: '',
@@ -25,7 +26,7 @@ const seed = async () => {
     },
   });
 
-  console.log(`Admin email: ${admin.email}   --   password: ${password}`);
+  log.info(`Admin email: ${admin.email}   --   password: ${password}`);
 
   const tag = await prisma.tag.upsert({
     where: { id: 1 },
@@ -33,7 +34,7 @@ const seed = async () => {
     create: { name: 'admin', description: 'none' },
   });
 
-  console.log(`Created tag: ${JSON.stringify(tag)}`);
+  log.info(`Created tag: ${JSON.stringify(tag)}`);
 };
 
 seed()
@@ -41,7 +42,7 @@ seed()
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e);
+    log.error(e);
     await prisma.$disconnect();
     process.exit(1);
   });

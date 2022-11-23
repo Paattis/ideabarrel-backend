@@ -30,6 +30,7 @@ model Idea {
   id Int @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  title String @db.VarChar(100)
   content String @db.VarChar(1000)
   user_id Int @default(0)
   user User @relation(fields: [user_id], references:[id])
@@ -50,7 +51,6 @@ model Comment {
 }
 
 model IdeaTag {
-  //id Int @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -76,7 +76,7 @@ model TagUser {
 
 model Tag {
   id Int @id @default(autoincrement())
-  name String @db.VarChar(255)
+  name String @db.VarChar(255) @unique
   description String? @db.VarChar(500)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

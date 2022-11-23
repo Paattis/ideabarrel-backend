@@ -134,7 +134,7 @@ users.post(
         name: req.body.name,
         password: await auth.hash(req.body.password),
         profile_img: req.file?.filename ?? '',
-        role_id: Number.parseInt(req.body.role_id as unknown as string),
+        role_id: Number.parseInt(req.body.role_id as unknown as string | '0', 10),
       };
       const result = await usersClient.create(fields, db);
       res.json(result);

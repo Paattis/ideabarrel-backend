@@ -18,6 +18,7 @@ CREATE TABLE `Idea` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
+    `title` VARCHAR(100) NOT NULL,
     `content` VARCHAR(1000) NOT NULL,
     `user_id` INTEGER NOT NULL DEFAULT 0,
 
@@ -64,6 +65,7 @@ CREATE TABLE `Tag` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Tag_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

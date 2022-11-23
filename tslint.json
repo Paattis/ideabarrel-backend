@@ -2,6 +2,9 @@
   "defaultSeverity": "warning",
   "extends": ["tslint:recommended"],
   "jsRules": {},
-  "rules": {},
+  "rules": {
+    "no-unused-variable": true,
+    "max-classes-per-file": false
+  },
   "rulesDirectory": []
 }

@@ -1,4 +1,4 @@
-import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
+import { Comment, Idea, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
@@ -51,7 +51,7 @@ const all = async (ctx: PrismaContext) => {
 
 const selectByEmailSecret = async (email: string, ctx: PrismaContext) => {
   return await ctx.prisma.user.findFirst({
-    where: { email: email },
+    where: { email },
     select: { ...publicFields, password: true },
   });
 };

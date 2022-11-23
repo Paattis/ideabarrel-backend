@@ -57,7 +57,7 @@ ideas.put(
   async (req: TRequest<IdeaData>, res: Response, next: NextFunction) => {
     try {
       const ideaId = Number.parseInt(req.params.id, 10);
-      const result = await ideasClient.update(req.body, ideaId, req.user as User, db);
+      const result = await ideasClient.update(req.body, ideaId, db);
       res.json(result);
     } catch (err) {
       respondWithError(res, err);

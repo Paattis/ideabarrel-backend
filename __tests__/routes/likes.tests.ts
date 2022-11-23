@@ -40,13 +40,6 @@ const like: Like = {
   created_at: timestamp,
 };
 
-const like2: Like = {
-  id: 2,
-  idea_id: 2,
-  user_id: 1,
-  created_at: timestamp,
-};
-
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = () => {
   mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user);
