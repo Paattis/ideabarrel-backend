@@ -56,21 +56,6 @@ const required = [
   },
 ];
 
-const sameUser = [
-  ...required,
-  (req: any, _: any, next: NextFunction) => {
-    const user = req.user as User | null;
-    if (user !== null) {
-      const id = Number.parseInt(req.params.id, 10);
-      if (user.id !== id) {
-        return next(new Forbidden());
-      }
-      return next();
-    }
-    next(new Forbidden());
-  },
-];
-
 export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
 const userHasAccess = (predicate: Predicate) => {
@@ -104,7 +89,6 @@ export default {
   passport,
   jwt: jwtSign,
   required,
-  sameUser,
   userHasAccess,
   onlyAdmin,
 };

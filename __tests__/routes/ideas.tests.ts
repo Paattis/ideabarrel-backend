@@ -137,8 +137,8 @@ describe('POST /ideas/', () => {
         content: 'This will fail',
         tags: [444],
       });
-      log.debug('Res code', res.statusCode);
-      log.debug('Res body', res.body);
+    log.debug('Res code', res.statusCode);
+    log.debug('Res body', res.body);
     expect(res.body).toMatchObject({
       status: 400,
       msg: 'No tag exists with that id, cant create idea.',
@@ -202,7 +202,7 @@ describe('PUT /ideas/:idea_id', () => {
         tags: [33, 2],
       });
 
-      log.debug('res body put test 400: ', res.body);
+    log.debug('res body put test 400: ', res.body);
     expect(res.statusCode).toBe(400);
   });
 });

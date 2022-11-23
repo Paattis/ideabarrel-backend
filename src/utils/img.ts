@@ -64,10 +64,10 @@ const randomFilename = (file: Express.Multer.File) => {
 };
 
 const storage = multer.diskStorage({
-  destination (req: Request, file: Express.Multer.File, filter) {
+  destination(req: Request, file: Express.Multer.File, filter) {
     filter(null, UPLOADS_FOLDER);
   },
-  filename (req, file, filter) {
+  filename(req, file, filter) {
     filter(null, randomFilename(file));
   },
 });

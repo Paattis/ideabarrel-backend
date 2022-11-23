@@ -10,7 +10,7 @@ import auth from '../../src/utils/auth';
 
 let mockCtx: MockPrismaContext;
 
-beforeEach(() => mockCtx = createMockContext());
+beforeEach(() => (mockCtx = createMockContext()));
 
 describe('', () => {
   test('Route should return 404 when user is not found', async () => {
