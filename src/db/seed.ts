@@ -27,7 +27,7 @@ const seed = async () => {
 
   console.log(`Admin email: ${admin.email}   --   password: ${password}`);
 
-  const tag = await prisma.group.upsert({
+  const tag = await prisma.tag.upsert({
     where: { id: 1 },
     update: {},
     create: { name: 'admin', description: 'none' },

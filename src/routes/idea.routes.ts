@@ -11,12 +11,12 @@ const ideas = Router();
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pageNum = parseInt((req.query.page_num || '0') as string);
-    log.info(`groups: ${JSON.stringify(req.query.groups)}`);
+    log.info(`tags: ${JSON.stringify(req.query.tags)}`);
 
-    const groups = req.query.groups as string[];
-    const groupIds = groups ? groups.map(Number) : [];
+    const tags = req.query.tags as string[];
+    const tagIds = tags ? tags.map(Number) : [];
 
-    const results = await ideasClient.all(db, pageNum, req.user as User, groupIds);
+    const results = await ideasClient.all(db, pageNum, req.user as User, tagIds);
     res.json(results);
   } catch (err) {
     return respondWithError(res, err);
