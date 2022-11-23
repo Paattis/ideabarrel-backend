@@ -71,7 +71,15 @@ export class BadRequest extends ApiError {
   }
 }
 
-export type MissingResource = 'role' | 'user' | 'idea' | 'comment' | 'avatar' | 'tag';
+export type MissingResource =
+  | 'role'
+  | 'user'
+  | 'idea'
+  | 'comment'
+  | 'avatar'
+  | 'like'
+  | 'tag'
+  | 'comment';
 
 export class NoSuchResource extends ApiError {
   public readonly code = 404;

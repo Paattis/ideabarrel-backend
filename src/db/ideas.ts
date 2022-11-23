@@ -1,35 +1,15 @@
-import { Comment, Idea, Prisma, Role, User, Tag } from '@prisma/client';
+import { Idea, Tag, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
-import { Unauthorized } from '../utils/errors';
 
 export interface IdeaData {
   content: string;
-  //user: User;
+  title: string;
   tags: number[];
 }
 export type IdeaWithTags = Idea & { tags: Tag[] };
-export type RichIdea = IdeaWithTags & { comments: Comment[] };
 const everything = { tags: true, comments: true };
-
-/**
- * Checks if the idea with the idea id is a valid idea the user can access
- * @param user the user to check against
- * @param idea_id the id of the idea to check
- * @returns true if the access rights are valid
- * @throws Unauthorized
- */
-const checkRights = async (ctx: PrismaContext, user: User, idea_id: number) => {
-  // TODO: add admin check
-  // TODO: make into middleware
-  const idea: Idea = await ctx.prisma.idea.findFirstOrThrow({
-    where: { id: idea_id, user_id: user.id },
-  });
-  log.info(`idea id ${idea_id} ${idea}`);
-  if (!idea) throw new Unauthorized();
-  return true;
-};
 
 /**
  * Select all ideas.
@@ -77,7 +57,7 @@ const all = async (ctx: PrismaContext, page: number, user: User, tags: number[])
 const select = async (id: number, user: User, ctx: PrismaContext) => {
   try {
     return await ctx.prisma.idea.findFirstOrThrow({
-      where: { id: id },
+      where: { id },
       include: everything,
     });
   } catch (err) {
@@ -96,11 +76,9 @@ const select = async (id: number, user: User, ctx: PrismaContext) => {
 const remove = async (id: number, user: User, ctx: PrismaContext) => {
   log.info(`id ${id} user.id ${user.id}`);
   try {
-    await checkRights(ctx, user, id);
-
     // delete m2m relationship between Tag(s) and the Idea
-    const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
-      where: { id: id },
+    await ctx.prisma.idea.update({
+      where: { id },
       data: {
         tags: {
           deleteMany: {},
@@ -109,12 +87,10 @@ const remove = async (id: number, user: User, ctx: PrismaContext) => {
     });
 
     const ideaDeleteResult: Idea = await ctx.prisma.idea.delete({
-      where: {
-        id: id,
-      },
+      where: { id },
       include: everything,
     });
-    if (ideaDeleteResult === null) throw 'Missing record';
+    if (ideaDeleteResult === null) throw new NoSuchResource('idea');
     return ideaDeleteResult;
   } catch (err) {
     throw new NoSuchResource('idea', `No idea with id: ${id}`);
@@ -125,7 +101,7 @@ const remove = async (id: number, user: User, ctx: PrismaContext) => {
  * Tries to creates idea from specified prototype object.
  *
  * @param from New idea prototype
- * @param user_id the id of the currently logged in user
+ * @param user User object
  * @param ctx prisma context
  * @throws Error when one of the tag ids doesn't match with the existing tag ids
  * @returns Promise<Idea> Created idea object.
@@ -137,6 +113,7 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
     // Create idea and store it to database.
     const idea = await ctx.prisma.idea.create({
       data: {
+        title: from.title,
         content: from.content,
         user: {
           connect: { id: user.id },
@@ -148,8 +125,6 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
       include: everything,
     });
     log.info('Created new idea: ' + JSON.stringify(idea));
-    return idea;
-
     return idea;
   } catch (err) {
     throw new BadRequest('No tag exists with that id, cant create idea.');
@@ -165,10 +140,9 @@ const create = async (from: IdeaData, user: User, ctx: PrismaContext) => {
  * @throws Error when one of the tag ids does not match with any existing tag ids
  * @returns Promise<Idea> Updated Idea object.
  */
-const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext) => {
+const update = async (from: IdeaData, id: number, ctx: PrismaContext) => {
   log.info(`from ${JSON.stringify(from)}`);
-  await checkRights(ctx, user, id);
-  if (from.tags == undefined) {
+  if (from.tags === undefined) {
     throw new BadRequest('Tags not sent');
   }
 
@@ -181,7 +155,7 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
   });
   log.info(`tags ${JSON.stringify(tags)}`);
   log.info(`from.tags ${JSON.stringify(from.tags)}, ids ${from.tags.map(Number)}`);
-  if (!tags || tags.length != from.tags.length) {
+  if (!tags || tags.length !== from.tags.length) {
     throw new BadRequest(`One or more of the tags do not exist, cannot update idea`);
   }
 
@@ -191,8 +165,8 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
       : [];
 
     // due to how Prisma works, we have to clear out the old m2m connections first
-    const m2mDeleteResult: Idea = await ctx.prisma.idea.update({
-      where: { id: id },
+    await ctx.prisma.idea.update({
+      where: { id },
       data: {
         tags: {
           deleteMany: {},
@@ -203,8 +177,9 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
     // now we can add the new ones when updating
     log.info(`tagsConnection ${JSON.stringify(tagsConnection)}`);
     const idea = await ctx.prisma.idea.update({
-      where: { id: id },
+      where: { id },
       data: {
+        title: from.title,
         content: from.content,
         tags: {
           create: tagsConnection,
@@ -218,4 +193,19 @@ const update = async (from: IdeaData, id: number, user: User, ctx: PrismaContext
   }
 };
 
-export default { all, select, create, remove, update };
+const userOwns = async (user: User, ideaId: number, ctx: PrismaContext) => {
+  try {
+    const result = await ctx.prisma.idea.findFirst({
+      where: { id: ideaId },
+    });
+    if (result) {
+      return result.user_id === user.id;
+    } else {
+      throw new NoSuchResource('idea', `No idea with id: ${ideaId}`);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+export default { all, select, create, remove, update, userOwns };

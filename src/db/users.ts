@@ -1,4 +1,4 @@
-import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
+import { Comment, Idea, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
@@ -16,7 +16,7 @@ export type PublicUser = {
   ideas: Idea[];
 };
 
-const publicFields = {
+export const publicFields = {
   comments: { select: { content: true, id: true, created_at: true, idea: true } },
   name: true,
   profile_img: true,
@@ -24,7 +24,8 @@ const publicFields = {
   id: true,
   role: { select: { name: true, id: true } },
   created_at: true,
-  ideas: { select: { id: true } },
+  ideas: true,
+  likes: true,
 };
 
 /**
@@ -50,7 +51,7 @@ const all = async (ctx: PrismaContext) => {
 
 const selectByEmailSecret = async (email: string, ctx: PrismaContext) => {
   return await ctx.prisma.user.findFirst({
-    where: { email: email },
+    where: { email },
     select: { ...publicFields, password: true },
   });
 };
@@ -187,6 +188,21 @@ const updateAvatar = async (
   }
 };
 
+const userOwns = async (user: User, userId: number, ctx: PrismaContext) => {
+  try {
+    const result = await ctx.prisma.user.findFirst({
+      where: { id: userId },
+    });
+    if (result) {
+      return result.id === user.id;
+    } else {
+      throw new NoSuchResource('user', `No user with id: ${userId}`);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 export default {
   all,
   remove,
@@ -196,4 +212,5 @@ export default {
   selectByEmailSecret,
   updatePassword,
   updateAvatar,
+  userOwns,
 };

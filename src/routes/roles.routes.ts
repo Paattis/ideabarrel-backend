@@ -32,12 +32,12 @@ roles.get(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = Number.parseInt(req.params.id, 10);
+      const roleId = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
-        const result = await rolesClient.selectWithUsers(id, db);
+        const result = await rolesClient.selectWithUsers(roleId, db);
         res.json(result);
       } else {
-        const result: Role = await rolesClient.select(id, db);
+        const result: Role = await rolesClient.select(roleId, db);
         res.json(result);
       }
     } catch (err) {
@@ -51,6 +51,7 @@ roles.get(
 roles.post(
   '/',
   auth.required,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
       const result = await rolesClient.create(req.body, db);
@@ -66,11 +67,11 @@ roles.post(
 roles.put(
   '/:id',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<RoleFields>, res: Response, next: NextFunction) => {
     try {
-      const id = Number.parseInt(req.params.id, 10);
-      const result = await rolesClient.update(id, req.body, db);
+      const roleId = Number.parseInt(req.params.id, 10);
+      const result = await rolesClient.update(roleId, req.body, db);
       res.json(result);
     } catch (err) {
       next(err);
@@ -83,11 +84,11 @@ roles.put(
 roles.delete(
   '/:id',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = Number.parseInt(req.params.id, 10);
-      const result = await rolesClient.remove(id, db);
+      const roleId = Number.parseInt(req.params.id, 10);
+      const result = await rolesClient.remove(roleId, db);
       res.json(result);
     } catch (err) {
       next(err);

@@ -1,24 +1,21 @@
-import { Idea, User, Tag, Role, Comment } from '@prisma/client';
+import { User, Tag } from '@prisma/client';
 import { IdeaWithTags } from '../../src/db/ideas';
 import request from 'supertest';
 import app from '../../src/app';
 import auth from '../../src/utils/auth';
 import {
   MockPrismaContext,
-  PrismaContext,
   createMockContext,
   swapToMockContext,
   swapToAppContext,
 } from '../../src/db/context';
+import { log } from '../../src/logger/log';
 
 jest.setTimeout(15000);
 
 let mockCtx: MockPrismaContext;
-let ctx: PrismaContext;
 
-afterAll(() => {
-  swapToAppContext();
-});
+afterAll(() => swapToAppContext());
 
 const timestamp = new Date();
 
@@ -28,16 +25,6 @@ const user1: User = {
   profile_img: '',
   email: 'user@app.com',
   password: 'p455w0rd',
-  role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-};
-const user2: User = {
-  id: 2,
-  name: 'Test User 2',
-  email: 'user2@app.com',
-  profile_img: '',
-  password: '',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -54,7 +41,6 @@ beforeEach(() => {
   mockCtx = createMockContext();
   swapToMockContext(mockCtx);
   mockJWT();
-  ctx = mockCtx as unknown as PrismaContext;
 });
 
 const tag: Tag = {
@@ -80,15 +66,9 @@ const expectedTag = {
   updated_at: timestamp.toISOString(),
 };
 
-const role: Role = {
-  id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
-  name: 'Test Engineer',
-};
-
 const idea: IdeaWithTags = {
   id: 1,
+  title: 'title',
   content: 'Lorem ipsum dolor sit amet',
   user_id: 1,
   created_at: timestamp,
@@ -98,6 +78,7 @@ const idea: IdeaWithTags = {
 
 const idea2: IdeaWithTags = {
   id: 1,
+  title: 'title',
   content: 'New content',
   user_id: 1,
   created_at: timestamp,
@@ -114,7 +95,6 @@ describe('POST /ideas/', () => {
       .post('/ideas/')
       .send({
         content: 'Lorem ipsum dolor sit amet',
-        //user: 1,
         tags: [1],
       });
 
@@ -125,23 +105,21 @@ describe('POST /ideas/', () => {
       mockCtx.prisma.idea.create.mockResolvedValue(idea);
       mockCtx.prisma.tag.findMany.mockRejectedValue([tag]);
 
-      console.log(JSON.stringify(idea));
+      log.debug(JSON.stringify(idea));
 
       const res = await request(app)
         .post('/ideas/')
         .auth(JWT, { type: 'bearer' })
         .send({
           content: 'Lorem ipsum dolor sit amet',
-          //user: 1,
           tags: [1],
         });
 
       expect(res.statusCode).toBe(200);
-      console.log('res body', res.body);
+      log.debug('res body', res.body);
       expect(res.body).toMatchObject({
         id: 1,
         content: 'Lorem ipsum dolor sit amet',
-        //user_id: 1, // TODO: remove when the auth endpoints are finished
         tags: [expectedTag],
       });
     });
@@ -157,11 +135,10 @@ describe('POST /ideas/', () => {
       .auth(JWT, { type: 'bearer' })
       .send({
         content: 'This will fail',
-        //user: 1,
         tags: [444],
       });
-    console.log('Res code', res.statusCode);
-    console.log('Res body', res.body);
+    log.debug('Res code', res.statusCode);
+    log.debug('Res body', res.body);
     expect(res.body).toMatchObject({
       status: 400,
       msg: 'No tag exists with that id, cant create idea.',
@@ -198,7 +175,7 @@ describe('PUT /ideas/:idea_id', () => {
           tags: [2],
         });
 
-      console.log('res body put test: ', res.body);
+      log.debug('res body put test: ', res.body);
       expect(res.body).toMatchObject({
         content: 'New content',
         tags: [
@@ -225,9 +202,8 @@ describe('PUT /ideas/:idea_id', () => {
         tags: [33, 2],
       });
 
-    console.log('res body put test 400: ', res.body);
+    log.debug('res body put test 400: ', res.body);
     expect(res.statusCode).toBe(400);
-    //expect(res.body).toMatchObject()
   });
 });
 
@@ -258,7 +234,7 @@ describe('DELETE /ideas/:idea_id', () => {
     swapToMockContext(mockCtx);
     mockCtx.prisma.idea.delete.mockRejectedValue(idea);
     const res = await request(app).delete('/ideas/11').auth(JWT, { type: 'bearer' });
-    console.log('res body', res.body);
+    log.debug('res body', res.body);
     expect(res.statusCode).toBe(404);
     expect(res.body).toMatchObject({
       status: 404,

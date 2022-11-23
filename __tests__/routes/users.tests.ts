@@ -41,7 +41,7 @@ const user2: User = {
 };
 
 const user1: User = {
-  id: 1,
+  id: 10,
   name: 'Test User 1',
   email: 'user@app.com',
   profile_img: '',
@@ -98,9 +98,11 @@ describe('POST /users/', () => {
  */
 describe('DELETE /users/:id', () => {
   test('Route should delete and return user with status 200', async () => {
+    mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
     mockCtx.prisma.user.delete.mockResolvedValue(user1);
 
-    const res = await request(app).delete('/users/1').auth(JWT, { type: 'bearer' });
+    const res = await request(app).delete('/users/10').auth(JWT, { type: 'bearer' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
@@ -111,12 +113,16 @@ describe('DELETE /users/:id', () => {
 
   test('Route should return 401 on invalid JWT', async () => {
     mockJWT();
-    await request(app).delete('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
+    await request(app)
+      .delete('/users/10')
+      .auth('NOT_JWT', { type: 'bearer' })
+      .expect(401);
   });
 
   test('Route should fail to delete user and return error with status 403', async () => {
-    mockCtx.prisma.user.delete.mockRejectedValue(new Error('Mock Error'));
-    await request(app).delete('/users/420').auth(JWT, { type: 'bearer' }).expect(403);
+    mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValueOnce(user2);
+    await request(app).delete('/users/2').auth(JWT, { type: 'bearer' }).expect(403);
   });
 });
 
@@ -128,12 +134,12 @@ describe('GET /users/1', () => {
     mockCtx.prisma.user.findFirstOrThrow.mockResolvedValue(user1);
 
     const res = await request(app)
-      .get('/users/1')
+      .get('/users/10')
       .auth(JWT, { type: 'bearer' })
       .expect(200);
 
     expect(res.body).toMatchObject({
-      id: 1,
+      id: 10,
       name: 'Test User 1',
       role_id: 1,
     });
@@ -141,12 +147,12 @@ describe('GET /users/1', () => {
 
   test('Route should return 401 on invalid JWT', async () => {
     mockJWT();
-    await request(app).get('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
+    await request(app).get('/users/10').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 
   test('Route should return no user, and status code of 404', async () => {
     mockCtx.prisma.user.findFirstOrThrow.mockRejectedValue(new Error('Mock error'));
-    await request(app).get('/users/1').auth(JWT, { type: 'bearer' }).expect(404);
+    await request(app).get('/users/10').auth(JWT, { type: 'bearer' }).expect(404);
   });
 });
 
@@ -186,7 +192,7 @@ describe('PUT /users/:id', () => {
     mockCtx.prisma.user.update.mockRejectedValue(new Error());
 
     const res = await request(app)
-      .put('/users/1')
+      .put('/users/10')
       .send(user2)
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
@@ -200,10 +206,11 @@ describe('PUT /users/:id', () => {
 
   test('Route should return new user with status 200', async () => {
     mockJWT();
+    mockCtx.prisma.user.findFirst.mockResolvedValue(user1);
     mockCtx.prisma.user.update.mockResolvedValue(user2);
 
     const res = await request(app)
-      .put('/users/1')
+      .put('/users/10')
       .send(user2)
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)

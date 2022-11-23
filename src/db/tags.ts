@@ -1,4 +1,4 @@
-import { Tag, User, TagUser, Prisma } from '@prisma/client';
+import { Tag, Prisma } from '@prisma/client';
 import { log } from '../logger/log';
 import { NoSuchResource } from '../utils/errors';
 import { PrismaContext } from './context';
@@ -8,12 +8,12 @@ export interface TagFields {
   description: string;
 }
 
-const publicFields = {
-  id: true,
-  name: true,
-  description: true,
-  users: { select: { name: true, id: true } },
-};
+// const publicFields = {
+//   id: true,
+//   name: true,
+//   description: true,
+//   users: { select: { name: true, id: true } },
+// };
 
 /**
  * Get all Tags.
@@ -48,7 +48,7 @@ const selectWithUsers = async (TagId: number, ctx: PrismaContext) => {
   try {
     return await ctx.prisma.tag.findFirstOrThrow({
       where: { id: TagId },
-      //select: publicFields,
+      // select: publicFields,
     });
   } catch (err) {
     throw new NoSuchResource('tag');
@@ -85,7 +85,6 @@ const create = async (from: TagFields, ctx: PrismaContext) => {
         name: from.name,
         description: from.description,
       },
-      //select: publicFields,
     });
     log.info('Created new Tag: ' + JSON.stringify(result));
     return result;
@@ -114,7 +113,7 @@ const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) =
 
     return result;
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code == 'P2002') {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       // just return since this error signifies that the relation already
       // exists and checking this with a query is distractingly difficult
       return {};
@@ -132,7 +131,7 @@ const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) =
  */
 const removeUserFromTag = async (tagId: number, userId: number, ctx: PrismaContext) => {
   try {
-    const m2mDeleteResult: TagUser = await ctx.prisma.tagUser.delete({
+    await ctx.prisma.tagUser.delete({
       where: {
         user_id_tag_id: {
           user_id: userId,
@@ -149,7 +148,6 @@ const remove = async (TagId: number, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.tag.delete({
       where: { id: TagId },
-      //select: publicFields,
     });
     return result;
   } catch (err) {
@@ -157,12 +155,11 @@ const remove = async (TagId: number, ctx: PrismaContext) => {
   }
 };
 
-const update = async (TagId: number, Tag: TagFields, ctx: PrismaContext) => {
+const update = async (TagId: number, tag: TagFields, ctx: PrismaContext) => {
   try {
     const result = await ctx.prisma.tag.update({
       where: { id: TagId },
-      data: Tag,
-      //select: publicFields,
+      data: tag,
     });
     return result;
   } catch (err) {

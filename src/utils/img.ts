@@ -5,7 +5,6 @@ import { unlink } from 'fs/promises';
 import { log } from '../logger/log';
 import sharp, { JpegOptions } from 'sharp';
 import fs from 'fs/promises';
-import { ApiError } from './errors';
 
 const UPLOADS_FOLDER = './uploads/';
 const AVATAR_W = 250;
@@ -65,10 +64,10 @@ const randomFilename = (file: Express.Multer.File) => {
 };
 
 const storage = multer.diskStorage({
-  destination: function (req: Request, file: Express.Multer.File, filter) {
+  destination(req: Request, file: Express.Multer.File, filter) {
     filter(null, UPLOADS_FOLDER);
   },
-  filename: function (req, file, filter) {
+  filename(req, file, filter) {
     filter(null, randomFilename(file));
   },
 });
@@ -88,7 +87,7 @@ const fileFilter = (
 
 const upload = multer({
   dest: UPLOADS_FOLDER,
-  fileFilter: fileFilter,
-  storage: storage,
+  fileFilter,
+  storage,
 });
 export default { upload, remove, resize };

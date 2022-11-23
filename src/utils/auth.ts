@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs';
 import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { getAppEnvVar } from './env';
 import { db } from '../db/context';
-import usersClient, { PublicUser } from '../db/users';
-import passport, { AuthenticateOptions } from 'passport';
+import usersClient from '../db/users';
+import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextFunction } from 'express';
@@ -17,6 +17,8 @@ const options: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: SECRET,
 };
+
+const ADMIN_ID = 1;
 
 export type UserPayload = {
   id: number;
@@ -35,7 +37,7 @@ passport.use(
 
 const jwtSign = (object: any) => jwt.sign(object, SECRET);
 
-const hash = async (password: string) => {
+const createHash = async (password: string) => {
   return await bcrypt.hash(password, SALT).then((it) => it);
 };
 
@@ -54,26 +56,39 @@ const required = [
   },
 ];
 
-const sameUser = [
-  ...required,
-  (req: any, _: any, next: NextFunction) => {
+export type Predicate = (user: User, idParam: number) => Promise<boolean>;
+
+const userHasAccess = (predicate: Predicate) => {
+  return async (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
-    if (user !== null) {
-      const id = Number.parseInt(req.params.id);
-      if (user.id !== id) {
-        return next(new Forbidden());
+    if (user) {
+      if (user.id === ADMIN_ID) {
+        return next();
       }
-      return next();
+
+      const id = Number.parseInt(req.params.id, 10);
+      try {
+        if (await predicate(user as User, id)) {
+          return next();
+        } else {
+          return next(new Forbidden());
+        }
+      } catch (error) {
+        next(error);
+      }
     }
     next(new Forbidden());
-  },
-];
-
-const admin = (req: any, _: any, next: NextFunction) => {
-  const user = req.user as PublicUser;
-  // TODO: check that user is admin
-  log.warn('ADMIN CHECK IS NOT IMPLEMENTED!');
-  next();
+  };
 };
 
-export default { hash, match, passport, jwt: jwtSign, required, sameUser, admin };
+const onlyAdmin = async () => false;
+
+export default {
+  hash: createHash,
+  match,
+  passport,
+  jwt: jwtSign,
+  required,
+  userHasAccess,
+  onlyAdmin,
+};

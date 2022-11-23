@@ -46,7 +46,7 @@ tags.get(
 tags.post(
   '/',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.create(req.body, db);
@@ -62,12 +62,12 @@ tags.post(
 tags.post(
   '/:tagId/user/:userId',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.addUserToTag(
-        parseInt(req.params.tagId),
-        parseInt(req.params.userId),
+        parseInt(req.params.tagId, 10),
+        parseInt(req.params.userId, 10),
         db
       );
       res.json(result);
@@ -83,12 +83,12 @@ tags.post(
 tags.delete(
   '/:tagId/user/:userId',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const result = await tagsClient.removeUserFromTag(
-        parseInt(req.params.tagId),
-        parseInt(req.params.userId),
+        parseInt(req.params.tagId, 10),
+        parseInt(req.params.userId, 10),
         db
       );
       res.json(result);
@@ -104,7 +104,7 @@ tags.delete(
 tags.put(
   '/:id',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
@@ -121,7 +121,7 @@ tags.put(
 tags.delete(
   '/:id',
   auth.required,
-  auth.admin,
+  auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
