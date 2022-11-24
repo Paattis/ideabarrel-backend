@@ -6,6 +6,7 @@ import ideasClient, { IdeaData } from '../db/ideas';
 import { TRequest as TRequest } from '../utils/types';
 import { respondWithError } from '../utils/errors';
 import auth from '../utils/auth';
+import { throwIfNotValid, validIdeaBody } from '../validation/schema';
 
 const ideas = Router();
 
@@ -40,22 +41,29 @@ ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-ideas.post('/', async (req: TRequest<IdeaData>, res: Response, next: NextFunction) => {
-  try {
-    const result = await ideasClient.create(req.body, req.user as User, db);
-    res.json(result);
-  } catch (err) {
-    respondWithError(res, err);
-  } finally {
-    next();
+ideas.post(
+  '/',
+  validIdeaBody,
+  async (req: TRequest<IdeaData>, res: Response, next: NextFunction) => {
+    try {
+      throwIfNotValid(req);
+      const result = await ideasClient.create(req.body, req.user as User, db);
+      res.json(result);
+    } catch (err) {
+      respondWithError(res, err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
 ideas.put(
   '/:id',
+  validIdeaBody,
   auth.userHasAccess(toIdea),
   async (req: TRequest<IdeaData>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const ideaId = Number.parseInt(req.params.id, 10);
       const result = await ideasClient.update(req.body, ideaId, db);
       res.json(result);

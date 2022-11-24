@@ -230,7 +230,7 @@ describe('PUT /tags/:id', () => {
       .put('/tags/1')
       .send(newTag)
       .auth(JWT, { type: 'bearer' })
-      // .expect('Content-Type', /json/)
+      .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toMatchObject({

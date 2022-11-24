@@ -20,7 +20,7 @@ describe('', () => {
       .post('/auth/login')
       .send({
         password: 'asd',
-        username: 'user',
+        email: 'user@app.com',
       })
       .expect(404);
   });
@@ -43,7 +43,7 @@ describe('', () => {
       .post('/auth/login')
       .send({
         password: 'different',
-        username: 'Test User 1',
+        email: 'user@app.com',
       })
       .expect(400);
   });

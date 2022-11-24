@@ -94,6 +94,7 @@ describe('POST /ideas/', () => {
     const res = await request(app)
       .post('/ideas/')
       .send({
+        title: 'title',
         content: 'Lorem ipsum dolor sit amet',
         tags: [1],
       });
@@ -111,6 +112,7 @@ describe('POST /ideas/', () => {
         .post('/ideas/')
         .auth(JWT, { type: 'bearer' })
         .send({
+          title: 'title',
           content: 'Lorem ipsum dolor sit amet',
           tags: [1],
         });
@@ -134,6 +136,7 @@ describe('POST /ideas/', () => {
       .post('/ideas/')
       .auth(JWT, { type: 'bearer' })
       .send({
+        title: 'title',
         content: 'This will fail',
         tags: [444],
       });
@@ -171,12 +174,15 @@ describe('PUT /ideas/:idea_id', () => {
         .put('/ideas/1')
         .auth(JWT, { type: 'bearer' })
         .send({
+          title: 'title',
           content: 'New content',
           tags: [2],
-        });
+        })
+        .expect(200);
 
       log.debug('res body put test: ', res.body);
       expect(res.body).toMatchObject({
+        title: 'title',
         content: 'New content',
         tags: [
           {

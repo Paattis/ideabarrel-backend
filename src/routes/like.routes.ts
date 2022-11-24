@@ -5,6 +5,7 @@ import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
+import { throwIfNotValid, validLikeBody } from '../validation/schema';
 
 const likes = Router();
 const toLike = async (user: User, id: number) => likesClient.userOwns(user, id, db);
@@ -32,20 +33,25 @@ likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-likes.post('/', async (req: TRequest<LikeFields>, res: Response, next: NextFunction) => {
-  try {
-    const user = req.user as PublicUser;
-    const result = await likesClient.create(
-      { idea_id: req.body.idea_id, user_id: user.id },
-      db
-    );
-    return res.json(result);
-  } catch (err) {
-    next(err);
-  } finally {
-    next();
+likes.post(
+  '/',
+  validLikeBody,
+  async (req: TRequest<LikeFields>, res: Response, next: NextFunction) => {
+    try {
+      throwIfNotValid(req);
+      const user = req.user as PublicUser;
+      const result = await likesClient.create(
+        { idea_id: req.body.idea_id, user_id: user.id },
+        db
+      );
+      return res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
   }
-});
+);
 
 likes.delete(
   '/:id',

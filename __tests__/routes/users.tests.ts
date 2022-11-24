@@ -31,10 +31,10 @@ const role: Role = {
 
 const user2: User = {
   id: 2,
-  name: 'Test User 2',
+  name: 'Test User',
   email: 'user2@app.com',
   profile_img: '',
-  password: 'pw',
+  password: 'Password123',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -42,10 +42,10 @@ const user2: User = {
 
 const user1: User = {
   id: 10,
-  name: 'Test User 1',
+  name: 'Test User',
   email: 'user@app.com',
   profile_img: '',
-  password: 'pw',
+  password: 'Password123',
   role_id: 1,
   created_at: timestamp,
   updated_at: timestamp,
@@ -71,7 +71,7 @@ describe('POST /users/', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
-      name: 'Test User 1',
+      name: 'Test User',
       role_id: 1,
     });
   });
@@ -106,7 +106,7 @@ describe('DELETE /users/:id', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
-      name: 'Test User 1',
+      name: 'Test User',
       role_id: 1,
     });
   });
@@ -140,7 +140,7 @@ describe('GET /users/1', () => {
 
     expect(res.body).toMatchObject({
       id: 10,
-      name: 'Test User 1',
+      name: 'Test User',
       role_id: 1,
     });
   });

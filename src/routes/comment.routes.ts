@@ -5,6 +5,7 @@ import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
+import { throwIfNotValid, validCommentBody } from '../validation/schema';
 
 const comments = Router();
 
@@ -36,11 +37,16 @@ comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => 
 
 comments.post(
   '/',
+  validCommentBody,
   async (req: TRequest<CommentFields>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const user = req.user as PublicUser;
       const result = await commentsClient.create(
-        { idea_id: req.body.idea_id, user_id: user.id, content: req.body.content },
+        {
+          ...req.body,
+          user_id: user.id,
+        },
         db
       );
       return res.json(result);

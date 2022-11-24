@@ -83,13 +83,13 @@ const create = async (from: TagFields, ctx: PrismaContext) => {
     const result = await ctx.prisma.tag.create({
       data: {
         name: from.name,
-        description: from.description,
+        description: from.description ?? '',
       },
     });
     log.info('Created new Tag: ' + JSON.stringify(result));
     return result;
   } catch (err) {
-    throw new Error('Something went wrong');
+    throw err;
   }
 };
 
@@ -118,8 +118,6 @@ const addUserToTag = async (tagId: number, userId: number, ctx: PrismaContext) =
       // exists and checking this with a query is distractingly difficult
       return {};
     }
-
-    throw new Error('Something went wrong');
   }
 };
 
@@ -167,6 +165,15 @@ const update = async (TagId: number, tag: TagFields, ctx: PrismaContext) => {
   }
 };
 
+const tagIsFree = async (name: string, ctx: PrismaContext) => {
+  try {
+    await ctx.prisma.tag.findFirstOrThrow({ where: { name } });
+    return false;
+  } catch (error) {
+    return true;
+  }
+};
+
 export default {
   all,
   create,
@@ -177,4 +184,5 @@ export default {
   remove,
   addUserToTag,
   removeUserFromTag,
+  tagIsFree,
 };

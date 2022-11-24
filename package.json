@@ -4,13 +4,15 @@
   "description": "Backend for the App for the course TX00CK67-3010",
   "main": "dist\\index.js",
   "scripts": {
-    "test": "npx jest --forceExit --detectOpenHandles --watchAll --maxWorkers=1 --silent=true --verbose=false",
+    "test": "npx jest --forceExit --detectOpenHandles --watchAll --silent=true --verbose=false",
+    "ci-test": "npx jest --silent=true --verbose=false",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",
     "swagger": "npx ts-node ./src/swagger.ts",
     "format": "npx prettier src __tests__ --write",
     "checkCodeStyle": "npx prettier src __tests__ --check",
-    "build": "npx tsc && npx tslint --project . && npx jest --silent=true --verbose=false"
+    "lint": "npx tslint --project .",
+    "build": "npx tsc && npx tslint --project ."
   },
   "prisma": {
     "seed": "ts-node src/db/seed.ts"
@@ -51,6 +53,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-validator": "^6.14.2",
     "express-winston": "^4.2.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.20",

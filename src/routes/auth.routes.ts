@@ -4,6 +4,7 @@ import { BadRequest, NoSuchResource } from '../utils/errors';
 import auth from '../utils/auth';
 import { db } from '../db/context';
 import usersClient from '../db/users';
+import { throwIfNotValid, validAuthBody } from '../validation/schema';
 
 const router = Router();
 
@@ -14,8 +15,10 @@ type AuthBody = {
 
 router.post(
   '/login',
+  validAuthBody,
   async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const user = await usersClient.selectByEmailSecret(req.body.email, db);
       if (!user) {
         throw new NoSuchResource('user');

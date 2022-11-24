@@ -7,6 +7,7 @@ import auth from '../utils/auth';
 import { NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
+import { throwIfNotValid, validUserBody } from '../validation/schema';
 
 const users = Router();
 
@@ -41,10 +42,12 @@ users.get(
 
 users.put(
   '/:id',
+  validUserBody,
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const userId = Number.parseInt(req.params.id, 10);
       const result = await usersClient.update(req.body, userId, db);
       res.json(result);
@@ -127,8 +130,10 @@ users.post(
   '/',
   img.upload.single('avatar'),
   img.resize,
+  validUserBody,
   async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const fields: UserData = {
         email: req.body.email,
         name: req.body.name,

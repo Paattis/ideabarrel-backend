@@ -4,6 +4,7 @@ import { Router, Response, NextFunction, Request } from 'express';
 import tagsClient, { TagFields } from '../db/tags';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
+import { throwIfNotValid, validTagBody } from '../validation/schema';
 
 const tags = Router();
 
@@ -45,10 +46,12 @@ tags.get(
 
 tags.post(
   '/',
+  validTagBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const result = await tagsClient.create(req.body, db);
       res.json(result);
     } catch (err) {
@@ -72,7 +75,6 @@ tags.post(
       );
       res.json(result);
     } catch (err) {
-      throw err;
       next(err);
     } finally {
       next();
@@ -93,7 +95,6 @@ tags.delete(
       );
       res.json(result);
     } catch (err) {
-      throw err;
       next(err);
     } finally {
       next();
@@ -103,10 +104,12 @@ tags.delete(
 
 tags.put(
   '/:id',
+  validTagBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const id = Number.parseInt(req.params.id, 10);
       const result = await tagsClient.update(id, req.body, db);
       res.json(result);

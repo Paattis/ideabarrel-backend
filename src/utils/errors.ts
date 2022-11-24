@@ -66,8 +66,18 @@ export class Unauthorized extends ApiError {
 
 export class BadRequest extends ApiError {
   public readonly code = 400;
-  constructor(msg: string, dev: any = null) {
-    super(msg, dev);
+  private readonly errors: any[];
+  constructor(msg: string, errors: any[] | string = []) {
+    super(msg, errors instanceof Array ? null : errors);
+    this.errors = errors instanceof Array ? errors : [];
+  }
+
+  public json() {
+    return {
+      status: this.code,
+      msg: this.message,
+      errors: this.errors,
+    };
   }
 }
 
