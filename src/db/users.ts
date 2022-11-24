@@ -1,4 +1,4 @@
-import { Comment, Idea, Role, User } from '@prisma/client';
+import { Comment, Idea, Prisma, Role, User } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
@@ -38,6 +38,25 @@ export interface UserData {
   email: string;
   profile_img: string;
 }
+
+const userEmail = Prisma.validator<Prisma.UserSelect>()({
+  email: true,
+});
+
+const emailIsFree = async (email: string, ctx: PrismaContext) => {
+  const user = await ctx.prisma.user.findUnique({
+    where: { email },
+    select: userEmail,
+  });
+  if (user?.email !== email) {
+    log.debug(`Email ${email} is free`);
+    return true;
+  } else {
+    log.debug(`Email ${email} is taken`);
+    return false;
+  }
+  return;
+};
 
 /**
  * Select all users.
@@ -213,4 +232,5 @@ export default {
   updatePassword,
   updateAvatar,
   userOwns,
+  checkEmail: emailIsFree,
 };

@@ -157,6 +157,34 @@ describe('GET /users/1', () => {
 });
 
 /**
+ * Tests for POST method on route /users/email/available
+ * Route checks if email is available.
+ */
+describe('POST /users/email/available', () => {
+  test('Route should return json with result false and status code of 200', async () => {
+    mockCtx.prisma.user.findUnique.mockResolvedValue(user1);
+
+    const res = await request(app)
+      .post('/users/email/available')
+      .send({ email: 'user@app.com' })
+      .expect(200);
+
+    expect(res.body).toMatchObject({ available: false });
+  });
+
+  test('Route should return json with result true and status code of 200', async () => {
+    mockCtx.prisma.user.findUnique.mockResolvedValue(null);
+
+    const res = await request(app)
+      .post('/users/email/available')
+      .send({ email: 'user@app.com' })
+      .expect(200);
+
+    expect(res.body).toMatchObject({ available: true });
+  });
+});
+
+/**
  * Tests for GET method on route /users
  */
 describe('GET /users/', () => {

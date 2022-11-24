@@ -4,7 +4,7 @@ import { db } from '../db/context';
 import usersClient, { PublicUser, UserData } from '../db/users';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { NoSuchResource, ServerError } from '../utils/errors';
+import { BadRequest, NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 
@@ -140,6 +140,24 @@ users.post(
       res.json(result);
     } catch (err) {
       next(err);
+    } finally {
+      next();
+    }
+  }
+);
+
+users.post(
+  '/email/available',
+  async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    try {
+      if (req?.body?.email) {
+        const emailOK = await usersClient.checkEmail(req.body.email, db);
+        return res.json({ available: emailOK });
+      } else {
+        throw new BadRequest('Request body is missing the email');
+      }
+    } catch (error) {
+      next(error);
     } finally {
       next();
     }

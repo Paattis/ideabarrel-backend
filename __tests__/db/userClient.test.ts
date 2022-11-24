@@ -123,4 +123,14 @@ describe('Users database access client', () => {
     mockCtx.prisma.user.findFirst.mockResolvedValue(null);
     await expect(usersClient.selectByEmailSecret(user1.name, ctx)).resolves.toBeNull();
   });
+
+  test('should return true', async () => {
+    mockCtx.prisma.user.findUnique.mockResolvedValue(null);
+    await expect(usersClient.checkEmail('user@app.com', ctx)).resolves.toBeTruthy();
+  });
+
+  test('should return false', async () => {
+    mockCtx.prisma.user.findUnique.mockResolvedValue(user1);
+    await expect(usersClient.checkEmail('user@app.com', ctx)).resolves.toBeFalsy();
+  });
 });
