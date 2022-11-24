@@ -7,10 +7,7 @@
   },
   "host": "HOST HERE",
   "basePath": "/",
-  "schemes": [
-    "http",
-    "https"
-  ],
+  "schemes": ["http", "https"],
   "paths": {
     "/users/": {
       "get": {
