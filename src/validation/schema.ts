@@ -1,7 +1,6 @@
 import { checkSchema, validationResult } from 'express-validator';
 import { BadRequest } from '../utils/errors';
 import { TRequest } from '../utils/types';
-import { db } from '../db/context';
 import {
   isString,
   notEmpty,
