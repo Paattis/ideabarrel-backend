@@ -9,10 +9,8 @@ import { router as ideaRoutes } from './routes/idea.routes';
 import { httpBegin as httpLogger, httpEnd as httpEndLogger } from './logger/log';
 import auth from './utils/auth';
 import { httpHandler as httpErrorHandler } from './utils/errors';
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from './swagger.json'
-import swaggerAutogen from 'swagger-autogen';
-
+import swaggerUi from 'swagger-ui-express';
+import * as swaggerDocument from './swagger.json';
 
 const app: Application = express();
 
@@ -36,7 +34,6 @@ app.use('/static/', express.static('uploads'));
 // --------------------------------
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 
 app.use(httpErrorHandler);
 app.use(httpEndLogger);
