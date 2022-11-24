@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  password String @db.VarChar(64)
+  email String @db.VarChar(255) @unique
+  profile_img String @db.VarChar(255)
+  role_id Int @default(0)
+  role Role @relation(fields: [role_id], references:[id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  ideas Idea[]
+  comments Comment[]
+  likes Like[]
+  tags TagUser[]
+}
+
+model Idea {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  title String @db.VarChar(100)
+  content String @db.VarChar(1000)
+  user_id Int @default(0)
+  user User @relation(fields: [user_id], references:[id])
+  tags IdeaTag[]
+  comments Comment[]
+  likes Like[]
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  content String @db.VarChar(500)
+  user_id Int
+  user User @relation(fields: [user_id], references:[id])
+  idea_id Int
+  idea Idea @relation(fields: [idea_id], references:[id])
+}
+
+model IdeaTag {
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  idea_id Int
+  idea Idea @relation(fields: [idea_id], references:[id])
+  tag_id Int
+  tag Tag @relation(fields: [tag_id], references:[id])
+
+  @@id([idea_id, tag_id])
+}
+
+model TagUser {
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user_id Int
+  user User @relation(fields: [user_id], references:[id])
+  tag_id Int
+  tag Tag @relation(fields: [tag_id], references:[id])
+
+  @@id([user_id, tag_id])
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255) @unique
+  description String? @db.VarChar(500)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  ideas IdeaTag[]
+  users TagUser[]
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  users User[]
+}
+
+model Like {
+  id Int @id @default(autoincrement())
+  user_id Int
+  idea_id Int
+  user User @relation(fields: [user_id], references:[id])
+  idea Idea @relation(fields: [idea_id], references:[id])
+  created_at DateTime @default(now())
+  @@unique([user_id, idea_id], name: "likeIdentifier")
+}
