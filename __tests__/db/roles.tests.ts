@@ -1,10 +1,10 @@
 import { PrismaClient, Role } from '@prisma/client';
 import { mockDeep, mockReset } from 'jest-mock-extended';
-import { DbType, getClient } from '../../src/db/Database';
+import { DbType, dbMock } from '../../src/db/Database';
 import { NoSuchResource } from '../../src/utils/errors';
 
 const prismaMock = mockDeep<PrismaClient>();
-const db = getClient(DbType.MOCK_PRISMA, prismaMock);
+const db = dbMock(DbType.MOCK_PRISMA, prismaMock);
 afterEach(() => mockReset(prismaMock));
 
 const timestamp = new Date();

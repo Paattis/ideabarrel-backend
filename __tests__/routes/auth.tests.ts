@@ -1,10 +1,10 @@
 import { DeepMockProxy, mockReset } from 'jest-mock-extended';
 import request from 'supertest';
 import app from '../../src/app';
-import { Database, DbType, getClient } from '../../src/db/Database';
+import { Database, DbType, dbMock } from '../../src/db/Database';
 import auth from '../../src/utils/auth';
 
-const mockDb: DeepMockProxy<Database> = getClient(
+const mockDb: DeepMockProxy<Database> = dbMock(
   DbType.MOCK_CLIENT
 ) as DeepMockProxy<Database>;
 afterEach(() => mockReset(mockDb));

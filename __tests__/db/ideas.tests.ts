@@ -2,10 +2,10 @@ import { User, Idea, Tag, PrismaClient } from '@prisma/client';
 import { BadRequest, NoSuchResource } from '../../src/utils/errors';
 import { log } from '../../src/logger/log';
 import { mockDeep, mockReset } from 'jest-mock-extended';
-import { DbType, getClient } from '../../src/db/Database';
+import { DbType, dbMock } from '../../src/db/Database';
 
 const prismaMock = mockDeep<PrismaClient>();
-const db = getClient(DbType.MOCK_PRISMA, prismaMock);
+const db = dbMock(DbType.MOCK_PRISMA, prismaMock);
 afterEach(() => mockReset(prismaMock));
 
 const timestamp = new Date();

@@ -132,7 +132,6 @@ export class Database {
 }
 
 export enum DbType {
-  REAL_CLIENT,
   MOCK_CLIENT,
   MOCK_PRISMA,
 }
@@ -146,8 +145,8 @@ export function db() {
   return instance;
 }
 
-export function getClient(
-  type: DbType = DbType.REAL_CLIENT,
+export function dbMock(
+  type: DbType,
   prisma: DeepMockProxy<PrismaClient> | null = null
 ) {
   switch (type) {
@@ -156,13 +155,6 @@ export function getClient(
         log.info('Using MOCK_CLIENT database context');
         instance = mockDeep<Database>();
         activeType = DbType.MOCK_CLIENT;
-      }
-      break;
-    case DbType.REAL_CLIENT:
-      if (activeType !== DbType.REAL_CLIENT) {
-        log.info('Using REAL_CLIENT database context');
-        instance = new Database();
-        activeType = DbType.REAL_CLIENT;
       }
       break;
     case DbType.MOCK_PRISMA:
