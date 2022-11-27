@@ -10,6 +10,9 @@ import {
   inRange,
   max,
   isArray,
+  email,
+  avatar,
+  isStrong,
 } from './helpers';
 
 export const throwIfNotValid = (req: TRequest<any>) => {
@@ -95,7 +98,6 @@ export const validUserBody = checkSchema({
       errorMessage: 'must not contain special characters',
     },
     trim: true,
-    // escape: true,
   },
   role_id: {
     toInt: true,
@@ -103,16 +105,17 @@ export const validUserBody = checkSchema({
   },
   password: {
     isString,
-    isLength: inRange(6, 64),
-    matches: {
-      options: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-      errorMessage: 'should have atleast one uppercase letter and one number',
-    },
+    isStrongPassword: isStrong,
   },
   email: {
     isString,
     isEmail,
+    custom: email.notInUse
   },
+});
+
+export const validAvatar = checkSchema({
+  avatar: avatar.exists,
 });
 
 export const validCommentBody = checkSchema({

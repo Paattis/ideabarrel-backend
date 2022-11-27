@@ -7,7 +7,7 @@ import auth from '../utils/auth';
 import { NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
-import { throwIfNotValid, validUserBody } from '../validation/schema';
+import { throwIfNotValid, validAvatar, validUserBody } from '../validation/schema';
 
 const users = Router();
 
@@ -48,7 +48,7 @@ users.put(
   async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const userId = Number.parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.id, 10);
       const result = await usersClient.update(req.body, userId, db);
       res.json(result);
     } catch (err) {
@@ -65,7 +65,7 @@ users.delete(
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = Number.parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.id, 10);
       const result = await usersClient.remove(userId, db);
       img.remove(result.profile_img);
       result.profile_img = '';
@@ -80,22 +80,21 @@ users.delete(
 
 users.put(
   '/:id/img',
+  validAvatar,
   auth.required,
   auth.userHasAccess(toUser),
   img.upload.single('avatar'),
   img.resize,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = Number.parseInt(req.params.id, 10);
+      throwIfNotValid(req);
       if (req.file) {
-        const user = req.user as UserData;
         const result = await usersClient.updateAvatar(
-          userId,
-          user.profile_img,
+          parseInt(req.params.id, 10),
           req.file.filename,
           db
         );
-        log.debug('Updated avatar for user ' + userId);
+        log.debug('Updated avatar for user ' + req.params.id);
         return res.json(result);
       } else throw ServerError;
     } catch (err) {
@@ -116,7 +115,10 @@ users.delete(
       if (!user.profile_img) {
         throw new NoSuchResource('avatar');
       }
-      const result = await usersClient.updateAvatar(user.id, user.profile_img, '', db);
+      const result = await usersClient.updateAvatar(
+        parseInt(req.params.id, 10),
+        '',
+         db);
       return res.json(result);
     } catch (err) {
       next(err);
@@ -139,7 +141,7 @@ users.post(
         name: req.body.name,
         password: await auth.hash(req.body.password),
         profile_img: req.file?.filename ?? '',
-        role_id: Number.parseInt(req.body.role_id as unknown as string | '0', 10),
+        role_id: parseInt(req.body.role_id as any as string | '0', 10),
       };
       const result = await usersClient.create(fields, db);
       res.json(result);

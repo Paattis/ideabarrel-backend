@@ -169,20 +169,25 @@ const updatePassword = async (userId: number, password: string, ctx: PrismaConte
 
 const updateAvatar = async (
   userId: number,
-  oldAvatar: string,
   newAvatar: string,
   ctx: PrismaContext
 ) => {
   try {
-    const user = await ctx.prisma.user.update({
+    const user = await ctx.prisma.user.findFirstOrThrow({
+      where: {id: userId},
+      select: {profile_img: true},
+    });
+
+    const result = await ctx.prisma.user.update({
       where: { id: userId },
       data: { profile_img: newAvatar },
       select: publicFields,
     });
-    if (oldAvatar !== newAvatar) {
-      await img.remove(oldAvatar);
+
+    if (user.profile_img !== newAvatar) {
+      await img.remove(user.profile_img);
     }
-    return user;
+    return result;
   } catch (err) {
     throw new BadRequest('');
   }

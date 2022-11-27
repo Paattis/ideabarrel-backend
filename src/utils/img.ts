@@ -29,6 +29,7 @@ const jpeg: JpegOptions = {
   mozjpeg: true,
   quality: 80,
 };
+
 const resize = async (req: Request, _: Response, next: NextFunction) => {
   if (req.file) {
     log.debug(`About to resize file: ${req.file}`);
