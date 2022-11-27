@@ -53,7 +53,7 @@ export class RolesClient extends AbstractClient {
    *
    * @param roleId Id of the role
    * @throws on missing role {@link NoSuchResource} error.
-   * @returns Role
+   * @returns Role object.
    */
   async select(roleId: number) {
     try {
@@ -63,6 +63,11 @@ export class RolesClient extends AbstractClient {
     }
   }
 
+  /**
+   * Check if role exists.
+   * @param roleId Id of the role
+   * @returns Role
+   */
   async exists(roleId: number) {
     try {
         const role = await this.ctx.prisma.role.findFirst({where: {id: roleId}});
@@ -91,6 +96,12 @@ export class RolesClient extends AbstractClient {
     }
   }
 
+  /**
+   * Deletes role with specified id.
+   *
+   * @param roleId Role id
+   * @returns Deleted Role object.
+   */
   async remove(roleId: number) {
     try {
       const result = await this.ctx.prisma.role.delete({
@@ -103,11 +114,17 @@ export class RolesClient extends AbstractClient {
     }
   }
 
-  async update(roleId: number, role: Roles.Update) {
+  /**
+   * Updates role with specified id.
+   * @param roleId Role id
+   * @param from Fields to update
+   * @returns Updated Role object.
+   */
+  async update(roleId: number, from: Roles.Update) {
     try {
       const result = await this.ctx.prisma.role.update({
         where: { id: roleId },
-        data: role,
+        data: from,
         select: this.publicFields,
       });
       return result;
