@@ -1,6 +1,6 @@
 import auth from '../utils/auth';
 import { Router, Response, NextFunction, Request } from 'express';
-import { Comments, getDb } from '../db/client';
+import { Comments, getDb } from '../db/Database';
 import { TRequest as TRequest } from '../utils/types';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validCommentBody } from '../validation/schema';

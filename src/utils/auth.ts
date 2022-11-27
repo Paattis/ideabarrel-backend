@@ -7,7 +7,7 @@ import { User } from '@prisma/client';
 import { NextFunction } from 'express';
 import { log } from '../logger/log';
 import { Forbidden, Unauthorized } from './errors';
-import { getDb } from '../db/client';
+import { getDb } from '../db/Database';
 
 const SECRET = getAppEnvVar('ACCESS_TOKEN_SECRET');
 const SALT = 10;

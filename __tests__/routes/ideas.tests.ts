@@ -1,47 +1,36 @@
-import { User, Tag } from '@prisma/client';
-import { IdeaWithTags } from '../../src/db/ideas';
+import { Tag } from '@prisma/client';
 import request from 'supertest';
 import app from '../../src/app';
 import auth from '../../src/utils/auth';
-import {
-  MockPrismaContext,
-  createMockContext,
-  swapToMockContext,
-  swapToAppContext,
-} from '../../src/db/context';
 import { log } from '../../src/logger/log';
+import { Database, DbType, getClient } from '../../src/db/Database';
+import { DeepMockProxy, mockReset } from 'jest-mock-extended';
+import { BadRequest, NoSuchResource } from '../../src/utils/errors';
 
-jest.setTimeout(15000);
-
-let mockCtx: MockPrismaContext;
-
-afterAll(() => swapToAppContext());
+const mockDb: DeepMockProxy<Database> = getClient(
+  DbType.MOCK_CLIENT
+) as DeepMockProxy<Database>;
+afterEach(() => mockReset(mockDb));
 
 const timestamp = new Date();
 
-const user1: User = {
+const user = {
+  id: 2,
+  name: 'Test User 1',
+  profile_img: '',
+  email: 'user@app.com',
+  password: 'p455w0rd',
+  role_id: 1,
+};
+
+const admin = {
   id: 1,
   name: 'Test User 1',
   profile_img: '',
   email: 'user@app.com',
   password: 'p455w0rd',
   role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
 };
-
-// JWT for test user
-const JWT = auth.jwt({ id: user1.id });
-const mockJWT = () => {
-  mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
-};
-
-// top level jest stuff
-beforeEach(() => {
-  mockCtx = createMockContext();
-  swapToMockContext(mockCtx);
-  mockJWT();
-});
 
 const tag: Tag = {
   id: 1,
@@ -66,7 +55,7 @@ const expectedTag = {
   updated_at: timestamp.toISOString(),
 };
 
-const idea: IdeaWithTags = {
+const idea = {
   id: 1,
   title: 'title',
   content: 'Lorem ipsum dolor sit amet',
@@ -76,7 +65,7 @@ const idea: IdeaWithTags = {
   tags: [tag],
 };
 
-const idea2: IdeaWithTags = {
+const idea2 = {
   id: 1,
   title: 'title',
   content: 'New content',
@@ -86,11 +75,33 @@ const idea2: IdeaWithTags = {
   tags: [tag2],
 };
 
+const JWT = auth.jwt({ id: user.id });
+const mockJWT = (success: boolean) => {
+  if (success) {
+    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+  } else {
+    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
+};
+
+const ADMIN_JWT = auth.jwt({ id: admin.id });
+const mockAdminJWT = (success: boolean) => {
+  if (success) {
+    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+  } else {
+    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
+};
+
 /**
  * Tests for POST method on route /ideas
  */
 describe('POST /ideas/', () => {
   test('Route should give out a 401 if no user is logged in', async () => {
+    // Mock authentication
+    mockJWT(false);
+
+    // Actions
     const res = await request(app)
       .post('/ideas/')
       .send({
@@ -99,39 +110,45 @@ describe('POST /ideas/', () => {
         tags: [1],
       });
 
+    // Results
     expect(res.statusCode).toBe(401);
-  }),
-    test('Route should create and return idea with status 200', async () => {
-      mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
-      mockCtx.prisma.idea.create.mockResolvedValue(idea);
-      mockCtx.prisma.tag.findMany.mockRejectedValue([tag]);
+  });
 
-      log.debug(JSON.stringify(idea));
+  test('Route should create and return idea with status 200', async () => {
+    // Mock authentication
+    mockJWT(true);
+    // Mock resulting actions.
+    mockDb.access.ideas.create.mockResolvedValue(idea as any);
 
-      const res = await request(app)
-        .post('/ideas/')
-        .auth(JWT, { type: 'bearer' })
-        .send({
-          title: 'title',
-          content: 'Lorem ipsum dolor sit amet',
-          tags: [1],
-        });
-
-      expect(res.statusCode).toBe(200);
-      log.debug('res body', res.body);
-      expect(res.body).toMatchObject({
-        id: 1,
+    // Actions
+    const res = await request(app)
+      .post('/ideas/')
+      .auth(JWT, { type: 'bearer' })
+      .send({
+        title: 'title',
         content: 'Lorem ipsum dolor sit amet',
-        tags: [expectedTag],
+        tags: [1],
       });
+
+    // Results
+    expect(res.statusCode).toBe(200);
+    log.debug('res body', res.body);
+    expect(res.body).toMatchObject({
+      id: 1,
+      content: 'Lorem ipsum dolor sit amet',
+      tags: [expectedTag],
     });
+  });
 
   test('Route should fail to create idea if a non-existent tag is given', async () => {
-    swapToMockContext(mockCtx);
-    mockCtx.prisma.idea.create.mockRejectedValue(idea);
-    mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user1);
-    mockCtx.prisma.tag.create.mockResolvedValue(tag);
+    // Mock authentication
+    mockJWT(true);
+    // Mock resulting actions.
+    mockDb.access.ideas.create.mockRejectedValue(
+      new BadRequest('No tag exists with that id, cant create idea.')
+    );
 
+    // Actions
     const res = await request(app)
       .post('/ideas/')
       .auth(JWT, { type: 'bearer' })
@@ -140,8 +157,8 @@ describe('POST /ideas/', () => {
         content: 'This will fail',
         tags: [444],
       });
-    log.debug('Res code', res.statusCode);
-    log.debug('Res body', res.body);
+
+    // results
     expect(res.body).toMatchObject({
       status: 400,
       msg: 'No tag exists with that id, cant create idea.',
@@ -155,51 +172,61 @@ describe('POST /ideas/', () => {
  */
 describe('PUT /ideas/:idea_id', () => {
   test('Route should give out a 401 if no user is logged in', async () => {
+    // Mock authentication
+    mockJWT(false);
+
+    // Actions
     const res = await request(app)
       .put('/ideas/1')
       .send({
         content: 'New content',
         tags: [2],
       });
-
+    // results
     expect(res.statusCode).toBe(401);
-  }),
-    test('Route should update and return idea with status 200 and new data', async () => {
-      swapToMockContext(mockCtx);
-      mockCtx.prisma.idea.update.mockResolvedValue(idea2);
-      mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea2);
-      mockCtx.prisma.tag.findMany.mockResolvedValue([tag2]);
+  });
 
-      const res = await request(app)
-        .put('/ideas/1')
-        .auth(JWT, { type: 'bearer' })
-        .send({
-          title: 'title',
-          content: 'New content',
-          tags: [2],
-        })
-        .expect(200);
+  test('Route should update and return idea with status 200 and new data', async () => {
+    // Mock authentication
+    mockJWT(true);
+    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    // Mock Resulting actions
+    mockDb.access.ideas.update.mockResolvedValue(idea2 as any);
 
-      log.debug('res body put test: ', res.body);
-      expect(res.body).toMatchObject({
+    // Actions
+    const res = await request(app)
+      .put('/ideas/1')
+      .auth(JWT, { type: 'bearer' })
+      .send({
         title: 'title',
         content: 'New content',
-        tags: [
-          {
-            ...tag2,
-            created_at: timestamp.toISOString(),
-            updated_at: timestamp.toISOString(),
-          },
-        ],
-      });
+        tags: [2],
+      })
+      .expect(200);
+
+    // Results
+    log.debug('res body put test: ', res.body);
+    expect(res.body).toMatchObject({
+      title: 'title',
+      content: 'New content',
+      tags: [
+        {
+          ...tag2,
+          created_at: timestamp.toISOString(),
+          updated_at: timestamp.toISOString(),
+        },
+      ],
     });
+  });
 
   test("Route should fail with status 400 and not update the idea if one or more of the given tags doesn't exist", async () => {
-    swapToMockContext(mockCtx);
-    mockCtx.prisma.idea.update.mockResolvedValue(idea);
-    mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
-    mockCtx.prisma.tag.update.mockResolvedValue(tag2);
+    // Mock authentication
+    mockJWT(true);
+    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    // Mock Resulting actions
+    mockDb.access.ideas.update.mockResolvedValue(tag2 as any);
 
+    // Actions
     const res = await request(app)
       .put('/ideas/1')
       .auth(JWT, { type: 'bearer' })
@@ -208,6 +235,7 @@ describe('PUT /ideas/:idea_id', () => {
         tags: [33, 2],
       });
 
+    // Results
     log.debug('res body put test 400: ', res.body);
     expect(res.statusCode).toBe(400);
   });
@@ -218,29 +246,45 @@ describe('PUT /ideas/:idea_id', () => {
  */
 describe('DELETE /ideas/:idea_id', () => {
   test('Route should give out a 401 if no user is logged in', async () => {
+    // Mock authentication
+    mockJWT(false);
+    // Actions
     const res = await request(app).delete('/ideas/1');
 
+    // Results
     expect(res.statusCode).toBe(401);
-  }),
-    test('Route should delete and return idea with status 200', async () => {
-      swapToMockContext(mockCtx);
-      mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
-      mockCtx.prisma.idea.delete.mockResolvedValue(idea);
+  });
 
-      const res = await request(app).delete('/ideas/1').auth(JWT, { type: 'bearer' });
+  test('Route should delete and return idea with status 200', async () => {
+    // Mock authentication
+    mockJWT(true);
+    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    // Mock resulting actions
+    mockDb.access.ideas.remove.mockResolvedValue(idea as any);
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toMatchObject({
-        id: 1,
-        content: 'Lorem ipsum dolor sit amet',
-      });
+    // Actions
+    const res = await request(app).delete('/ideas/1').auth(JWT, { type: 'bearer' });
+
+    // Results
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({
+      id: 1,
+      content: 'Lorem ipsum dolor sit amet',
     });
+  });
 
   test('Route should fail to delete non-existent idea and return error with status 404', async () => {
-    swapToMockContext(mockCtx);
-    mockCtx.prisma.idea.delete.mockRejectedValue(idea);
-    const res = await request(app).delete('/ideas/11').auth(JWT, { type: 'bearer' });
-    log.debug('res body', res.body);
+    // Mock ADMIN authentication
+    mockAdminJWT(true);
+    // Mock resulting actions
+    mockDb.access.ideas.remove.mockRejectedValue(new NoSuchResource('idea'));
+
+    // Actions
+    const res = await request(app)
+      .delete('/ideas/11')
+      .auth(ADMIN_JWT, { type: 'bearer' });
+
+    // Results
     expect(res.statusCode).toBe(404);
     expect(res.body).toMatchObject({
       status: 404,

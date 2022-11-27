@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
-import { Likes } from './client';
+import { Likes } from './Database';
 
 export class LikesClient extends AbstractClient {
   public readonly TAG = 'like';

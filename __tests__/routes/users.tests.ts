@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { DeepMockProxy, mockReset } from 'jest-mock-extended';
 import request from 'supertest';
 import app from '../../src/app';
-import { Database, DbType, getClient } from '../../src/db/client';
+import { Database, DbType, getClient } from '../../src/db/Database';
 import auth from '../../src/utils/auth';
 import { NoSuchResource } from '../../src/utils/errors';
 

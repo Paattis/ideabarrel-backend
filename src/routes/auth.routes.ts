@@ -3,7 +3,7 @@ import { TRequest as TRequest } from '../utils/types';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import auth from '../utils/auth';
 import { throwIfNotValid, validAuthBody } from '../validation/schema';
-import { getDb } from '../db/client';
+import { getDb } from '../db/Database';
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import { log } from '../logger/log';
 import { NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
-import { Roles } from './client';
+import { Roles } from './Database';
 
 export class RolesClient extends AbstractClient {
   public readonly TAG = 'role';

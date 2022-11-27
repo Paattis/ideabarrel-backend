@@ -1,11 +1,10 @@
 import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
-import { getDb, Users } from '../db/client';
+import { getDb, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
-// import { PublicUser, UserData } from '../db/users';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { BadRequest, NoSuchResource, ServerError } from '../utils/errors';
+import { NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 import { throwIfNotValid, validAvatar, validUserBody } from '../validation/schema';

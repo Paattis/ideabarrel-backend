@@ -1,24 +1,11 @@
-import { Tag, User } from '@prisma/client';
-import tagsClient from '../../src/db/tags';
-import {
-  MockPrismaContext,
-  PrismaContext,
-  createMockContext,
-  swapToAppContext,
-} from '../../src/db/context';
+import { PrismaClient, Tag, User } from '@prisma/client';
+import { mockDeep, mockReset } from 'jest-mock-extended';
+import { DbType, getClient } from '../../src/db/Database';
 import { NoSuchResource } from '../../src/utils/errors';
 
-let mockCtx: MockPrismaContext;
-let ctx: PrismaContext;
-
-beforeEach(() => {
-  mockCtx = createMockContext();
-  ctx = mockCtx as unknown as PrismaContext;
-});
-
-afterAll(() => {
-  swapToAppContext();
-});
+const prismaMock = mockDeep<PrismaClient>();
+const db = getClient(DbType.MOCK_PRISMA, prismaMock);
+afterEach(() => mockReset(prismaMock));
 
 const timestamp = new Date();
 const tag: Tag = {
@@ -31,8 +18,8 @@ const tag: Tag = {
 
 describe('Tags client remove', () => {
   test('Should remove existing user', async () => {
-    mockCtx.prisma.tag.delete.mockResolvedValue(tag);
-    expect(await tagsClient.remove(1, ctx)).toMatchObject({
+    prismaMock.tag.delete.mockResolvedValue(tag);
+    expect(await db.access.tags.remove(1)).toMatchObject({
       id: 1,
       name: 'Cafeteria',
       description: 'Food is good',
@@ -40,15 +27,15 @@ describe('Tags client remove', () => {
   });
 
   test('Should throw error when tag is not found', async () => {
-    mockCtx.prisma.tag.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(tagsClient.remove(1, ctx)).rejects.toThrow(NoSuchResource);
+    prismaMock.tag.delete.mockRejectedValue(new Error('Mock Error'));
+    expect(db.access.tags.remove(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Tags client get by id', () => {
   test('Should return tag by its id', async () => {
-    mockCtx.prisma.tag.findFirstOrThrow.mockResolvedValue(tag);
-    await expect(tagsClient.select(1, ctx)).resolves.toMatchObject({
+    prismaMock.tag.findFirstOrThrow.mockResolvedValue(tag);
+    await expect(db.access.tags.select(1)).resolves.toMatchObject({
       id: 1,
       name: 'Cafeteria',
       description: 'Food is good',
@@ -56,23 +43,23 @@ describe('Tags client get by id', () => {
   });
 
   test('Should throw error when no tag is found', async () => {
-    mockCtx.prisma.tag.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(tagsClient.select(1, ctx)).rejects.toThrow(NoSuchResource);
+    prismaMock.tag.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
+    await expect(db.access.tags.select(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Tags client get all', () => {
   test('Should return existing tags', async () => {
-    mockCtx.prisma.tag.findMany.mockResolvedValue([tag]);
-    const result = await tagsClient.all(ctx);
+    prismaMock.tag.findMany.mockResolvedValue([tag]);
+    const result = await db.access.tags.all();
 
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(1);
   });
 
   test('Should return empty when no tags exist', async () => {
-    mockCtx.prisma.tag.findMany.mockResolvedValue([]);
-    const result = await tagsClient.all(ctx);
+    prismaMock.tag.findMany.mockResolvedValue([]);
+    const result = await db.access.tags.all();
 
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(0);
@@ -81,12 +68,12 @@ describe('Tags client get all', () => {
 
 describe('Tags client create', () => {
   test('Should create new user', async () => {
-    mockCtx.prisma.tag.create.mockResolvedValue({ ...tag, name: 'Cafeteria' });
+    prismaMock.tag.create.mockResolvedValue({ ...tag, name: 'Cafeteria' });
     const fields = {
       name: 'Cafeteria',
       description: 'Food is good',
     };
-    await expect(tagsClient.create(fields, ctx)).resolves.toMatchObject({
+    await expect(db.access.tags.create(fields)).resolves.toMatchObject({
       name: 'Cafeteria',
       description: 'Food is good',
     });

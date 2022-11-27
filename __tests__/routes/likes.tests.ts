@@ -1,8 +1,8 @@
-import { Like, User } from '@prisma/client';
+import { Like } from '@prisma/client';
 import { DeepMockProxy, mockReset } from 'jest-mock-extended';
 import request from 'supertest';
 import app from '../../src/app';
-import { Database, DbType, getClient } from '../../src/db/client';
+import { Database, DbType, getClient } from '../../src/db/Database';
 import auth from '../../src/utils/auth';
 import { NoSuchResource } from '../../src/utils/errors';
 
@@ -81,7 +81,7 @@ describe('POST /likes/', () => {
   });
 
   test('Route should return 401 with invalid JWT', async () => {
-     // Mock Authentication
+    // Mock Authentication
     mockJWT(false);
 
     // Action
@@ -98,7 +98,7 @@ describe('POST /likes/', () => {
  */
 describe('GET /likes/', () => {
   test('Route should return all likes with status 200', async () => {
-     // Mock Authentication
+    // Mock Authentication
     mockJWT(true);
     // Mock resulting action.
     mockDb.access.likes.all.mockResolvedValue([like]);
@@ -110,7 +110,7 @@ describe('GET /likes/', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-      // Results
+    // Results
     expect(res.body).toMatchObject([
       {
         id: 1,
@@ -139,7 +139,7 @@ describe('GET /likes/:id', () => {
       // .expect('Content-Type', /json/)
       .expect(404);
 
-      // Results
+    // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
       status: 404,
@@ -159,7 +159,7 @@ describe('GET /likes/:id', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-      // Results
+    // Results
     expect(res.body).toMatchObject({
       id: 1,
       idea_id: 1,
@@ -193,7 +193,7 @@ describe('DELETE /likes/:id', () => {
       .expect('Content-Type', /json/)
       .expect(404);
 
-      // Results
+    // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
       status: 404,
@@ -212,7 +212,7 @@ describe('DELETE /likes/:id', () => {
       .auth(JWT, { type: 'bearer' })
       .expect(200);
 
-      // Results
+    // Results
     expect(res.body).toMatchObject({
       id: 1,
       user_id: 1,

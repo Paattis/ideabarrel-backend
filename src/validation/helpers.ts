@@ -1,5 +1,5 @@
 import { Meta } from 'express-validator';
-import { getDb } from '../db/client';
+import { getDb } from '../db/Database';
 
 export const capitalize = {
   options: (value: string, _: any) => {

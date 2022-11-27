@@ -4,7 +4,7 @@ import auth from '../utils/auth';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validLikeBody } from '../validation/schema';
 import { PublicUser } from '../db/UserClient';
-import { getDb, Likes } from '../db/client';
+import { getDb, Likes } from '../db/Database';
 
 const likes = Router();
 const toLike = async (user: User, id: number) => getDb().access.likes.userOwns(user, id);
@@ -39,9 +39,10 @@ likes.post(
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
-      const result = await getDb().access.likes.create(
-        { idea_id: req.body.idea_id, user_id: user.id }
-      );
+      const result = await getDb().access.likes.create({
+        idea_id: req.body.idea_id,
+        user_id: user.id,
+      });
       return res.json(result);
     } catch (err) {
       next(err);

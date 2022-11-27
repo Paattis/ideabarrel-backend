@@ -1,10 +1,9 @@
 import { Tag } from '@prisma/client';
-import { db } from '../db/context';
 import { Router, Response, NextFunction, Request } from 'express';
-import tagsClient, { TagFields } from '../db/tags';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validTagBody } from '../validation/schema';
+import { getDb, Tags } from '../db/Database';
 
 const tags = Router();
 
@@ -14,7 +13,7 @@ const queryisPresent = (req: Request, param: QueryParam): boolean =>
 
 tags.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await tagsClient.all(db);
+    const result = await getDb().access.tags.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -30,10 +29,10 @@ tags.get(
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
-        const result = await tagsClient.selectWithUsers(id, db);
+        const result = await getDb().access.tags.selectWithUsers(id);
         res.json(result);
       } else {
-        const result: Tag = await tagsClient.select(id, db);
+        const result: Tag = await getDb().access.tags.select(id);
         res.json(result);
       }
     } catch (err) {
@@ -49,10 +48,10 @@ tags.post(
   validTagBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
-  async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const result = await tagsClient.create(req.body, db);
+      const result = await getDb().access.tags.create(req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -66,12 +65,11 @@ tags.post(
   '/:tagId/user/:userId',
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
-  async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
     try {
-      const result = await tagsClient.addUserToTag(
+      const result = await getDb().access.tags.addUserToTag(
         parseInt(req.params.tagId, 10),
-        parseInt(req.params.userId, 10),
-        db
+        parseInt(req.params.userId, 10)
       );
       res.json(result);
     } catch (err) {
@@ -86,12 +84,11 @@ tags.delete(
   '/:tagId/user/:userId',
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
-  async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Tags.Delete>, res: Response, next: NextFunction) => {
     try {
-      const result = await tagsClient.removeUserFromTag(
+      const result = await getDb().access.tags.removeUserFromTag(
         parseInt(req.params.tagId, 10),
-        parseInt(req.params.userId, 10),
-        db
+        parseInt(req.params.userId, 10)
       );
       res.json(result);
     } catch (err) {
@@ -107,11 +104,11 @@ tags.put(
   validTagBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
-  async (req: TRequest<TagFields>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Tags.Update>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
       const id = Number.parseInt(req.params.id, 10);
-      const result = await tagsClient.update(id, req.body, db);
+      const result = await getDb().access.tags.update(id, req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -128,7 +125,7 @@ tags.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
-      const result = await tagsClient.remove(id, db);
+      const result = await getDb().access.tags.remove(id);
       res.json(result);
     } catch (err) {
       next(err);

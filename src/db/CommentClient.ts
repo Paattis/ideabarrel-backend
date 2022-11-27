@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
-import { Comments } from './client';
+import { Comments } from './Database';
 
 export class CommentsClient extends AbstractClient {
   public readonly TAG = 'comment';

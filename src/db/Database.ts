@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { MockPrismaContext, PrismaContext } from './context';
+import { PrismaContext } from './context';
 import { Accessor } from './Accessor';
 import { log } from '../logger/log';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
@@ -20,6 +20,34 @@ export namespace Likes {
   export type Create = {
     idea_id: number;
     user_id: number;
+  };
+}
+
+export namespace Ideas {
+  export type Create = {
+    content: string;
+    title: string;
+    tags: number[];
+  };
+  export type Update = {
+    content: string;
+    title: string;
+    tags: number[];
+  };
+}
+
+export namespace Tags {
+  export type Create = {
+    name: string;
+    description: string;
+  };
+  export type Delete = {
+    name: string;
+    description: string;
+  };
+  export type Update = {
+    name: string;
+    description: string;
   };
 }
 
@@ -52,7 +80,7 @@ export namespace Users {
 
 export class Database {
   public readonly access = new Accessor(() => this.getActiveContext());
-  private activeContext: TransparentPrismaContext;
+  private activeContext: PrismaContext;
 
   private getActiveContext() {
     return this.activeContext;
@@ -69,7 +97,6 @@ export enum DbType {
   MOCK_CLIENT,
   MOCK_PRISMA,
 }
-export type TransparentPrismaContext = PrismaContext | MockPrismaContext;
 
 export type Db = Database | DeepMockProxy<Database>;
 

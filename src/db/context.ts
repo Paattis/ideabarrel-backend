@@ -1,17 +1,17 @@
 import { PrismaClient } from '@prisma/client';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy } from 'jest-mock-extended';
 
 /**
  * Backing database context.
  */
-export let db: PrismaContext = {
+export let db: AppPrismaContext = {
   prisma: new PrismaClient(),
 };
 
 /**
  * Database context for actual application.
  */
-export type PrismaContext = {
+export type AppPrismaContext = {
   prisma: PrismaClient;
 };
 
@@ -23,28 +23,6 @@ export type MockPrismaContext = {
 };
 
 /**
- * Creates mockup of PrismaClient.
- * @returns  Mockup PrismaClient
+ * 
  */
-export const createMockContext = (): MockPrismaContext => {
-  return {
-    prisma: mockDeep<PrismaClient>(),
-  };
-};
-
-/**
- * Switches singleton context to mockup version.
- * @param mock
- */
-export const swapToMockContext = (mock: MockPrismaContext) => {
-  db = mock;
-};
-
-/**
- * Switches singleton context to app version.
- */
-export const swapToAppContext = () => {
-  db = {
-    prisma: new PrismaClient(),
-  };
-};
+export type PrismaContext = AppPrismaContext | MockPrismaContext;

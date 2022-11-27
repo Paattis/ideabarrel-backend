@@ -1,6 +1,6 @@
 import { Comment, PrismaClient, User } from '@prisma/client';
 import { mockDeep, mockReset } from 'jest-mock-extended';
-import { Comments, DbType, getClient } from '../../src/db/client';
+import { Comments, DbType, getClient } from '../../src/db/Database';
 import { NoSuchResource } from '../../src/utils/errors';
 
 const prismaMock = mockDeep<PrismaClient>();

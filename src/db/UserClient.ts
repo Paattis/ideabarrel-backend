@@ -4,7 +4,7 @@ import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import img from '../utils/img';
 import { AbstractClient } from './AbstractClient';
-import { Users } from './client';
+import { Users } from './Database';
 
 export type PublicUser = {
   comments: Comment[];
@@ -49,12 +49,14 @@ export class UserClient extends AbstractClient {
    */
   async select(userId: number) {
     try {
-      return await this.ctx.prisma.user.findFirstOrThrow({
+      const result = await this.ctx.prisma.user.findFirst({
         where: { id: userId },
         select: this.publicFields,
       });
+      if (!result) throw new NoSuchResource(this.TAG);
+      return result;
     } catch (err) {
-      throw new NoSuchResource(this.TAG);
+      throw err;
     }
   }
 

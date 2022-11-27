@@ -1,11 +1,9 @@
 import { Role } from '@prisma/client';
-import { db } from '../db/context';
 import { Router, Response, NextFunction, Request } from 'express';
-// import rolesClient, { RoleFields } from '../db/roles';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validRoleBody } from '../validation/schema';
-import { getDb, Roles } from '../db/client';
+import { getDb, Roles } from '../db/Database';
 
 const roles = Router();
 

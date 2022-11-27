@@ -1,7 +1,7 @@
 import { PrismaClient, Role, User } from '@prisma/client';
-import { BadRequest, NoSuchResource } from '../../src/utils/errors';
+import { NoSuchResource } from '../../src/utils/errors';
 import { mockDeep, mockReset } from 'jest-mock-extended';
-import { DbType, getClient } from '../../src/db/client';
+import { DbType, getClient } from '../../src/db/Database';
 
 const prismaMock = mockDeep<PrismaClient>();
 const db = getClient(DbType.MOCK_PRISMA, prismaMock);
@@ -37,12 +37,12 @@ const user2: User = {
 
 describe('Users database access client', () => {
   test('Should return user by its id', async () => {
-    prismaMock.user.findFirstOrThrow.mockResolvedValue(user1);
+    prismaMock.user.findFirst.mockResolvedValue(user1);
     await expect(db.access.users.select(1)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should throw error when no user is found', async () => {
-    prismaMock.user.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
+    prismaMock.user.findFirst.mockRejectedValue(new NoSuchResource('user'));
     await expect(db.access.users.select(1)).rejects.toThrow(NoSuchResource);
   });
 
@@ -86,12 +86,6 @@ describe('Users database access client', () => {
       name: 'Test User 1',
       role_id: 1,
     });
-  });
-
-  test('Should throw when role with specified id does not exist', async () => {
-    prismaMock.role.findFirstOrThrow.mockRejectedValue(new Error());
-    prismaMock.user.create.mockResolvedValue(user1);
-    await expect(db.access.users.create(user1)).rejects.toThrow(BadRequest);
   });
 
   test('should fetch user from database', async () => {
