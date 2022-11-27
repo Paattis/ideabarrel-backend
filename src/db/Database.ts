@@ -3,6 +3,13 @@ import { PrismaContext } from './context';
 import { Accessor } from './Accessor';
 import { log } from '../logger/log';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { CommentsClient } from './CommentClient';
+import { AppPrismaContext } from './context';
+import { IdeasClient } from './IdeasClient';
+import { LikesClient } from './LikesClient';
+import { RolesClient } from './RolesClient';
+import { TagsClient } from './TagsClient';
+import { UserClient } from './UserClient';
 
 export namespace Comments {
   export type Create = {
@@ -79,19 +86,51 @@ export namespace Users {
 }
 
 export class Database {
-  public readonly access = new Accessor(() => this.getActiveContext());
-  private activeContext: PrismaContext;
+  private context: PrismaContext;
+  private readonly _comments: CommentsClient;
+  private readonly _users: UserClient;
+  private readonly _roles: RolesClient;
+  private readonly _likes: LikesClient;
+  private readonly _tags: TagsClient;
+  private readonly _ideas: IdeasClient;
 
-  private getActiveContext() {
-    return this.activeContext;
+  get comments() {
+    return this._comments.withContext(this.context) as CommentsClient;
+  }
+
+  get users() {
+    return this._users.withContext(this.context) as UserClient;
+  }
+
+  get roles() {
+    return this._roles.withContext(this.context) as RolesClient;
+  }
+
+  get likes() {
+    return this._likes.withContext(this.context) as LikesClient;
+  }
+
+  get tags() {
+    return this._tags.withContext(this.context) as TagsClient;
+  }
+
+  get ideas() {
+    return this._ideas.withContext(this.context) as IdeasClient;
   }
 
   constructor(prisma: PrismaClient | DeepMockProxy<PrismaClient> = new PrismaClient()) {
-    this.activeContext = {
+    this.context = {
       prisma,
     };
+    this._comments = new CommentsClient();
+    this._users = new UserClient();
+    this._roles = new RolesClient();
+    this._likes = new LikesClient();
+    this._tags = new TagsClient();
+    this._ideas = new IdeasClient();
   }
 }
+
 export enum DbType {
   REAL_CLIENT,
   MOCK_CLIENT,
@@ -101,10 +140,10 @@ export enum DbType {
 export type Db = Database | DeepMockProxy<Database>;
 
 let activeType: DbType | undefined;
-let db: Db = new Database();
+let instance: Db = new Database();
 
-export function getDb() {
-  return db;
+export function db() {
+  return instance;
 }
 
 export function getClient(
@@ -115,14 +154,14 @@ export function getClient(
     case DbType.MOCK_CLIENT:
       if (activeType !== DbType.MOCK_CLIENT) {
         log.info('Using MOCK_CLIENT database context');
-        db = mockDeep<Database>();
+        instance = mockDeep<Database>();
         activeType = DbType.MOCK_CLIENT;
       }
       break;
     case DbType.REAL_CLIENT:
       if (activeType !== DbType.REAL_CLIENT) {
         log.info('Using REAL_CLIENT database context');
-        db = new Database();
+        instance = new Database();
         activeType = DbType.REAL_CLIENT;
       }
       break;
@@ -130,7 +169,7 @@ export function getClient(
       if (activeType !== DbType.MOCK_PRISMA) {
         log.info('Using MOCK_PRISMA database context');
         if (prisma !== null) {
-          db = new Database(prisma);
+          instance = new Database(prisma);
         } else {
           throw new Error('No prisma mock provided');
         }
@@ -140,5 +179,5 @@ export function getClient(
     default:
       break;
   }
-  return db;
+  return instance;
 }

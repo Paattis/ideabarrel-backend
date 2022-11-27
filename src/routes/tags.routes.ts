@@ -3,7 +3,7 @@ import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validTagBody } from '../validation/schema';
-import { getDb, Tags } from '../db/Database';
+import { db, Tags } from '../db/Database';
 
 const tags = Router();
 
@@ -13,7 +13,7 @@ const queryisPresent = (req: Request, param: QueryParam): boolean =>
 
 tags.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getDb().access.tags.all();
+    const result = await db().tags.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -29,10 +29,10 @@ tags.get(
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
-        const result = await getDb().access.tags.selectWithUsers(id);
+        const result = await db().tags.selectWithUsers(id);
         res.json(result);
       } else {
-        const result: Tag = await getDb().access.tags.select(id);
+        const result: Tag = await db().tags.select(id);
         res.json(result);
       }
     } catch (err) {
@@ -51,7 +51,7 @@ tags.post(
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const result = await getDb().access.tags.create(req.body);
+      const result = await db().tags.create(req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -67,7 +67,7 @@ tags.post(
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
     try {
-      const result = await getDb().access.tags.addUserToTag(
+      const result = await db().tags.addUserToTag(
         parseInt(req.params.tagId, 10),
         parseInt(req.params.userId, 10)
       );
@@ -86,7 +86,7 @@ tags.delete(
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Delete>, res: Response, next: NextFunction) => {
     try {
-      const result = await getDb().access.tags.removeUserFromTag(
+      const result = await db().tags.removeUserFromTag(
         parseInt(req.params.tagId, 10),
         parseInt(req.params.userId, 10)
       );
@@ -108,7 +108,7 @@ tags.put(
     try {
       throwIfNotValid(req);
       const id = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.tags.update(id, req.body);
+      const result = await db().tags.update(id, req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -125,7 +125,7 @@ tags.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.tags.remove(id);
+      const result = await db().tags.remove(id);
       res.json(result);
     } catch (err) {
       next(err);

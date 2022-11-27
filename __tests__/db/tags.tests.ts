@@ -19,7 +19,7 @@ const tag: Tag = {
 describe('Tags client remove', () => {
   test('Should remove existing user', async () => {
     prismaMock.tag.delete.mockResolvedValue(tag);
-    expect(await db.access.tags.remove(1)).toMatchObject({
+    expect(await db.tags.remove(1)).toMatchObject({
       id: 1,
       name: 'Cafeteria',
       description: 'Food is good',
@@ -28,14 +28,14 @@ describe('Tags client remove', () => {
 
   test('Should throw error when tag is not found', async () => {
     prismaMock.tag.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(db.access.tags.remove(1)).rejects.toThrow(NoSuchResource);
+    expect(db.tags.remove(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Tags client get by id', () => {
   test('Should return tag by its id', async () => {
     prismaMock.tag.findFirstOrThrow.mockResolvedValue(tag);
-    await expect(db.access.tags.select(1)).resolves.toMatchObject({
+    await expect(db.tags.select(1)).resolves.toMatchObject({
       id: 1,
       name: 'Cafeteria',
       description: 'Food is good',
@@ -44,14 +44,14 @@ describe('Tags client get by id', () => {
 
   test('Should throw error when no tag is found', async () => {
     prismaMock.tag.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(db.access.tags.select(1)).rejects.toThrow(NoSuchResource);
+    await expect(db.tags.select(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Tags client get all', () => {
   test('Should return existing tags', async () => {
     prismaMock.tag.findMany.mockResolvedValue([tag]);
-    const result = await db.access.tags.all();
+    const result = await db.tags.all();
 
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(1);
@@ -59,7 +59,7 @@ describe('Tags client get all', () => {
 
   test('Should return empty when no tags exist', async () => {
     prismaMock.tag.findMany.mockResolvedValue([]);
-    const result = await db.access.tags.all();
+    const result = await db.tags.all();
 
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(0);
@@ -73,7 +73,7 @@ describe('Tags client create', () => {
       name: 'Cafeteria',
       description: 'Food is good',
     };
-    await expect(db.access.tags.create(fields)).resolves.toMatchObject({
+    await expect(db.tags.create(fields)).resolves.toMatchObject({
       name: 'Cafeteria',
       description: 'Food is good',
     });

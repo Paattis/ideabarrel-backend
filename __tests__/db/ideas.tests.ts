@@ -69,13 +69,13 @@ const idea2 = {
 describe('Ideas database access client', () => {
   test('Should return idea by its id', async () => {
     prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
-    await expect(db.access.ideas.select(1, user1)).resolves.toMatchObject({ id: 1 });
+    await expect(db.ideas.select(1, user1)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should create idea', async () => {
     prismaMock.idea.create.mockResolvedValue(idea);
     prismaMock.tag.findMany.mockResolvedValue([tag]);
-    const res = db.access.ideas.create(
+    const res = db.ideas.create(
       {
         title: 'title',
         content: 'Lorem ipsum dolor sit amet',
@@ -89,13 +89,13 @@ describe('Ideas database access client', () => {
 
   test('Should throw error when no idea is found', async () => {
     prismaMock.idea.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(db.access.ideas.select(1, user1)).rejects.toThrow(NoSuchResource);
+    await expect(db.ideas.select(1, user1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should remove existing idea', async () => {
     prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
     prismaMock.idea.delete.mockResolvedValue(idea);
-    const res = await db.access.ideas.remove(1, user1);
+    const res = await db.ideas.remove(1, user1);
 
     expect(res).not.toBeNull();
     expect(res).toMatchObject({ id: 1 });
@@ -103,12 +103,12 @@ describe('Ideas database access client', () => {
 
   test('Should throw error', async () => {
     prismaMock.idea.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(db.access.ideas.remove(666, user1)).rejects.toThrow(NoSuchResource);
+    expect(db.ideas.remove(666, user1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should return existing ideas', async () => {
     prismaMock.idea.findMany.mockResolvedValue([idea, idea2]);
-    const result = await db.access.ideas.all(0, []);
+    const result = await db.ideas.all(0, []);
 
     expect(result).toBeInstanceOf(Array<Idea>);
     expect(result.length).toBe(2);
@@ -125,7 +125,7 @@ describe('Ideas database access client', () => {
     prismaMock.idea.update.mockResolvedValue(updatedIdea);
     prismaMock.idea.findFirstOrThrow.mockResolvedValue(updatedIdea);
     prismaMock.tag.findMany.mockResolvedValue([tag2]);
-    const res = await db.access.ideas.update(
+    const res = await db.ideas.update(
       {
         title: 'title',
         content: 'New content',
@@ -151,7 +151,7 @@ describe('Ideas database access client', () => {
     prismaMock.idea.update.mockResolvedValue(idea);
     prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
 
-    const res = db.access.ideas.update(
+    const res = db.ideas.update(
       {
         title: 'title',
         content: 'New content',

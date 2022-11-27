@@ -3,7 +3,7 @@ import { TRequest as TRequest } from '../utils/types';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import auth from '../utils/auth';
 import { throwIfNotValid, validAuthBody } from '../validation/schema';
-import { getDb } from '../db/Database';
+import { db } from '../db/Database';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.post(
   async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const user = await getDb().access.users.selectByEmailSecret(req.body.email);
+      const user = await db().users.selectByEmailSecret(req.body.email);
       if (!user) {
         throw new NoSuchResource('user');
       }

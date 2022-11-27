@@ -1,6 +1,6 @@
 import auth from '../utils/auth';
 import { Router, Response, NextFunction, Request } from 'express';
-import { Comments, getDb } from '../db/Database';
+import { Comments, db } from '../db/Database';
 import { TRequest as TRequest } from '../utils/types';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validCommentBody } from '../validation/schema';
@@ -8,12 +8,11 @@ import { PublicUser } from '../db/UserClient';
 
 const comments = Router();
 
-const toComment = async (user: User, id: number) =>
-  getDb().access.comments.userOwns(user, id);
+const toComment = async (user: User, id: number) => db().comments.userOwns(user, id);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getDb().access.comments.all();
+    const result = await db().comments.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -25,7 +24,7 @@ comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
 comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const commentId = Number.parseInt(req.params.id, 10);
-    const result = await getDb().access.comments.select(commentId);
+    const result = await db().comments.select(commentId);
     return res.json(result);
   } catch (err) {
     next(err);
@@ -41,7 +40,7 @@ comments.post(
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
-      const result = await getDb().access.comments.create({
+      const result = await db().comments.create({
         ...req.body,
         user_id: user.id,
       });
@@ -60,7 +59,7 @@ comments.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.comments.remove(commentId);
+      const result = await db().comments.remove(commentId);
       return res.json(result);
     } catch (err) {
       next(err);
@@ -76,7 +75,7 @@ comments.put(
   async (req: TRequest<Comments.Update>, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.comments.update(commentId, req.body);
+      const result = await db().comments.update(commentId, req.body);
       return res.json(result);
     } catch (err) {
       next(err);

@@ -22,7 +22,7 @@ const incorrectLogin = {
 describe('POST /auth/login', () => {
   test('Route should return 404 when user is not found', async () => {
     // Mock resulting actions
-    mockDb.access.users.selectByEmailSecret.mockResolvedValue(null);
+    mockDb.users.selectByEmailSecret.mockResolvedValue(null);
 
     // Action
     const res = await request(app).post('/auth/login').send(login);
@@ -41,7 +41,7 @@ describe('POST /auth/login', () => {
       password: await auth.hash('password'),
       role_id: 1,
     };
-    mockDb.access.users.selectByEmailSecret.mockResolvedValue(user as any);
+    mockDb.users.selectByEmailSecret.mockResolvedValue(user as any);
 
     // Action
     const res = await request(app).post('/auth/login').send(incorrectLogin);
@@ -63,7 +63,7 @@ describe('POST /auth/login', () => {
       },
       role_id: 1,
     };
-    mockDb.access.users.selectByEmailSecret.mockResolvedValue(user as any);
+    mockDb.users.selectByEmailSecret.mockResolvedValue(user as any);
 
     // Action
     const res = await request(app).post('/auth/login').send(login).expect(200);

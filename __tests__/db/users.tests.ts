@@ -38,17 +38,17 @@ const user2: User = {
 describe('Users database access client', () => {
   test('Should return user by its id', async () => {
     prismaMock.user.findFirst.mockResolvedValue(user1);
-    await expect(db.access.users.select(1)).resolves.toMatchObject({ id: 1 });
+    await expect(db.users.select(1)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should throw error when no user is found', async () => {
     prismaMock.user.findFirst.mockRejectedValue(new NoSuchResource('user'));
-    await expect(db.access.users.select(1)).rejects.toThrow(NoSuchResource);
+    await expect(db.users.select(1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should remove existing user', async () => {
     prismaMock.user.delete.mockResolvedValue(user1);
-    const user = await db.access.users.remove(1);
+    const user = await db.users.remove(1);
 
     expect(user).not.toBeNull();
     expect(user).toMatchObject({ id: 1 });
@@ -56,12 +56,12 @@ describe('Users database access client', () => {
 
   test('Should throw error', async () => {
     prismaMock.user.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(db.access.users.remove(666)).rejects.toThrow(NoSuchResource);
+    expect(db.users.remove(666)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should return existing users', async () => {
     prismaMock.user.findMany.mockResolvedValue([user1, user2]);
-    const result = await db.access.users.all();
+    const result = await db.users.all();
 
     expect(result).toBeInstanceOf(Array<User>);
     expect(result.length).toBe(2);
@@ -82,7 +82,7 @@ describe('Users database access client', () => {
     prismaMock.role.findFirstOrThrow.mockResolvedValue(role);
     prismaMock.user.create.mockResolvedValue(user1);
 
-    await expect(db.access.users.create(user1)).resolves.toMatchObject({
+    await expect(db.users.create(user1)).resolves.toMatchObject({
       name: 'Test User 1',
       role_id: 1,
     });
@@ -90,7 +90,7 @@ describe('Users database access client', () => {
 
   test('should fetch user from database', async () => {
     prismaMock.user.findFirst.mockResolvedValue(user1);
-    await expect(db.access.users.selectByEmailSecret(user1.name)).resolves.toMatchObject({
+    await expect(db.users.selectByEmailSecret(user1.name)).resolves.toMatchObject({
       name: 'Test User 1',
       password: 'pw',
     });
@@ -98,6 +98,6 @@ describe('Users database access client', () => {
 
   test('should fetch user from database', async () => {
     prismaMock.user.findFirst.mockResolvedValue(null);
-    await expect(db.access.users.selectByEmailSecret(user1.name)).resolves.toBeNull();
+    await expect(db.users.selectByEmailSecret(user1.name)).resolves.toBeNull();
   });
 });

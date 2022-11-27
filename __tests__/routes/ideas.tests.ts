@@ -78,18 +78,18 @@ const idea2 = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -118,7 +118,7 @@ describe('POST /ideas/', () => {
     // Mock authentication
     mockJWT(true);
     // Mock resulting actions.
-    mockDb.access.ideas.create.mockResolvedValue(idea as any);
+    mockDb.ideas.create.mockResolvedValue(idea as any);
 
     // Actions
     const res = await request(app)
@@ -144,7 +144,7 @@ describe('POST /ideas/', () => {
     // Mock authentication
     mockJWT(true);
     // Mock resulting actions.
-    mockDb.access.ideas.create.mockRejectedValue(
+    mockDb.ideas.create.mockRejectedValue(
       new BadRequest('No tag exists with that id, cant create idea.')
     );
 
@@ -189,9 +189,9 @@ describe('PUT /ideas/:idea_id', () => {
   test('Route should update and return idea with status 200 and new data', async () => {
     // Mock authentication
     mockJWT(true);
-    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    mockDb.ideas.userOwns.mockResolvedValue(true);
     // Mock Resulting actions
-    mockDb.access.ideas.update.mockResolvedValue(idea2 as any);
+    mockDb.ideas.update.mockResolvedValue(idea2 as any);
 
     // Actions
     const res = await request(app)
@@ -222,9 +222,9 @@ describe('PUT /ideas/:idea_id', () => {
   test("Route should fail with status 400 and not update the idea if one or more of the given tags doesn't exist", async () => {
     // Mock authentication
     mockJWT(true);
-    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    mockDb.ideas.userOwns.mockResolvedValue(true);
     // Mock Resulting actions
-    mockDb.access.ideas.update.mockResolvedValue(tag2 as any);
+    mockDb.ideas.update.mockResolvedValue(tag2 as any);
 
     // Actions
     const res = await request(app)
@@ -258,9 +258,9 @@ describe('DELETE /ideas/:idea_id', () => {
   test('Route should delete and return idea with status 200', async () => {
     // Mock authentication
     mockJWT(true);
-    mockDb.access.ideas.userOwns.mockResolvedValue(true);
+    mockDb.ideas.userOwns.mockResolvedValue(true);
     // Mock resulting actions
-    mockDb.access.ideas.remove.mockResolvedValue(idea as any);
+    mockDb.ideas.remove.mockResolvedValue(idea as any);
 
     // Actions
     const res = await request(app).delete('/ideas/1').auth(JWT, { type: 'bearer' });
@@ -277,7 +277,7 @@ describe('DELETE /ideas/:idea_id', () => {
     // Mock ADMIN authentication
     mockAdminJWT(true);
     // Mock resulting actions
-    mockDb.access.ideas.remove.mockRejectedValue(new NoSuchResource('idea'));
+    mockDb.ideas.remove.mockRejectedValue(new NoSuchResource('idea'));
 
     // Actions
     const res = await request(app)

@@ -51,18 +51,18 @@ const user: User = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -74,7 +74,7 @@ describe('POST /roles/', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action
-    mockDb.access.roles.create.mockResolvedValue(role as any);
+    mockDb.roles.create.mockResolvedValue(role as any);
 
     // Action
     const res = await request(app)
@@ -109,7 +109,7 @@ describe('POST /roles/', () => {
  */
 describe('GET /roles/', () => {
   test('Route should return all roles with status 200', async () => {
-    mockDb.access.roles.all.mockResolvedValue([role]);
+    mockDb.roles.all.mockResolvedValue([role]);
 
     // Action
     const res = await request(app)
@@ -135,7 +135,7 @@ describe('GET /roles/:id', () => {
   test('Route should 404 with missing role', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.roles.select.mockRejectedValue(new NoSuchResource('role'));
+    mockDb.roles.select.mockRejectedValue(new NoSuchResource('role'));
 
     // Action
     const res = await request(app)
@@ -154,7 +154,7 @@ describe('GET /roles/:id', () => {
   test('Route should return role with status 200', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.roles.select.mockResolvedValue(role);
+    mockDb.roles.select.mockResolvedValue(role);
 
     // Action
     const res = await request(app)
@@ -190,7 +190,7 @@ describe('DELETE /roles/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action.
-    mockDb.access.roles.remove.mockRejectedValue(new NoSuchResource('role'));
+    mockDb.roles.remove.mockRejectedValue(new NoSuchResource('role'));
 
     // Action
     const res = await request(app)
@@ -210,7 +210,7 @@ describe('DELETE /roles/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action.
-    mockDb.access.roles.remove.mockResolvedValue(role as any);
+    mockDb.roles.remove.mockResolvedValue(role as any);
 
     // Action
     const res = await request(app)
@@ -243,7 +243,7 @@ describe('PUT /roles/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action.
-    mockDb.access.roles.update.mockRejectedValue(new NoSuchResource('role'));
+    mockDb.roles.update.mockRejectedValue(new NoSuchResource('role'));
 
     // Action
     const res = await request(app)
@@ -264,7 +264,7 @@ describe('PUT /roles/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action.
-    mockDb.access.roles.update.mockResolvedValue(updatedRole as any);
+    mockDb.roles.update.mockResolvedValue(updatedRole as any);
 
     // Action
     const res = await request(app)

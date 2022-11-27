@@ -4,14 +4,14 @@ import auth from '../utils/auth';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validLikeBody } from '../validation/schema';
 import { PublicUser } from '../db/UserClient';
-import { getDb, Likes } from '../db/Database';
+import { db, Likes } from '../db/Database';
 
 const likes = Router();
-const toLike = async (user: User, id: number) => getDb().access.likes.userOwns(user, id);
+const toLike = async (user: User, id: number) => db().likes.userOwns(user, id);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getDb().access.likes.all();
+    const result = await db().likes.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -23,7 +23,7 @@ likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
 likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const likeId = Number.parseInt(req.params.id, 10);
-    const result = await getDb().access.likes.select(likeId);
+    const result = await db().likes.select(likeId);
     return res.json(result);
   } catch (err) {
     next(err);
@@ -39,7 +39,7 @@ likes.post(
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
-      const result = await getDb().access.likes.create({
+      const result = await db().likes.create({
         idea_id: req.body.idea_id,
         user_id: user.id,
       });
@@ -58,7 +58,7 @@ likes.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const likeId = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.likes.remove(likeId);
+      const result = await db().likes.remove(likeId);
       return res.json(result);
     } catch (err) {
       next(err);

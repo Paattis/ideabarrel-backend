@@ -3,7 +3,7 @@ import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validRoleBody } from '../validation/schema';
-import { getDb, Roles } from '../db/Database';
+import { db, Roles } from '../db/Database';
 
 const roles = Router();
 
@@ -14,10 +14,10 @@ const queryisPresent = (req: Request, param: QueryParam): boolean =>
 roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (queryisPresent(req, 'usr')) {
-      const result = await getDb().access.roles.allRolesWithUsers();
+      const result = await db().roles.allRolesWithUsers();
       res.json(result);
     } else {
-      const result = await getDb().access.roles.all();
+      const result = await db().roles.all();
       res.json(result);
     }
   } catch (err) {
@@ -34,10 +34,10 @@ roles.get(
     try {
       const roleId = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
-        const result = await getDb().access.roles.selectWithUsers(roleId);
+        const result = await db().roles.selectWithUsers(roleId);
         res.json(result);
       } else {
-        const result: Role = await getDb().access.roles.select(roleId);
+        const result: Role = await db().roles.select(roleId);
         res.json(result);
       }
     } catch (err) {
@@ -56,7 +56,7 @@ roles.post(
   async (req: TRequest<Roles.Create>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const result = await getDb().access.roles.create(req.body);
+      const result = await db().roles.create(req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -75,7 +75,7 @@ roles.put(
     try {
       throwIfNotValid(req);
       const roleId = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.roles.update(roleId, req.body);
+      const result = await db().roles.update(roleId, req.body);
       res.json(result);
     } catch (err) {
       next(err);
@@ -92,7 +92,7 @@ roles.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roleId = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.roles.remove(roleId);
+      const result = await db().roles.remove(roleId);
       res.json(result);
     } catch (err) {
       next(err);

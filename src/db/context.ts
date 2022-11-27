@@ -23,6 +23,7 @@ export type MockPrismaContext = {
 };
 
 /**
- * 
+ * Database context type for encapsulating bot mock and app
+ * contextes.
  */
 export type PrismaContext = AppPrismaContext | MockPrismaContext;

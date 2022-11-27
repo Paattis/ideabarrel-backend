@@ -18,7 +18,7 @@ const role: Role = {
 describe('Roles client remove', () => {
   test('Should remove existing user', async () => {
     prismaMock.role.delete.mockResolvedValue(role);
-    expect(await db.access.roles.remove(1)).toMatchObject({
+    expect(await db.roles.remove(1)).toMatchObject({
       id: 1,
       name: 'Test Engineer',
     });
@@ -26,14 +26,14 @@ describe('Roles client remove', () => {
 
   test('Should throw error when role is not found', async () => {
     prismaMock.role.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(db.access.roles.remove(1)).rejects.toThrow(NoSuchResource);
+    expect(db.roles.remove(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Roles client get by id', () => {
   test('Should return role by its id', async () => {
     prismaMock.role.findFirstOrThrow.mockResolvedValue(role);
-    await expect(db.access.roles.select(1)).resolves.toMatchObject({
+    await expect(db.roles.select(1)).resolves.toMatchObject({
       id: 1,
       name: 'Test Engineer',
     });
@@ -41,14 +41,14 @@ describe('Roles client get by id', () => {
 
   test('Should throw error when no role is found', async () => {
     prismaMock.role.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(db.access.roles.select(1)).rejects.toThrow(NoSuchResource);
+    await expect(db.roles.select(1)).rejects.toThrow(NoSuchResource);
   });
 });
 
 describe('Roles client get all', () => {
   test('Should return existing roles', async () => {
     prismaMock.role.findMany.mockResolvedValue([role]);
-    const result = await db.access.roles.all();
+    const result = await db.roles.all();
 
     expect(result).toBeInstanceOf(Array<Role>);
     expect(result.length).toBe(1);
@@ -56,7 +56,7 @@ describe('Roles client get all', () => {
 
   test('Should return empty when no roles exist', async () => {
     prismaMock.role.findMany.mockResolvedValue([]);
-    const result = await db.access.roles.all();
+    const result = await db.roles.all();
 
     expect(result).toBeInstanceOf(Array<Role>);
     expect(result.length).toBe(0);
@@ -69,7 +69,7 @@ describe('Roles client create', () => {
     const fields = {
       name: 'asd',
     };
-    await expect(db.access.roles.create(fields)).resolves.toMatchObject({
+    await expect(db.roles.create(fields)).resolves.toMatchObject({
       name: 'asd',
     });
   });

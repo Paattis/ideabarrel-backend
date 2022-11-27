@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
-import { getDb, Users } from '../db/Database';
+import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
@@ -11,11 +11,11 @@ import { throwIfNotValid, validAvatar, validUserBody } from '../validation/schem
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => getDb().access.users.userOwns(user, id);
+const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {
-    const results = await getDb().access.users.all();
+    const results = await db().users.all();
     res.json(results);
   } catch (err) {
     next(err);
@@ -30,7 +30,7 @@ users.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
-      const result = await getDb().access.users.select(id);
+      const result = await db().users.select(id);
       res.json(result);
     } catch (err) {
       next(err);
@@ -49,7 +49,7 @@ users.put(
     try {
       throwIfNotValid(req);
       const userId = parseInt(req.params.id, 10);
-      const result = await getDb().access.users.update(req.body, userId);
+      const result = await db().users.update(req.body, userId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -66,7 +66,7 @@ users.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = parseInt(req.params.id, 10);
-      const result = await getDb().access.users.remove(userId);
+      const result = await db().users.remove(userId);
       img.remove(result.profile_img);
       result.profile_img = '';
       res.json(result);
@@ -89,7 +89,7 @@ users.put(
     try {
       throwIfNotValid(req);
       if (req.file) {
-        const result = await getDb().access.users.updateAvatar(
+        const result = await db().users.updateAvatar(
           parseInt(req.params.id, 10),
           req.file.filename
         );
@@ -115,7 +115,7 @@ users.delete(
         throw new NoSuchResource('avatar');
       }
       const EMPTY_AVATAR = '';
-      const result = await getDb().access.users.updateAvatar(
+      const result = await db().users.updateAvatar(
         parseInt(req.params.id, 10),
         EMPTY_AVATAR
       );
@@ -143,7 +143,7 @@ users.post(
         profile_img: req.file?.filename ?? '',
         role_id: parseInt(req.body.role_id as any as string | '0', 10),
       };
-      const result = await getDb().access.users.create(fields);
+      const result = await db().users.create(fields);
       res.json(result);
     } catch (err) {
       next(err);

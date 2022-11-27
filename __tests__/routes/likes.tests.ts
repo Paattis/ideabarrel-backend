@@ -39,18 +39,18 @@ const like: Like = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -62,7 +62,7 @@ describe('POST /likes/', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock resulting action.
-    mockDb.access.likes.create.mockResolvedValue(like as any);
+    mockDb.likes.create.mockResolvedValue(like as any);
 
     // Action
     const res = await request(app)
@@ -101,7 +101,7 @@ describe('GET /likes/', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock resulting action.
-    mockDb.access.likes.all.mockResolvedValue([like]);
+    mockDb.likes.all.mockResolvedValue([like]);
 
     // Action
     const res = await request(app)
@@ -130,7 +130,7 @@ describe('GET /likes/:id', () => {
     mockJWT(true);
 
     // Mock resulting action.
-    mockDb.access.likes.select.mockRejectedValue(new NoSuchResource('like'));
+    mockDb.likes.select.mockRejectedValue(new NoSuchResource('like'));
 
     // Action
     const res = await request(app)
@@ -150,7 +150,7 @@ describe('GET /likes/:id', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock resulting action.
-    mockDb.access.likes.select.mockResolvedValue(like as any);
+    mockDb.likes.select.mockResolvedValue(like as any);
 
     // Action
     const res = await request(app)
@@ -184,7 +184,7 @@ describe('DELETE /likes/:id', () => {
     // Mock Authentication
     mockAdminJWT(true);
     // Mock resulting action.
-    mockDb.access.likes.remove.mockRejectedValue(new NoSuchResource('like'));
+    mockDb.likes.remove.mockRejectedValue(new NoSuchResource('like'));
 
     // Action
     const res = await request(app)
@@ -203,8 +203,8 @@ describe('DELETE /likes/:id', () => {
   test('Route should return like with status 200', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.likes.userOwns.mockResolvedValue(true);
-    mockDb.access.likes.remove.mockResolvedValue(like as any);
+    mockDb.likes.userOwns.mockResolvedValue(true);
+    mockDb.likes.remove.mockResolvedValue(like as any);
 
     // Action
     const res = await request(app)

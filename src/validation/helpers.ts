@@ -1,5 +1,5 @@
 import { Meta } from 'express-validator';
-import { getDb } from '../db/Database';
+import { db } from '../db/Database';
 
 export const capitalize = {
   options: (value: string, _: any) => {
@@ -38,7 +38,7 @@ export const user = {
 export const email = {
   notInUse: {
     options: async (value: string) => {
-      const exists = await getDb().access.users.emailExists(value);
+      const exists = await db().users.emailExists(value);
       if (exists) {
         throw new Error('email');
       }
@@ -50,7 +50,7 @@ export const email = {
 export const role = {
   exists: {
     options: async (value: number) => {
-      const exists = await getDb().access.roles.exists(value);
+      const exists = await db().roles.exists(value);
       if (!exists) {
         throw new Error('role_id');
       }

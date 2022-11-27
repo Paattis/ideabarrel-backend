@@ -49,18 +49,18 @@ const updatedUser: User = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -70,10 +70,10 @@ const mockAdminJWT = (success: boolean) => {
 describe('POST /users/', () => {
   test('Route should create and return user with status 200', async () => {
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(false);
-    mockDb.access.roles.exists.mockResolvedValue(true);
+    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.roles.exists.mockResolvedValue(true);
     // Mock resulting action
-    mockDb.access.users.create.mockResolvedValue(user as any);
+    mockDb.users.create.mockResolvedValue(user as any);
 
     // Action
     const res = await request(app)
@@ -92,8 +92,8 @@ describe('POST /users/', () => {
 
   test('Route should return 400 when email is taken', async () => {
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(true);
-    mockDb.access.roles.exists.mockResolvedValue(true);
+    mockDb.users.emailExists.mockResolvedValue(true);
+    mockDb.roles.exists.mockResolvedValue(true);
 
     // Action
     const res = await request(app)
@@ -118,8 +118,8 @@ describe('POST /users/', () => {
 
   test('Route should return 400 when role id doesnt exist', async () => {
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(false);
-    mockDb.access.roles.exists.mockResolvedValue(false);
+    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.roles.exists.mockResolvedValue(false);
 
     // Action
     const res = await request(app)
@@ -150,9 +150,9 @@ describe('DELETE /users/:id', () => {
   test('Route should delete and return user with status 200', async () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true);
+    mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Resulting action
-    mockDb.access.users.remove.mockResolvedValue(user as any);
+    mockDb.users.remove.mockResolvedValue(user as any);
 
     // Action
     const res = await request(app).delete('/users/2').auth(ADMIN_JWT, { type: 'bearer' });
@@ -168,9 +168,9 @@ describe('DELETE /users/:id', () => {
   test('Route return 404 on missing user', async () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true);
+    mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Resulting action
-    mockDb.access.users.remove.mockRejectedValue(new NoSuchResource('user'));
+    mockDb.users.remove.mockRejectedValue(new NoSuchResource('user'));
 
     // Action
     const res = await request(app)
@@ -199,7 +199,7 @@ describe('DELETE /users/:id', () => {
   test('Route should fail to delete user and return error with status 403', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.users.userOwns.mockRejectedValue(false);
+    mockDb.users.userOwns.mockRejectedValue(false);
 
     // Action
     const res = await request(app).delete('/users/2').auth(JWT, { type: 'bearer' });
@@ -217,7 +217,7 @@ describe('GET /users/:id', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock Resulting action
-    mockDb.access.users.select.mockResolvedValue(user as any);
+    mockDb.users.select.mockResolvedValue(user as any);
 
     // Action
     const res = await request(app)
@@ -247,7 +247,7 @@ describe('GET /users/:id', () => {
   test('Route should return no user, and status code of 404', async () => {
     mockJWT(true);
 
-    mockDb.access.users.select.mockRejectedValue(new NoSuchResource('user'));
+    mockDb.users.select.mockRejectedValue(new NoSuchResource('user'));
     await request(app).get('/users/10').auth(JWT, { type: 'bearer' }).expect(404);
   });
 });
@@ -260,7 +260,7 @@ describe('GET /users/', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock Resulting action
-    mockDb.access.users.all.mockResolvedValue([user as any]);
+    mockDb.users.all.mockResolvedValue([user as any]);
 
     // Action
     const res = await request(app)
@@ -276,7 +276,7 @@ describe('GET /users/', () => {
     // Mock Authentication
     mockJWT(true);
     // Mock Resulting action
-    mockDb.access.users.all.mockResolvedValue([]);
+    mockDb.users.all.mockResolvedValue([]);
 
     // Action
     const res = await request(app)
@@ -298,10 +298,10 @@ describe('PUT /users/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(false);
-    mockDb.access.roles.exists.mockResolvedValue(true);
+    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.roles.exists.mockResolvedValue(true);
     // Mock Resulting action
-    mockDb.access.users.update.mockRejectedValue(new NoSuchResource('user'));
+    mockDb.users.update.mockRejectedValue(new NoSuchResource('user'));
 
     // Action
     const res = await request(app)
@@ -321,10 +321,10 @@ describe('PUT /users/:id', () => {
   test('Route should return 400 when role id doesnt exist', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true);
+    mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(false);
-    mockDb.access.roles.exists.mockResolvedValue(false);
+    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.roles.exists.mockResolvedValue(false);
 
     // Action
     const res = await request(app)
@@ -350,12 +350,12 @@ describe('PUT /users/:id', () => {
   test('Route should return new user with status 200', async () => {
     // Mock Authentication
     mockJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true);
+    mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Request prerequisites
-    mockDb.access.users.emailExists.mockResolvedValue(false);
-    mockDb.access.roles.exists.mockResolvedValue(true);
+    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.roles.exists.mockResolvedValue(true);
     // Mock Resulting action
-    mockDb.access.users.update.mockResolvedValue(updatedUser as any);
+    mockDb.users.update.mockResolvedValue(updatedUser as any);
 
     // Action
     const res = await request(app)

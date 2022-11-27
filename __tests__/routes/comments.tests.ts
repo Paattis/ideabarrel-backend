@@ -52,9 +52,9 @@ const resolvedComment = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -65,7 +65,7 @@ describe('POST /comments/', () => {
   test('Route should create and return like with status 200', async () => {
     mockJWT(true);
 
-    mockDb.access.comments.create.mockResolvedValue(resolvedComment);
+    mockDb.comments.create.mockResolvedValue(resolvedComment);
 
     const res = await request(app)
       .post('/comments/')
@@ -98,7 +98,7 @@ describe('POST /comments/', () => {
 describe('GET /comments/', () => {
   test('Route should return all comments with status 200', async () => {
     mockJWT(true);
-    mockDb.access.comments.all.mockResolvedValue([resolvedComment]);
+    mockDb.comments.all.mockResolvedValue([resolvedComment]);
 
     const res = await request(app)
       .get('/comments/')
@@ -123,7 +123,7 @@ describe('GET /comments/', () => {
 describe('GET /comments/:id', () => {
   test('Route should 404 with missing comment', async () => {
     mockJWT(true);
-    mockDb.access.comments.select.mockRejectedValue(new NoSuchResource('comment'));
+    mockDb.comments.select.mockRejectedValue(new NoSuchResource('comment'));
 
     const res = await request(app)
       .get('/comments/1')
@@ -139,7 +139,7 @@ describe('GET /comments/:id', () => {
 
   test('Route should return comment with status 200', async () => {
     mockJWT(true);
-    mockDb.access.comments.select.mockResolvedValue(resolvedComment);
+    mockDb.comments.select.mockResolvedValue(resolvedComment);
 
     const res = await request(app)
       .get('/comments/1')
@@ -167,8 +167,8 @@ describe('GET /comments/:id', () => {
 describe('DELETE /comments/:id', () => {
   test('Route should 404 with missing like', async () => {
     mockJWT(true);
-    mockDb.access.comments.userOwns.mockResolvedValue(true);
-    mockDb.access.comments.remove.mockRejectedValue(new NoSuchResource('comment'));
+    mockDb.comments.userOwns.mockResolvedValue(true);
+    mockDb.comments.remove.mockRejectedValue(new NoSuchResource('comment'));
 
     const res = await request(app)
       .delete('/comments/1')
@@ -184,8 +184,8 @@ describe('DELETE /comments/:id', () => {
 
   test('Route should return comment with status 200', async () => {
     mockJWT(true);
-    mockDb.access.comments.userOwns.mockResolvedValueOnce(true);
-    mockDb.access.comments.remove.mockResolvedValue(resolvedComment);
+    mockDb.comments.userOwns.mockResolvedValueOnce(true);
+    mockDb.comments.remove.mockResolvedValue(resolvedComment);
 
     const res = await request(app)
       .delete('/comments/1')

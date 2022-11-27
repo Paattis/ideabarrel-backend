@@ -45,18 +45,18 @@ const admin: User = {
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+    mockDb.users.select.mockResolvedValueOnce(user as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
   } else {
-    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
 };
 
@@ -68,7 +68,7 @@ describe('POST /tags/', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action
-    mockDb.access.tags.create.mockResolvedValue(tag as any);
+    mockDb.tags.create.mockResolvedValue(tag as any);
 
     // Action
     const res = await request(app)
@@ -105,7 +105,7 @@ describe('POST /tags/', () => {
 describe('GET /tags/', () => {
   test('Route should return all tags with status 200', async () => {
     // Mock resulting action
-    mockDb.access.tags.all.mockResolvedValue([tag]);
+    mockDb.tags.all.mockResolvedValue([tag]);
 
     // Action
     const res = await request(app)
@@ -133,7 +133,7 @@ describe('GET /tags/:id', () => {
     // Mock ADMIN Authentication
     mockJWT(true);
     // Mock resulting action
-    mockDb.access.tags.select.mockRejectedValue(new NoSuchResource('tag'));
+    mockDb.tags.select.mockRejectedValue(new NoSuchResource('tag'));
 
     // Action
     const res = await request(app)
@@ -153,7 +153,7 @@ describe('GET /tags/:id', () => {
     // Mock ADMIN Authentication
     mockJWT(true);
     // Mock resulting action
-    mockDb.access.tags.select.mockResolvedValue(tag as any);
+    mockDb.tags.select.mockResolvedValue(tag as any);
 
     // Action
     const res = await request(app)
@@ -187,7 +187,7 @@ describe('DELETE /tags/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action
-    mockDb.access.tags.remove.mockRejectedValue(new NoSuchResource('tag'));
+    mockDb.tags.remove.mockRejectedValue(new NoSuchResource('tag'));
 
     // Action
     const res = await request(app)
@@ -207,7 +207,7 @@ describe('DELETE /tags/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock resulting action
-    mockDb.access.tags.remove.mockResolvedValue(tag as any);
+    mockDb.tags.remove.mockResolvedValue(tag as any);
 
     // Action
     const res = await request(app)
@@ -241,7 +241,7 @@ describe('PUT /tags/:id', () => {
     mockAdminJWT(true);
     // Mock resulting action
     const newTag = { name: 'Test Engineer 2' };
-    mockDb.access.tags.update.mockRejectedValue(new NoSuchResource('tag'));
+    mockDb.tags.update.mockRejectedValue(new NoSuchResource('tag'));
 
     // Action
     const res = await request(app)
@@ -270,7 +270,7 @@ describe('PUT /tags/:id', () => {
       description: 'Food is great',
     };
     const newTag = { name: 'Restaurant' };
-    mockDb.access.tags.update.mockResolvedValue(updateResult);
+    mockDb.tags.update.mockResolvedValue(updateResult);
 
     // Action
     const res = await request(app)
