@@ -32,10 +32,10 @@ export const user = {
       in: 'params',
       exists: true,
       toInt: true,
-      isInt: isPositive
-    }
-  }
-}
+      isInt: isPositive,
+    },
+  },
+};
 export const email = {
   notInUse: {
     options: async (value: any) => {
@@ -48,26 +48,26 @@ export const email = {
   },
 };
 
-  export const isStrong = {
-    options: {
-      minLength: 8,
-      minNumbers: 1,
-      minUppercase: 1,
-      minLowercase: 1,
-      minSymbols: 0,
-    },
-    errorMessage:
-      'Should be atleast 8 chars of length, and have atleast one uppercase letter and a number',
-  }
+export const isStrong = {
+  options: {
+    minLength: 8,
+    minNumbers: 1,
+    minUppercase: 1,
+    minLowercase: 1,
+    minSymbols: 0,
+  },
+  errorMessage:
+    'Should be atleast 8 chars of length, and have atleast one uppercase letter and a number',
+};
 
 export const avatar = {
   exists: {
     custom: {
-      options: (_:any, { req }:Meta) => !!req.file,
+      options: (_: any, { req }: Meta) => !!req.file,
       errorMessage: 'is missing from request',
     },
   },
-}
+};
 
 export const inRange = (minimum: number, maximum: number) => {
   return {

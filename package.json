@@ -4,7 +4,7 @@
   "description": "Backend for the App for the course TX00CK67-3010",
   "main": "dist\\index.js",
   "scripts": {
-    "test": "npx jest --forceExit --detectOpenHandles --watchAll --silent=true --verbose=false",
+    "test": "npx jest --forceExit --detectOpenHandles --watchAll",
     "ci-test": "npx jest --silent=true --verbose=false",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",

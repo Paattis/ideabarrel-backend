@@ -110,7 +110,7 @@ export const validUserBody = checkSchema({
   email: {
     isString,
     isEmail,
-    custom: email.notInUse
+    custom: email.notInUse,
   },
 });
 

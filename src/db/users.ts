@@ -167,15 +167,11 @@ const updatePassword = async (userId: number, password: string, ctx: PrismaConte
   }
 };
 
-const updateAvatar = async (
-  userId: number,
-  newAvatar: string,
-  ctx: PrismaContext
-) => {
+const updateAvatar = async (userId: number, newAvatar: string, ctx: PrismaContext) => {
   try {
     const user = await ctx.prisma.user.findFirstOrThrow({
-      where: {id: userId},
-      select: {profile_img: true},
+      where: { id: userId },
+      select: { profile_img: true },
     });
 
     const result = await ctx.prisma.user.update({

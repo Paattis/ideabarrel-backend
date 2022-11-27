@@ -115,10 +115,7 @@ users.delete(
       if (!user.profile_img) {
         throw new NoSuchResource('avatar');
       }
-      const result = await usersClient.updateAvatar(
-        parseInt(req.params.id, 10),
-        '',
-         db);
+      const result = await usersClient.updateAvatar(parseInt(req.params.id, 10), '', db);
       return res.json(result);
     } catch (err) {
       next(err);

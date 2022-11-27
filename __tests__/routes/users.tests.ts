@@ -213,8 +213,8 @@ describe('PUT /users/:id', () => {
       .put('/users/10')
       .send(user2)
       .auth(JWT, { type: 'bearer' })
-      .expect('Content-Type', /json/)
-      // .expect(200);
+      .expect('Content-Type', /json/);
+    // .expect(200);
 
     expect(res.body).toMatchObject({ id: 2 });
   });
