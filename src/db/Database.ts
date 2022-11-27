@@ -1,10 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaContext } from './context';
-import { Accessor } from './Accessor';
 import { log } from '../logger/log';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { CommentsClient } from './CommentClient';
-import { AppPrismaContext } from './context';
 import { IdeasClient } from './IdeasClient';
 import { LikesClient } from './LikesClient';
 import { RolesClient } from './RolesClient';
