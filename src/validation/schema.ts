@@ -103,7 +103,7 @@ export const validUserBody = checkSchema({
   role_id: {
     toInt: true,
     isInt: isPositive,
-    custom: role.exists
+    custom: role.exists,
   },
   password: {
     isString,

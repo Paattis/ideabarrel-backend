@@ -16,6 +16,13 @@ export namespace Comments {
   };
 }
 
+export namespace Likes {
+  export type Create = {
+    idea_id: number;
+    user_id: number;
+  };
+}
+
 export namespace Roles {
   export type Create = {
     name: string;

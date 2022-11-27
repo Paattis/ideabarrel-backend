@@ -1,18 +1,17 @@
-import { db } from '../db/context';
 import { Router, Response, NextFunction, Request } from 'express';
-import likesClient, { LikeFields } from '../db/likes';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validLikeBody } from '../validation/schema';
 import { PublicUser } from '../db/UserClient';
+import { getDb, Likes } from '../db/client';
 
 const likes = Router();
-const toLike = async (user: User, id: number) => likesClient.userOwns(user, id, db);
+const toLike = async (user: User, id: number) => getDb().access.likes.userOwns(user, id);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await likesClient.all(db);
+    const result = await getDb().access.likes.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -24,7 +23,7 @@ likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
 likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const likeId = Number.parseInt(req.params.id, 10);
-    const result = await likesClient.select(likeId, db);
+    const result = await getDb().access.likes.select(likeId);
     return res.json(result);
   } catch (err) {
     next(err);
@@ -36,13 +35,12 @@ likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 likes.post(
   '/',
   validLikeBody,
-  async (req: TRequest<LikeFields>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Likes.Create>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
-      const result = await likesClient.create(
-        { idea_id: req.body.idea_id, user_id: user.id },
-        db
+      const result = await getDb().access.likes.create(
+        { idea_id: req.body.idea_id, user_id: user.id }
       );
       return res.json(result);
     } catch (err) {
@@ -59,7 +57,7 @@ likes.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const likeId = Number.parseInt(req.params.id, 10);
-      const result = await likesClient.remove(likeId, db);
+      const result = await getDb().access.likes.remove(likeId);
       return res.json(result);
     } catch (err) {
       next(err);

@@ -48,7 +48,6 @@ const user: User = {
   updated_at: timestamp,
 };
 
-
 const JWT = auth.jwt({ id: user.id });
 const mockJWT = (success: boolean) => {
   if (success) {
@@ -80,7 +79,7 @@ describe('POST /roles/', () => {
     // Action
     const res = await request(app)
       .post('/roles/')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .send(role)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -93,7 +92,7 @@ describe('POST /roles/', () => {
   });
 
   test('Route should return 401 with invalid JWT', async () => {
-     // Mock Authentication
+    // Mock Authentication
     mockJWT(false);
 
     // Action
@@ -176,7 +175,7 @@ describe('GET /roles/:id', () => {
     mockJWT(false);
 
     // Action
-    const res = await request(app).get('/roles/1').auth('NOT_JWT', { type: 'bearer' })
+    const res = await request(app).get('/roles/1').auth('NOT_JWT', { type: 'bearer' });
 
     // Results
     expect(res.statusCode).toBe(401);
@@ -196,7 +195,7 @@ describe('DELETE /roles/:id', () => {
     // Action
     const res = await request(app)
       .delete('/roles/1')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
@@ -216,7 +215,7 @@ describe('DELETE /roles/:id', () => {
     // Action
     const res = await request(app)
       .delete('/roles/1')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -250,7 +249,7 @@ describe('PUT /roles/:id', () => {
     const res = await request(app)
       .put('/roles/1')
       .send(updatedRole)
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
@@ -271,7 +270,7 @@ describe('PUT /roles/:id', () => {
     const res = await request(app)
       .put('/roles/1')
       .send(updatedRole)
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 

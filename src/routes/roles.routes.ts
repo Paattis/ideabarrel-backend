@@ -94,7 +94,7 @@ roles.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roleId = Number.parseInt(req.params.id, 10);
-      const result = await  getDb().access.roles.remove(roleId);
+      const result = await getDb().access.roles.remove(roleId);
       res.json(result);
     } catch (err) {
       next(err);

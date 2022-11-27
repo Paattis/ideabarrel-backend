@@ -1,36 +1,32 @@
 import { Like, User } from '@prisma/client';
+import { DeepMockProxy, mockReset } from 'jest-mock-extended';
 import request from 'supertest';
 import app from '../../src/app';
-import {
-  MockPrismaContext,
-  createMockContext,
-  swapToMockContext,
-  swapToAppContext,
-} from '../../src/db/context';
+import { Database, DbType, getClient } from '../../src/db/client';
 import auth from '../../src/utils/auth';
+import { NoSuchResource } from '../../src/utils/errors';
 
-let mockCtx: MockPrismaContext;
-
-beforeEach(() => {
-  mockCtx = createMockContext();
-  swapToMockContext(mockCtx);
-});
-
-afterAll(() => {
-  swapToAppContext();
-});
+const mockDb: DeepMockProxy<Database> = getClient(
+  DbType.MOCK_CLIENT
+) as DeepMockProxy<Database>;
+afterEach(() => mockReset(mockDb));
 
 const timestamp = new Date();
 
-const user: User = {
+const user = {
+  id: 2,
+  name: 'Test User 1',
+  profile_img: '',
+  email: 'user@app.com',
+  role_id: 1,
+};
+
+const admin = {
   id: 1,
   name: 'Test User 1',
   profile_img: '',
-  password: 'pw',
   email: 'user@app.com',
-  role_id: 1,
-  created_at: timestamp,
-  updated_at: timestamp,
+  role_id: 2,
 };
 
 const like: Like = {
@@ -41,8 +37,21 @@ const like: Like = {
 };
 
 const JWT = auth.jwt({ id: user.id });
-const mockJWT = () => {
-  mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user);
+const mockJWT = (success: boolean) => {
+  if (success) {
+    mockDb.access.users.select.mockResolvedValueOnce(user as any);
+  } else {
+    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
+};
+
+const ADMIN_JWT = auth.jwt({ id: admin.id });
+const mockAdminJWT = (success: boolean) => {
+  if (success) {
+    mockDb.access.users.select.mockResolvedValueOnce(admin as any);
+  } else {
+    mockDb.access.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
 };
 
 /**
@@ -50,9 +59,12 @@ const mockJWT = () => {
  */
 describe('POST /likes/', () => {
   test('Route should create and return like with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.like.create.mockResolvedValue(like);
+    // Mock Authentication
+    mockJWT(true);
+    // Mock resulting action.
+    mockDb.access.likes.create.mockResolvedValue(like as any);
 
+    // Action
     const res = await request(app)
       .post('/likes/')
       .auth(JWT, { type: 'bearer' })
@@ -60,6 +72,7 @@ describe('POST /likes/', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject({
       id: 1,
       idea_id: 1,
@@ -68,9 +81,10 @@ describe('POST /likes/', () => {
   });
 
   test('Route should return 401 with invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.like.create.mockResolvedValue(like);
+     // Mock Authentication
+    mockJWT(false);
 
+    // Action
     await request(app)
       .post('/likes/')
       .auth('NOT_JWT', { type: 'bearer' })
@@ -84,15 +98,19 @@ describe('POST /likes/', () => {
  */
 describe('GET /likes/', () => {
   test('Route should return all likes with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findMany.mockResolvedValue([like]);
+     // Mock Authentication
+    mockJWT(true);
+    // Mock resulting action.
+    mockDb.access.likes.all.mockResolvedValue([like]);
 
+    // Action
     const res = await request(app)
       .get('/likes/')
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
+      // Results
     expect(res.body).toMatchObject([
       {
         id: 1,
@@ -108,15 +126,20 @@ describe('GET /likes/', () => {
  */
 describe('GET /likes/:id', () => {
   test('Route should 404 with missing like', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findFirstOrThrow.mockRejectedValue(new Error());
+    // Mock Authentication
+    mockJWT(true);
 
+    // Mock resulting action.
+    mockDb.access.likes.select.mockRejectedValue(new NoSuchResource('like'));
+
+    // Action
     const res = await request(app)
       .get('/likes/1')
       .auth(JWT, { type: 'bearer' })
       // .expect('Content-Type', /json/)
       .expect(404);
 
+      // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
       status: 404,
@@ -124,15 +147,19 @@ describe('GET /likes/:id', () => {
   });
 
   test('Route should return like with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findFirstOrThrow.mockResolvedValue(like);
+    // Mock Authentication
+    mockJWT(true);
+    // Mock resulting action.
+    mockDb.access.likes.select.mockResolvedValue(like as any);
 
+    // Action
     const res = await request(app)
       .get('/likes/1')
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
+      // Results
     expect(res.body).toMatchObject({
       id: 1,
       idea_id: 1,
@@ -141,9 +168,10 @@ describe('GET /likes/:id', () => {
   });
 
   test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findFirstOrThrow.mockResolvedValue(like);
+    // Mock Authentication
+    mockJWT(false);
 
+    // Action
     await request(app).get('/likes/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });
@@ -153,16 +181,19 @@ describe('GET /likes/:id', () => {
  */
 describe('DELETE /likes/:id', () => {
   test('Route should 404 with missing like', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findFirst.mockResolvedValueOnce(like);
-    mockCtx.prisma.like.delete.mockRejectedValue(new Error());
+    // Mock Authentication
+    mockAdminJWT(true);
+    // Mock resulting action.
+    mockDb.access.likes.remove.mockRejectedValue(new NoSuchResource('like'));
 
+    // Action
     const res = await request(app)
-      .delete('/likes/1')
-      .auth(JWT, { type: 'bearer' })
+      .delete('/likes/10000')
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
+      // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
       status: 404,
@@ -170,15 +201,18 @@ describe('DELETE /likes/:id', () => {
   });
 
   test('Route should return like with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.like.findFirst.mockResolvedValueOnce(like);
-    mockCtx.prisma.like.delete.mockResolvedValue(like);
+    // Mock Authentication
+    mockJWT(true);
+    mockDb.access.likes.userOwns.mockResolvedValue(true);
+    mockDb.access.likes.remove.mockResolvedValue(like as any);
 
+    // Action
     const res = await request(app)
       .delete('/likes/1')
       .auth(JWT, { type: 'bearer' })
       .expect(200);
 
+      // Results
     expect(res.body).toMatchObject({
       id: 1,
       user_id: 1,
@@ -187,9 +221,10 @@ describe('DELETE /likes/:id', () => {
   });
 
   test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.like.delete.mockResolvedValue(like);
+    // Mock Authentication
+    mockJWT(false);
 
+    // Action
     await request(app).delete('/likes/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });

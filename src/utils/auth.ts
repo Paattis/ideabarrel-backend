@@ -26,8 +26,7 @@ export type UserPayload = {
 passport.use(
   new JWTStrategy(options, async (payload: UserPayload, done) => {
     try {
-      const db = getDb();
-      const user = await db.access.users.select(payload.id);
+      const user = await getDb().access.users.select(payload.id);
       return done(null, user);
     } catch (err) {
       return done(new Unauthorized());

@@ -24,7 +24,6 @@ const admin: User = {
   updated_at: timestamp,
 };
 
-
 const user: User = {
   id: 10,
   name: 'Test User',
@@ -82,7 +81,7 @@ describe('POST /users/', () => {
       .auth(JWT, { type: 'bearer' })
       .send(user);
 
-      // Results
+    // Results
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       name: 'Test User',
@@ -102,18 +101,18 @@ describe('POST /users/', () => {
       .auth(JWT, { type: 'bearer' })
       .send(user);
 
-      // Results
+    // Results
     expect(res.statusCode).toBe(400);
     expect(res.body).toMatchObject({
       msg: 'Invalid request body',
       status: 400,
       errors: [
         {
-          param: "email",
-          msg: "is already taken",
-          value: "user1@app.com"
-        }
-      ]
+          param: 'email',
+          msg: 'is already taken',
+          value: 'user1@app.com',
+        },
+      ],
     });
   });
 
@@ -126,20 +125,20 @@ describe('POST /users/', () => {
     const res = await request(app)
       .post('/users/')
       .auth(JWT, { type: 'bearer' })
-      .send({...user, role_id: 1000});
+      .send({ ...user, role_id: 1000 });
 
-      // Results
+    // Results
     expect(res.statusCode).toBe(400);
     expect(res.body).toMatchObject({
       msg: 'Invalid request body',
       status: 400,
       errors: [
         {
-          param: "role_id",
-          msg: "doesnt exist",
-          value: 1000
-        }
-      ]
+          param: 'role_id',
+          msg: 'doesnt exist',
+          value: 1000,
+        },
+      ],
     });
   });
 });
@@ -151,7 +150,7 @@ describe('DELETE /users/:id', () => {
   test('Route should delete and return user with status 200', async () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true)
+    mockDb.access.users.userOwns.mockResolvedValue(true);
     // Mock Resulting action
     mockDb.access.users.remove.mockResolvedValue(user as any);
 
@@ -169,12 +168,14 @@ describe('DELETE /users/:id', () => {
   test('Route return 404 on missing user', async () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
-    mockDb.access.users.userOwns.mockResolvedValue(true)
+    mockDb.access.users.userOwns.mockResolvedValue(true);
     // Mock Resulting action
     mockDb.access.users.remove.mockRejectedValue(new NoSuchResource('user'));
 
     // Action
-    const res = await request(app).delete('/users/1000').auth(ADMIN_JWT, { type: 'bearer' });
+    const res = await request(app)
+      .delete('/users/1000')
+      .auth(ADMIN_JWT, { type: 'bearer' });
 
     // Results
     expect(res.statusCode).toBe(404);
@@ -237,10 +238,10 @@ describe('GET /users/:id', () => {
     mockJWT(true);
 
     // Action
-    const res = await request(app).get('/users/10').auth('NOT_JWT', { type: 'bearer' })
+    const res = await request(app).get('/users/10').auth('NOT_JWT', { type: 'bearer' });
 
     // Results
-    expect(res.statusCode).toBe(401)
+    expect(res.statusCode).toBe(401);
   });
 
   test('Route should return no user, and status code of 404', async () => {
@@ -285,7 +286,7 @@ describe('GET /users/', () => {
       .expect(200);
 
     // Results
-    expect((res.body)).toMatchObject([]);
+    expect(res.body).toMatchObject([]);
   });
 });
 
@@ -329,7 +330,7 @@ describe('PUT /users/:id', () => {
     const res = await request(app)
       .put('/users/10')
       .auth(JWT, { type: 'bearer' })
-      .send({...user, role_id: 1000});
+      .send({ ...user, role_id: 1000 });
 
     // Results
     expect(res.statusCode).toBe(400);
@@ -338,11 +339,11 @@ describe('PUT /users/:id', () => {
       status: 400,
       errors: [
         {
-          param: "role_id",
-          msg: "doesnt exist",
-          value: 1000
-        }
-      ]
+          param: 'role_id',
+          msg: 'doesnt exist',
+          value: 1000,
+        },
+      ],
     });
   });
 
@@ -365,7 +366,11 @@ describe('PUT /users/:id', () => {
       .expect(200);
 
     // Results
-    expect(res.body).toMatchObject({ id: 10, name: 'Updated User', email: 'user2@app.com'});
+    expect(res.body).toMatchObject({
+      id: 10,
+      name: 'Updated User',
+      email: 'user2@app.com',
+    });
   });
 
   test('Route should return 401 on invalid JWT', async () => {

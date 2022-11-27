@@ -70,10 +70,10 @@ export class RolesClient extends AbstractClient {
    */
   async exists(roleId: number) {
     try {
-        const role = await this.ctx.prisma.role.findFirst({where: {id: roleId}});
-        return role !== null;
+      const role = await this.ctx.prisma.role.findFirst({ where: { id: roleId } });
+      return role !== null;
     } catch (err) {
-        throw err;
+      throw err;
     }
   }
 
