@@ -3,9 +3,9 @@ import { Router, Response, NextFunction, Request } from 'express';
 import likesClient, { LikeFields } from '../db/likes';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
-import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validLikeBody } from '../validation/schema';
+import { PublicUser } from '../db/UserClient';
 
 const likes = Router();
 const toLike = async (user: User, id: number) => likesClient.userOwns(user, id, db);

@@ -1,21 +1,22 @@
 import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
-import { db } from '../db/context';
-import usersClient, { PublicUser, UserData } from '../db/users';
+import { getDb, Users } from '../db/client';
+import { PublicUser } from '../db/UserClient';
+// import { PublicUser, UserData } from '../db/users';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { NoSuchResource, ServerError } from '../utils/errors';
+import { BadRequest, NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 import { throwIfNotValid, validAvatar, validUserBody } from '../validation/schema';
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => usersClient.userOwns(user, id, db);
+const toUser = async (user: User, id: number) => getDb().access.users.userOwns(user, id);
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {
-    const results = await usersClient.all(db);
+    const results = await getDb().access.users.all();
     res.json(results);
   } catch (err) {
     next(err);
@@ -30,7 +31,7 @@ users.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
-      const result = await usersClient.select(id, db);
+      const result = await getDb().access.users.select(id);
       res.json(result);
     } catch (err) {
       next(err);
@@ -45,11 +46,11 @@ users.put(
   validUserBody,
   auth.required,
   auth.userHasAccess(toUser),
-  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
       const userId = parseInt(req.params.id, 10);
-      const result = await usersClient.update(req.body, userId, db);
+      const result = await getDb().access.users.update(req.body, userId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -66,7 +67,7 @@ users.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = parseInt(req.params.id, 10);
-      const result = await usersClient.remove(userId, db);
+      const result = await getDb().access.users.remove(userId);
       img.remove(result.profile_img);
       result.profile_img = '';
       res.json(result);
@@ -89,10 +90,9 @@ users.put(
     try {
       throwIfNotValid(req);
       if (req.file) {
-        const result = await usersClient.updateAvatar(
+        const result = await getDb().access.users.updateAvatar(
           parseInt(req.params.id, 10),
-          req.file.filename,
-          db
+          req.file.filename
         );
         log.debug('Updated avatar for user ' + req.params.id);
         return res.json(result);
@@ -115,7 +115,11 @@ users.delete(
       if (!user.profile_img) {
         throw new NoSuchResource('avatar');
       }
-      const result = await usersClient.updateAvatar(parseInt(req.params.id, 10), '', db);
+      const EMPTY_AVATAR = '';
+      const result = await getDb().access.users.updateAvatar(
+        parseInt(req.params.id, 10),
+        EMPTY_AVATAR
+      );
       return res.json(result);
     } catch (err) {
       next(err);
@@ -130,17 +134,17 @@ users.post(
   img.upload.single('avatar'),
   img.resize,
   validUserBody,
-  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Users.Create>, res: Response, next: NextFunction) => {
     try {
       throwIfNotValid(req);
-      const fields: UserData = {
+      const fields: Users.Create = {
         email: req.body.email,
         name: req.body.name,
         password: await auth.hash(req.body.password),
         profile_img: req.file?.filename ?? '',
         role_id: parseInt(req.body.role_id as any as string | '0', 10),
       };
-      const result = await usersClient.create(fields, db);
+      const result = await getDb().access.users.create(fields);
       res.json(result);
     } catch (err) {
       next(err);

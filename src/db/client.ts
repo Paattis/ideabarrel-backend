@@ -16,6 +16,16 @@ export namespace Comments {
   };
 }
 
+export namespace Roles {
+  export type Create = {
+    name: string;
+  };
+
+  export type Update = {
+    name: string;
+  };
+}
+
 export namespace Users {
   export type Create = {
     name: string;

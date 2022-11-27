@@ -2,9 +2,9 @@ import auth from '../utils/auth';
 import { Router, Response, NextFunction, Request } from 'express';
 import { Comments, getDb } from '../db/client';
 import { TRequest as TRequest } from '../utils/types';
-import { PublicUser } from '../db/users';
 import { User } from '@prisma/client';
 import { throwIfNotValid, validCommentBody } from '../validation/schema';
+import { PublicUser } from '../db/UserClient';
 
 const comments = Router();
 

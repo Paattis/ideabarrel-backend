@@ -93,21 +93,10 @@ export class UserClient extends AbstractClient {
    * @returns New User as a {@link PublicUser}
    */
   async create(from: Users.Create) {
-    try {
-      const role = await this.ctx.prisma.role.findFirstOrThrow({
-        where: { id: from.role_id },
-      });
-      log.debug(`Role is ${role.name}`);
-    } catch (err) {
-      throw new BadRequest('No role exists with that id, cant create user.');
-    }
-
-    // Create user and store it to database.
     const user = await this.ctx.prisma.user.create({
       data: from,
       select: this.publicFields,
     });
-
     log.debug('Created new user: ' + JSON.stringify(user));
     return user;
   }
@@ -121,14 +110,6 @@ export class UserClient extends AbstractClient {
    * @returns User as a {@link PublicUser}
    */
   async update(from: Users.Update, userId: number) {
-    try {
-      await this.ctx.prisma.role.findFirstOrThrow({ where: { id: from.role_id } });
-    } catch (err) {
-      throw new BadRequest(
-        'No role with such id. Cant update user.',
-        `Missing role ${from.role_id}`
-      );
-    }
     from.password = await auth.hash(from.password);
     try {
       const user = await this.ctx.prisma.user.update({
@@ -160,6 +141,15 @@ export class UserClient extends AbstractClient {
       return user;
     } catch (err) {
       throw new NoSuchResource(this.TAG);
+    }
+  }
+
+  async emailExists(email:string) {
+    try {
+      const result = await this.ctx.prisma.user.findFirst({where: {email}});
+      return !result;
+    } catch (err) {
+      throw err;
     }
   }
 

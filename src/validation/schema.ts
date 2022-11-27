@@ -13,6 +13,7 @@ import {
   email,
   avatar,
   isStrong,
+  role,
 } from './helpers';
 
 export const throwIfNotValid = (req: TRequest<any>) => {
@@ -102,6 +103,7 @@ export const validUserBody = checkSchema({
   role_id: {
     toInt: true,
     isInt: isPositive,
+    custom: role.exists
   },
   password: {
     isString,

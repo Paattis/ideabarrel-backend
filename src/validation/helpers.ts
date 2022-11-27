@@ -1,6 +1,5 @@
 import { Meta } from 'express-validator';
-import { db } from '../db/context';
-import usersClient from '../db/users';
+import { getDb } from '../db/client';
 
 export const capitalize = {
   options: (value: string, _: any) => {
@@ -38,13 +37,25 @@ export const user = {
 };
 export const email = {
   notInUse: {
-    options: async (value: any) => {
-      const existing = await usersClient.selectByEmailSecret(value, db);
-      if (existing) {
+    options: async (value: string) => {
+      const exists = await getDb().access.users.emailExists(value);
+      if (exists) {
         throw new Error('email');
       }
     },
     errorMessage: 'is already taken',
+  },
+};
+
+export const role = {
+  exists: {
+    options: async (value: number) => {
+      const exists = await getDb().access.roles.exists(value);
+      if (!exists) {
+        throw new Error('role_id');
+      }
+    },
+    errorMessage: 'doesnt exist',
   },
 };
 
