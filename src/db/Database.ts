@@ -143,10 +143,7 @@ export function db() {
   return instance;
 }
 
-export function dbMock(
-  type: DbType,
-  prisma: DeepMockProxy<PrismaClient> | null = null
-) {
+export function dbMock(type: DbType, prisma: DeepMockProxy<PrismaClient> | null = null) {
   switch (type) {
     case DbType.MOCK_CLIENT:
       if (activeType !== DbType.MOCK_CLIENT) {
