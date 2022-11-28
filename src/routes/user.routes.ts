@@ -4,7 +4,7 @@ import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { BadRequest, NoSuchResource, ServerError } from '../utils/errors';
+import { NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 import {
@@ -165,7 +165,7 @@ users.post(
     try {
       throwIfNotValid(req);
       const exist = await db().users.emailExists(req.body.email);
-      return res.json({ available: !exist });
+      return res.json({ free: !exist });
     } catch (error) {
       next(error);
     } finally {

@@ -397,7 +397,7 @@ describe('POST /users/email/free', () => {
       .expect(200);
 
     // Results
-    expect(res.body).toMatchObject({ available: true });
+    expect(res.body).toMatchObject({ free: true });
   });
 
   test('Route should return response with false and status code of 200, when email is taken', async () => {
@@ -411,7 +411,7 @@ describe('POST /users/email/free', () => {
       .expect(200);
 
     // Results
-    expect(res.body).toMatchObject({ available: false });
+    expect(res.body).toMatchObject({ free: false });
   });
 
   test('Route should return response with errors and status code of 400, request is wrong', async () => {
