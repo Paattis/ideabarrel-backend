@@ -27,7 +27,7 @@ export const validIdeaBody = checkSchema({
   title: {
     isString,
     notEmpty,
-    isLength: max(100),
+    isLength: max(40),
     trim: true,
   },
   content: {
@@ -101,9 +101,9 @@ export const validUserBody = checkSchema({
   name: {
     isString,
     notEmpty,
-    isLength: inRange(2, 255),
+    isLength: inRange(3, 20),
     matches: {
-      options: /^[a-z ,.'-]+$/i,
+      options: /^[a-zA-ZäöüÄÖÜß ,.'-]+$/i,
       errorMessage: 'must not contain special characters',
     },
     trim: true,

@@ -64,7 +64,7 @@ export const isStrong = {
     minLength: 8,
     minNumbers: 1,
     minUppercase: 1,
-    minLowercase: 1,
+    minLowercase: 0,
     minSymbols: 0,
   },
   errorMessage:
