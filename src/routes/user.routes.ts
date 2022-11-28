@@ -4,10 +4,15 @@ import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { NoSuchResource, ServerError } from '../utils/errors';
+import { BadRequest, NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
-import { throwIfNotValid, validAvatar, validUserBody } from '../validation/schema';
+import {
+  throwIfNotValid,
+  validAvatar,
+  validEmailCheck,
+  validUserBody,
+} from '../validation/schema';
 
 const users = Router();
 
@@ -147,6 +152,22 @@ users.post(
       res.json(result);
     } catch (err) {
       next(err);
+    } finally {
+      next();
+    }
+  }
+);
+
+users.post(
+  '/email/free',
+  validEmailCheck,
+  async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    try {
+      throwIfNotValid(req);
+      const exist = await db().users.emailExists(req.body.email);
+      return res.json({ available: !exist });
+    } catch (error) {
+      next(error);
     } finally {
       next();
     }

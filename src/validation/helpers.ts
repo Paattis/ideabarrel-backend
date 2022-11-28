@@ -18,7 +18,7 @@ export const notEmpty = {
   errorMessage: 'must not be empty',
 };
 export const isEmail = {
-  errorMessage: 'is not email',
+  errorMessage: 'is not valid email address',
 };
 export const isPositive = {
   errorMessage: 'must be of positive int type',

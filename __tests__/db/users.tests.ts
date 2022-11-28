@@ -100,4 +100,14 @@ describe('Users database access client', () => {
     prismaMock.user.findFirst.mockResolvedValue(null);
     await expect(db.users.selectByEmailSecret(user1.name)).resolves.toBeNull();
   });
+
+  test('should return true when email exists', async () => {
+    prismaMock.user.findFirst.mockResolvedValue({ email: 'user@app.com' } as any);
+    await expect(db.users.emailExists('user@app.com')).resolves.toBe(true);
+  });
+
+  test('should return false when email exists', async () => {
+    prismaMock.user.findFirst.mockResolvedValue({ email: 'user2@app.com' } as any);
+    await expect(db.users.emailExists('user@app.com')).resolves.toBe(false);
+  });
 });

@@ -149,7 +149,7 @@ export class UserClient extends AbstractClient {
   async emailExists(email: string) {
     try {
       const result = await this.ctx.prisma.user.findFirst({ where: { email } });
-      return !result;
+      return result?.email === email;
     } catch (err) {
       throw err;
     }

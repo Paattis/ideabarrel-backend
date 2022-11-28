@@ -381,3 +381,62 @@ describe('PUT /users/:id', () => {
     await request(app).delete('/users/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });
+
+/**
+ * Tests for POST method on route /users/email/free
+ */
+describe('POST /users/email/free', () => {
+  test('Route should return response with true and status code of 200, when email is free', async () => {
+    // Mock Resulting action
+    mockDb.users.emailExists.mockResolvedValue(false);
+
+    // Action
+    const res = await request(app)
+      .post('/users/email/free')
+      .send({ email: 'user2@app.com' })
+      .expect(200);
+
+    // Results
+    expect(res.body).toMatchObject({ available: true });
+  });
+
+  test('Route should return response with false and status code of 200, when email is taken', async () => {
+    // Mock Resulting action
+    mockDb.users.emailExists.mockResolvedValue(true);
+
+    // Action
+    const res = await request(app)
+      .post('/users/email/free')
+      .send({ email: 'user@app.com' })
+      .expect(200);
+
+    // Results
+    expect(res.body).toMatchObject({ available: false });
+  });
+
+  test('Route should return response with errors and status code of 400, request is wrong', async () => {
+    // Mock Resulting action
+
+    // Action
+    const res = await request(app)
+      .post('/users/email/free')
+      .send({ email: '' })
+      .expect(400);
+
+    // Results
+    expect(res.body).toMatchObject({
+      errors: [
+        {
+          param: 'email',
+          msg: 'must not be empty',
+        },
+        {
+          param: 'email',
+          msg: 'is not valid email address',
+        },
+      ],
+      msg: 'Invalid request body',
+      status: 400,
+    });
+  });
+});

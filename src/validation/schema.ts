@@ -61,6 +61,14 @@ export const validTagBody = checkSchema({
   },
 });
 
+export const validEmailCheck = checkSchema({
+  email: {
+    isString,
+    notEmpty,
+    isEmail,
+  },
+});
+
 export const validAuthBody = checkSchema({
   email: {
     isString,
