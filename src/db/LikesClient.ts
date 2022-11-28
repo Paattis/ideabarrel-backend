@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { Like, User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
@@ -19,7 +19,7 @@ export class LikesClient extends AbstractClient {
    * @returns Array of {@link Like}s
    */
   async all() {
-    return await this.ctx.prisma.like.findMany();
+    return await this.ctx.prisma.like.findMany({ select: this.publicFields });
   }
 
   /**
@@ -74,6 +74,44 @@ export class LikesClient extends AbstractClient {
       return result;
     } catch (err) {
       throw new NoSuchResource('like', `No like with id: ${likeId}`);
+    }
+  }
+
+  /**
+   * Removes specified user and returns that object.
+   *
+   * @param ideaId Id of the idea
+   * @param userId Id of the user
+   * @returns deleted Like object
+   */
+  async removeFromIdea(ideaId: number, userId: number) {
+    try {
+      const result = await this.ctx.prisma.like.delete({
+        where: { likeIdentifier: { idea_id: ideaId, user_id: userId } },
+        select: this.publicFields,
+      });
+      return result;
+    } catch (err) {
+      throw new BadRequest('Unable to dislike this idea');
+    }
+  }
+
+  /**
+   * Removes specified user and returns that object.
+   *
+   * @param ideaId Id of the idea
+   * @param userId Id of the user
+   * @returns deleted Like object
+   */
+  async createForIdea(ideaId: number, userId: number) {
+    try {
+      const result = await this.ctx.prisma.like.create({
+        data: { user_id: userId, idea_id: ideaId },
+        select: this.publicFields,
+      });
+      return result;
+    } catch (err) {
+      throw new BadRequest('Unable to like this idea');
     }
   }
 

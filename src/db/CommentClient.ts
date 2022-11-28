@@ -19,7 +19,7 @@ export class CommentsClient extends AbstractClient {
    * @returns Array of {@link Comment}s
    */
   async all() {
-    return await this.ctx.prisma.comment.findMany();
+    return await this.ctx.prisma.comment.findMany({ select: this.publicFields });
   }
 
   /**

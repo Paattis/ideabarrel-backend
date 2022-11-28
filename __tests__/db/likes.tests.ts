@@ -1,7 +1,7 @@
 import { Like, PrismaClient } from '@prisma/client';
 import { mockDeep, mockReset } from 'jest-mock-extended';
 import { DbType, dbMock, Likes } from '../../src/db/Database';
-import { NoSuchResource } from '../../src/utils/errors';
+import { BadRequest, NoSuchResource } from '../../src/utils/errors';
 
 const prismaMock = mockDeep<PrismaClient>();
 const db = dbMock(DbType.MOCK_PRISMA, prismaMock);
@@ -15,6 +15,14 @@ const like: Like = {
   user_id: 1,
 };
 
+const user = {
+  id: 2,
+  name: 'Test User 1',
+  profile_img: '',
+  email: 'user@app.com',
+  role_id: 1,
+};
+
 describe('Likes client remove', () => {
   test('Should remove existing like', async () => {
     prismaMock.like.delete.mockResolvedValue(like);
@@ -25,9 +33,23 @@ describe('Likes client remove', () => {
     });
   });
 
+  test('Should remove existing like from idea', async () => {
+    prismaMock.like.delete.mockResolvedValue(like);
+    expect(await db.likes.removeFromIdea(like.id, user.id)).toMatchObject({
+      id: 1,
+      idea_id: 1,
+      user_id: 1,
+    });
+  });
+
   test('Should throw error when like is not found', async () => {
     prismaMock.like.delete.mockRejectedValue(new Error('Mock Error'));
     expect(db.likes.remove(1)).rejects.toThrow(NoSuchResource);
+  });
+
+  test('Should throw error when like is not found', async () => {
+    prismaMock.like.delete.mockRejectedValue(new Error('Mock Error'));
+    expect(db.likes.removeFromIdea(1, 2)).rejects.toThrow(BadRequest);
   });
 });
 

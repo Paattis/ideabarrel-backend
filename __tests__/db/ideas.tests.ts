@@ -69,7 +69,7 @@ const idea2 = {
 describe('Ideas database access client', () => {
   test('Should return idea by its id', async () => {
     prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
-    await expect(db.ideas.select(1, user1)).resolves.toMatchObject({ id: 1 });
+    await expect(db.ideas.select(1)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should create idea', async () => {
@@ -89,7 +89,7 @@ describe('Ideas database access client', () => {
 
   test('Should throw error when no idea is found', async () => {
     prismaMock.idea.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(db.ideas.select(1, user1)).rejects.toThrow(NoSuchResource);
+    await expect(db.ideas.select(1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should remove existing idea', async () => {

@@ -57,7 +57,7 @@ export class IdeasClient extends AbstractClient {
    * @throws Error on not found.
    * @returns Idea {@link RichIdea}
    */
-  async select(id: number, user: User) {
+  async select(id: number) {
     try {
       return await this.ctx.prisma.idea.findFirstOrThrow({
         where: { id },

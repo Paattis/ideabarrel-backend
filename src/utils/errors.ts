@@ -108,5 +108,5 @@ export const httpHandler = async (
     await img.remove(req.file?.filename ?? '');
   }
   respondWithError(res, err);
-  next(err);
+  next();
 };

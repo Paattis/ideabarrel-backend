@@ -68,4 +68,34 @@ likes.delete(
   }
 );
 
+likes.delete(
+  '/idea/:id',
+  auth.userHasAccess(toLike),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ideaId = Number.parseInt(req.params.id, 10);
+      const user = req.user as User;
+      const result = await db().likes.removeFromIdea(ideaId, user.id);
+      return res.json(result);
+    } catch (err) {
+      next(err);
+    } finally {
+      next();
+    }
+  }
+);
+
+likes.post('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const ideaId = Number.parseInt(req.params.id, 10);
+    const user = req.user as User;
+    const result = await db().likes.createForIdea(ideaId, user.id);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  } finally {
+    next();
+  }
+});
+
 export { likes as router };

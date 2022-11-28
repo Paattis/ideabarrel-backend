@@ -31,7 +31,7 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
 ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number.parseInt(req.params.id, 10);
-    const result = await db().ideas.select(id, req.user as User);
+    const result = await db().ideas.select(id);
     res.json(result);
   } catch (err) {
     respondWithError(res, err);
