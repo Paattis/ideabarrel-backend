@@ -37,7 +37,7 @@ roles.get(
         const result = await db().roles.selectWithUsers(roleId);
         res.json(result);
       } else {
-        const result: Role = await db().roles.select(roleId);
+        const result = await db().roles.select(roleId);
         res.json(result);
       }
     } catch (err) {
