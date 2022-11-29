@@ -48,7 +48,12 @@ $ npm run dev
 <br>
 <br>
 
-# Users
+# API Endpoints
+
+## Users
+<details>
+<summary></summary>
+
 ## <span style="color: #6ec3d4">`GET`</span> - `/users`
 ### Response
 `application/json`
@@ -315,9 +320,11 @@ avatar: image file
   ]
 }
 ```
+</details>
 
-
-# Authentication
+## Authentication
+<details>
+<summary></summary>
 
 ## <span style="color: #87d65a">`POST`</span> - `/auth/login`
 
@@ -372,9 +379,11 @@ avatar: image file
   "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
 }
 ```
+</details>
 
-
-# Roles
+## Roles
+<details>
+<summary></summary>
 
 ## <span style="color: #87d65a">`POST`</span> - `/roles`
 
@@ -523,9 +532,12 @@ avatar: image file
   "name": "Senior Developer",
 },
 ```
+</details>
 
+## Ideas
+<details>
+<summary></summary>
 
-# Ideas
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
 ### Summary
 Get all of the existing ideas.
@@ -569,6 +581,8 @@ Get all of the existing ideas.
   },
 ]
 ```
+
+
 
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
 ### Summary
@@ -772,9 +786,11 @@ Remove idea with specified id.
 }
 ```
 
+</details>
 
-# Tags
-
+## Tags
+<details>
+<summary></summary>
 
 ## <span style="color: #6ec3d4">`GET`</span> - `/tags`
 ### Summary
@@ -988,3 +1004,5 @@ Delete specified tag.
   "description": "Ideas related to snacks served in office"
 }
 ```
+
+</details>
