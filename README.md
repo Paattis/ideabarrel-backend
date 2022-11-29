@@ -496,3 +496,176 @@ avatar: image file
     ]
   }
 ```
+
+
+## <span style="color: #87d65a">`POST`</span> - `/ideas`
+
+### Privileges
+- authenticated user
+
+### Request
+`application/json`
+```json
+{
+  "title": "New idea",
+  "content": "Some cool idea, must be implemented.",
+  "tags": [ 1, 17 ]
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [],
+  "user": {
+    "id": 268,
+    "name": "Victor Mike"
+  },
+  "content": "Some cool idea, must be implemented.",
+  "likes": [],
+  "title": "New idea",
+  "tags": [
+    {
+      "tag": {
+        "name": "admin",
+        "id": 1
+      }
+    },
+    {
+      "tag": {
+        "name": "RnD",
+        "id": 17
+      }
+    }
+  ]
+}
+```
+
+## <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
+
+### Privileges
+- authenticated owner
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "tags": [ 1, 17, 28 ]
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "user": {
+    "id": 268,
+    "name": "Victor Mike"
+  },
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [
+    {
+      "content": "Not gonna happen",
+      "user": {
+        "id": 1,
+        "name": "admin"
+      },
+      "id": 2,
+      "created_at": "2022-11-24T10:36:10.190Z"
+    },
+  ],
+  "likes": [
+    {
+      "user_id": 1
+    }
+  ],
+  "tags": [
+    {
+      "tag": {
+        "name": "Cafeteria",
+        "id": 1
+      }
+    },
+    {
+      "tag": {
+        "name": "Management",
+        "id": 17
+      }
+    },
+    {
+      "tag": {
+        "name": "RnD",
+        "id": 28
+      }
+    }
+  ]
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
+
+### Privileges
+- authenticated owner
+- admin
+
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "user": {
+    "id": 268,
+    "name": "Victor Mike"
+  },
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [
+    {
+      "content": "Not gonna happen",
+      "user": {
+        "id": 1,
+        "name": "admin"
+      },
+      "id": 2,
+      "created_at": "2022-11-24T10:36:10.190Z"
+    },
+  ],
+  "likes": [
+    {
+      "user_id": 1
+    }
+  ],
+  "tags": [
+    {
+      "tag": {
+        "name": "Cafeteria",
+        "id": 1
+      }
+    },
+    {
+      "tag": {
+        "name": "Management",
+        "id": 17
+      }
+    },
+    {
+      "tag": {
+        "name": "RnD",
+        "id": 28
+      }
+    }
+  ]
+}
+```
