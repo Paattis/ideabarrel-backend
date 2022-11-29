@@ -27,7 +27,7 @@ router.post(
       }
       const { password, ...result } = user;
       const token = auth.jwt({ id: user.id, role: user.role.id });
-      res.json({ result, token });
+      res.json({ ...result, token });
     } catch (err) {
       next(err);
     } finally {

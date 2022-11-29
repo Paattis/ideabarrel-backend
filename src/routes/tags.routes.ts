@@ -1,4 +1,4 @@
-import { Tag } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
@@ -7,14 +7,21 @@ import { db, Tags } from '../db/Database';
 
 const tags = Router();
 
+const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+
 type QueryParam = 'usr';
 const queryisPresent = (req: Request, param: QueryParam): boolean =>
   Boolean(req.query[param]);
 
 tags.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await db().tags.all();
-    res.json(result);
+    if (queryisPresent(req, 'usr')) {
+      const result = await db().tags.allTagsWithUsers();
+      res.json(result);
+    } else {
+      const result = await db().tags.all();
+      res.json(result);
+    }
   } catch (err) {
     next(err);
   } finally {
@@ -32,7 +39,7 @@ tags.get(
         const result = await db().tags.selectWithUsers(id);
         res.json(result);
       } else {
-        const result: Tag = await db().tags.select(id);
+        const result = await db().tags.select(id);
         res.json(result);
       }
     } catch (err) {
@@ -64,7 +71,7 @@ tags.post(
 tags.post(
   '/:tagId/user/:userId',
   auth.required,
-  auth.userHasAccess(auth.onlyAdmin),
+  auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
     try {
       const result = await db().tags.addUserToTag(
@@ -83,7 +90,7 @@ tags.post(
 tags.delete(
   '/:tagId/user/:userId',
   auth.required,
-  auth.userHasAccess(auth.onlyAdmin),
+  auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Delete>, res: Response, next: NextFunction) => {
     try {
       const result = await db().tags.removeUserFromTag(

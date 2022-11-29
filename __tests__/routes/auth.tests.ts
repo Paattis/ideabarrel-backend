@@ -70,11 +70,9 @@ describe('POST /auth/login', () => {
 
     // Result
     expect(res.body).toMatchObject({
-      result: {
-        name: 'Test User',
-        email: 'user@app.com',
-        id: 1,
-      },
+      name: 'Test User',
+      email: 'user@app.com',
+      id: 1,
     });
     expect(res.body.token).not.toBeNull();
   });

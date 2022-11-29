@@ -11,8 +11,8 @@ export class RolesClient extends AbstractClient {
   };
 
   public readonly withUsers = {
-    users: { select: { name: true, id: true } }
-  }
+    users: { select: { name: true, id: true } },
+  };
 
   /**
    * Get all roles.
@@ -20,7 +20,7 @@ export class RolesClient extends AbstractClient {
    * @returns Array of {@link Role}s
    */
   async all() {
-    return await this.ctx.prisma.role.findMany({select: this.publicFields});
+    return await this.ctx.prisma.role.findMany({ select: this.publicFields });
   }
 
   /**
@@ -30,7 +30,9 @@ export class RolesClient extends AbstractClient {
    * @returns Array of {@link RoleWithUsers}'
    */
   async allRolesWithUsers() {
-    return await this.ctx.prisma.role.findMany({ select: {...this.publicFields, ...this.withUsers} });
+    return await this.ctx.prisma.role.findMany({
+      select: { ...this.publicFields, ...this.withUsers },
+    });
   }
 
   /**
@@ -44,7 +46,7 @@ export class RolesClient extends AbstractClient {
     try {
       return await this.ctx.prisma.role.findFirstOrThrow({
         where: { id: roleId },
-        select: {...this.publicFields, ...this.withUsers}
+        select: { ...this.publicFields, ...this.withUsers },
       });
     } catch (err) {
       throw new NoSuchResource('role');
@@ -60,7 +62,10 @@ export class RolesClient extends AbstractClient {
    */
   async select(roleId: number) {
     try {
-      return await this.ctx.prisma.role.findFirstOrThrow({ where: { id: roleId }, select: this.publicFields });
+      return await this.ctx.prisma.role.findFirstOrThrow({
+        where: { id: roleId },
+        select: this.publicFields,
+      });
     } catch (err) {
       throw new NoSuchResource('role');
     }

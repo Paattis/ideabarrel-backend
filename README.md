@@ -57,13 +57,13 @@ $ npm run dev
   {
     "name": "Victor Mike",
     "profile_img": "",
-    "email": "victor.mike@nokia.com",
+    "email": "victor.mike@app.com",
     "id": 10,
+    "created_at": "2022-11-23T17:23:24.903Z",
     "role": {
       "name": "Junior DevOps Engineer",
       "id": 1
     },
-    "created_at": "2022-11-23T17:23:24.903Z",
     "comments": [
       {
         "content": "Nice idea",
@@ -98,13 +98,13 @@ $ npm run dev
 {
   "name": "Victor Mike",
   "profile_img": "",
-  "email": "victor.mike@nokia.com",
+  "email": "victor.mike@app.com",
   "id": 10,
+  "created_at": "2022-11-23T17:23:24.903Z",
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
   },
-  "created_at": "2022-11-23T17:23:24.903Z",
   "comments": [
     {
       "content": "Nice idea",
@@ -149,16 +149,16 @@ avatar:   image file
 `application/json`
 ```json
 {
-  "comments": [],
   "name": "Victor Mike",
   "profile_img": "1669052777822-668015599.jpg",
   "email": "victor.mike@app.com",
   "id": 10,
+  "created_at": "2022-11-21T17:46:18.001Z",
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
   },
-  "created_at": "2022-11-21T17:46:18.001Z",
+  "comments": [],
   "ideas": [],
   "likes": []
 }
@@ -185,12 +185,19 @@ avatar:   image file
   "profile_img": "1669050855379-231410051.jpg",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -230,12 +237,19 @@ avatar: image file
   "profile_img": "NEW-IMG.jpg",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -271,12 +285,19 @@ avatar: image file
   "profile_img": "",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -316,40 +337,38 @@ avatar: image file
 `application/json`
 ```json
 {
-  "result": {
-    "name": "Victor Mike",
-    "profile_img": "",
-    "email": "victor.mike@nokia.com",
-    "id": 10,
-    "role": {
-      "name": "Junior DevOps Engineer",
-      "id": 1
-    },
-    "created_at": "2022-11-23T17:23:24.903Z",
-    "comments": [
-      {
-        "content": "Nice idea",
-        "id": 2,
-        "updated_at": "2022-11-24T10:36:10.190Z",
-        "idea": {
-          "id": 1
-        }
-      },
-    ],
-    "ideas": [
-      {
-        "id": 5,
-        "created_at": "2022-11-29T14:19:22.952Z",
-        "title": "New idea",
-        "content": "Some cool idea, must be implemented."
-      }
-    ],
-    "likes": [
-      {
-        "idea_id": 1
-      }
-    ]
+  "name": "Victor Mike",
+  "profile_img": "",
+  "email": "victor.mike@app.com",
+  "id": 10,
+  "created_at": "2022-11-23T17:23:24.903Z",
+  "role": {
+    "name": "Junior DevOps Engineer",
+    "id": 1
   },
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ],
   "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
 }
 ```
@@ -508,6 +527,8 @@ avatar: image file
 
 # Ideas
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
+### Summary
+Get all of the existing ideas.
 ### Response
 `application/json`
 ```json
@@ -550,6 +571,10 @@ avatar: image file
 ```
 
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
+### Summary
+Get idea with specified id.
+### Required privileges
+- authenticated user
 ### Response
 `application/json`
 ```json
@@ -591,9 +616,11 @@ avatar: image file
 
 
 ## <span style="color: #87d65a">`POST`</span> - `/ideas`
-
-### Privileges
+### Summary
+Create new idea.
+### Required Privileges
 - authenticated user
+- admin
 
 ### Request
 `application/json`
@@ -617,7 +644,11 @@ avatar: image file
     "name": "Victor Mike"
   },
   "content": "Some cool idea, must be implemented.",
-  "likes": [],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ],
   "title": "New idea",
   "tags": [
     {
@@ -637,8 +668,9 @@ avatar: image file
 ```
 
 ## <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
-
-### Privileges
+### Summary
+Update idea with specified id.
+### Required Privileges
 - authenticated owner
 - admin
 
@@ -693,8 +725,10 @@ avatar: image file
 
 
 ## <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
+### Summary
+Remove idea with specified id.
 
-### Privileges
+### Required Privileges
 - authenticated owner
 - admin
 
@@ -735,5 +769,222 @@ avatar: image file
       }
     },
   ]
+}
+```
+
+
+# Tags
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags`
+### Summary
+Get all of the existing tags.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Food",
+    "description": "Ideas related to food.",
+  },
+  {
+    "id": 2,
+    "name": "Management",
+    "description": "Ideas related to management.",
+  },
+]
+```
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags?usr=1`
+### Summary
+Get all of the existing tags, and include users who have subscribed to them.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Food",
+    "description": "Ideas related to food.",
+    "users": [
+      {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Management",
+    "description": "Ideas related to management.",
+    "users": [
+      {
+        "name": "John Doe",
+        "id": 2
+      },
+      {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    ]
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id`
+### Summary
+Get tag with specified id.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Food",
+  "description": "Ideas related to food.",
+},
+```
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id?usr=1`
+### Summary
+Get tag with specified id. Include users that have subscribed to it.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Food",
+  "description": "Ideas related to food.",
+  "users": [
+    {
+      "name": "Victor Mike",
+      "id": 10
+    }
+  ]
+},
+```
+
+
+## <span style="color: #87d65a">`POST`</span> - `/tags`
+### Summary
+Create new tag. Description field is optional.
+### Required Privileges
+- admin
+### Request
+`application/json`
+```json
+{
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
+}
+```
+```json
+{
+  "name": "Snacks",
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
+}
+```
+
+## <span style="color: #87d65a">`POST`</span> - `/tags/:tagId/user/:userId`
+### Summary
+User subscribes to specified tag.
+### Required Privileges
+- authenticated user (same as target)
+- admin
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office",
+  "users": [
+    {
+      "user": {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    }
+  ]
+}
+```
+
+
+## <span style="color: #1589F0">`PUT`</span> - `/tags/:tagId`
+### Summary
+Update tag with specified id.
+### Required Privileges
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "name": "Snacks V2",
+  "description": "Ideas related to snacks served in office",
+}
+```
+### Response
+`application/json`
+```json
+{
+  "id": 2,
+  "name": "Snacks V2",
+  "description": "Ideas related to snacks served in office"
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/tags/:tagId/user/:userId`
+### Summary
+User unsubscribes from specified tag.
+
+### Required Privileges
+- authenticated user (same as target)
+- admin
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office",
+  "users": []
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/tags/:id`
+### Summary
+Delete specified tag.
+### Required Privileges
+- admin
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
 }
 ```

@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { log } from '../logger/log';
-import { NoSuchResource } from '../utils/errors';
+import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
 import { Tags } from './Database';
 
@@ -10,7 +10,9 @@ export class TagsClient extends AbstractClient {
     id: true,
     name: true,
     description: true,
-    users: { select: { name: true, id: true } },
+  };
+  public readonly withUsers = {
+    users: { select: { user: { select: { name: true, id: true } } } },
   };
 
   /**
@@ -19,7 +21,7 @@ export class TagsClient extends AbstractClient {
    * @returns Array of {@link Tag}s
    */
   async all() {
-    return await this.ctx.prisma.tag.findMany();
+    return await this.ctx.prisma.tag.findMany({ select: this.publicFields });
   }
 
   /**
@@ -29,7 +31,9 @@ export class TagsClient extends AbstractClient {
    * @returns Array of {@link TagWithUsers}'
    */
   async allTagsWithUsers() {
-    return await this.ctx.prisma.tag.findMany();
+    return await this.ctx.prisma.tag.findMany({
+      select: { ...this.publicFields, ...this.withUsers },
+    });
   }
 
   /**
@@ -43,7 +47,7 @@ export class TagsClient extends AbstractClient {
     try {
       return await this.ctx.prisma.tag.findFirstOrThrow({
         where: { id: TagId },
-        // select: publicFields,
+        select: { ...this.publicFields, ...this.withUsers },
       });
     } catch (err) {
       throw new NoSuchResource(this.TAG);
@@ -59,7 +63,10 @@ export class TagsClient extends AbstractClient {
    */
   async select(tagId: number) {
     try {
-      return await this.ctx.prisma.tag.findFirstOrThrow({ where: { id: tagId } });
+      return await this.ctx.prisma.tag.findFirstOrThrow({
+        where: { id: tagId },
+        select: this.publicFields,
+      });
     } catch (err) {
       throw new NoSuchResource(this.TAG);
     }
@@ -78,11 +85,12 @@ export class TagsClient extends AbstractClient {
           name: from.name,
           description: from.description ?? '',
         },
+        select: this.publicFields,
       });
       log.info('Created new Tag: ' + JSON.stringify(result));
       return result;
     } catch (err) {
-      throw err;
+      throw new BadRequest('Unable to create tag');
     }
   }
 
@@ -96,12 +104,12 @@ export class TagsClient extends AbstractClient {
     try {
       const result = await this.ctx.prisma.tag.update({
         where: { id: tagId },
+        select: { ...this.publicFields, ...this.withUsers },
         data: {
           users: {
             create: [{ user: { connect: { id: userId } } }],
           },
         },
-        include: { users: true },
       });
 
       return result;
@@ -109,7 +117,7 @@ export class TagsClient extends AbstractClient {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         // just return since this error signifies that the relation already
         // exists and checking this with a query is distractingly difficult
-        return {};
+        throw new BadRequest('User is already subscribed to this tag');
       }
     }
   }
@@ -122,7 +130,7 @@ export class TagsClient extends AbstractClient {
    */
   async removeUserFromTag(tagId: number, userId: number) {
     try {
-      await this.ctx.prisma.tagUser.delete({
+      const del = await this.ctx.prisma.tagUser.delete({
         where: {
           user_id_tag_id: {
             user_id: userId,
@@ -130,8 +138,11 @@ export class TagsClient extends AbstractClient {
           },
         },
       });
+      if (del) {
+        return await this.selectWithUsers(tagId);
+      }
     } catch (err) {
-      throw new Error('Something went wrong');
+      throw new BadRequest('User is not subscribed to this tag');
     }
   }
 
@@ -139,6 +150,7 @@ export class TagsClient extends AbstractClient {
     try {
       const result = await this.ctx.prisma.tag.delete({
         where: { id: TagId },
+        select: this.publicFields,
       });
       return result;
     } catch (err) {
@@ -150,6 +162,7 @@ export class TagsClient extends AbstractClient {
     try {
       const result = await this.ctx.prisma.tag.update({
         where: { id: TagId },
+        select: this.publicFields,
         data: from,
       });
       return result;
