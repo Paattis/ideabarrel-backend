@@ -55,17 +55,38 @@ $ npm run dev
 ```json
 [
   {
-    "comments": [],
-    "name": "User",
+    "name": "Victor Mike",
     "profile_img": "",
-    "email": "user@app.com",
-    "id": 1,
+    "email": "victor.mike@nokia.com",
+    "id": 10,
     "role": {
-      "name": "admin",
+      "name": "Junior DevOps Engineer",
       "id": 1
     },
-    "created_at": "2022-11-21T14:54:32.887Z",
-    "ideas": []
+    "created_at": "2022-11-23T17:23:24.903Z",
+    "comments": [
+      {
+        "content": "Nice idea",
+        "id": 2,
+        "updated_at": "2022-11-24T10:36:10.190Z",
+        "idea": {
+          "id": 1
+        }
+      },
+    ],
+    "ideas": [
+      {
+        "id": 5,
+        "created_at": "2022-11-29T14:19:22.952Z",
+        "title": "New idea",
+        "content": "Some cool idea, must be implemented."
+      }
+    ],
+    "likes": [
+      {
+        "idea_id": 1
+      }
+    ]
   },
 ]
 ```
@@ -75,17 +96,38 @@ $ npm run dev
 `application/json`
 ```json
 {
-  "comments": [],
-  "name": "User",
+  "name": "Victor Mike",
   "profile_img": "",
-  "email": "user@app.com",
-  "id": 1,
+  "email": "victor.mike@nokia.com",
+  "id": 10,
   "role": {
-    "name": "admin",
+    "name": "Junior DevOps Engineer",
     "id": 1
   },
-  "created_at": "2022-11-21T14:54:32.887Z",
-  "ideas": []
+  "created_at": "2022-11-23T17:23:24.903Z",
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ]
 },
 ```
 
@@ -96,10 +138,10 @@ $ npm run dev
 ### Request
 `multipart/form-data`
 ```
-name:     User,
+name:     Victor Mike,
 role_id:  2,
-password: password,
-email:    user@app.com,
+password: PassWord123,
+email:    victor.mike@app.com,
 avatar:   image file
 ```
 
@@ -108,16 +150,17 @@ avatar:   image file
 ```json
 {
   "comments": [],
-  "name": "User",
+  "name": "Victor Mike",
   "profile_img": "1669052777822-668015599.jpg",
-  "email": "user@nokia.com",
-  "id": 1,
+  "email": "victor.mike@app.com",
+  "id": 10,
   "role": {
-    "name": "Senior Engineer",
-    "id": 2
+    "name": "Junior DevOps Engineer",
+    "id": 1
   },
   "created_at": "2022-11-21T17:46:18.001Z",
-  "ideas": []
+  "ideas": [],
+  "likes": []
 }
 ```
 
@@ -127,10 +170,10 @@ avatar:   image file
 `application/json`
 ```json
   {
-    "name": "New Name",
-    "email": "new.email@app.com",
+    "name": "Micktor Vike",
+    "email": "micktor.vike@app.com",
     "role_id": 8,
-    "password": "newpassword"
+    "password": "NewPassword123"
   }
 ```
 
@@ -138,22 +181,33 @@ avatar:   image file
 `application/json`
 ```json
 {
-  "comments": [],
-  "name": "New Name",
+  "name": "Micktor Vike",
   "profile_img": "1669050855379-231410051.jpg",
-  "email": "new.email@app.com",
+  "email": "micktor.Vike@app.com",
   "id": 2,
   "role": {
-    "name": "New Role",
+    "name": "Senior DevOps Engineer",
     "id":8
   },
   "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": []
+  "ideas": [],
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ]
 }
 ```
-
-
-
 
 
 
@@ -172,17 +226,31 @@ avatar: image file
 `application/json`
 ```json
 {
-  "comments": [],
-  "name": "User",
-  "profile_img": "1669050855379-231410051.jpg",
-  "email": "user@nokia.com",
-  "id": 1,
+  "name": "Micktor Vike",
+  "profile_img": "NEW-IMG.jpg",
+  "email": "micktor.Vike@app.com",
+  "id": 2,
   "role": {
-    "name": "Senior Engineer",
-    "id": 2
+    "name": "Senior DevOps Engineer",
+    "id":8
   },
   "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": []
+  "ideas": [],
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ]
 }
 ```
 
@@ -199,17 +267,31 @@ avatar: image file
 `application/json`
 ```json
 {
-  "comments": [],
-  "name": "User",
+  "name": "Micktor Vike",
   "profile_img": "",
-  "email": "niklas@nokia.com",
+  "email": "micktor.Vike@app.com",
   "id": 2,
   "role": {
-    "name": "Senior Engineer",
-    "id": 2
+    "name": "Senior DevOps Engineer",
+    "id":8
   },
   "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": []
+  "ideas": [],
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ]
 }
 ```
 
@@ -225,8 +307,8 @@ avatar: image file
 `application/json`
 ```json
 {
-  "email": "user@app.com",
-  "password": "password"
+  "email": "victor.mike@app.com",
+  "password": "Password123"
 }
 ```
 
@@ -235,17 +317,38 @@ avatar: image file
 ```json
 {
   "result": {
-    "comments": [],
-    "name": "User",
-    "profile_img": "1669050855379-231410051.jpg",
-    "email": "user@app.com",
-    "id": 1,
+    "name": "Victor Mike",
+    "profile_img": "",
+    "email": "victor.mike@nokia.com",
+    "id": 10,
     "role": {
-      "name": "Senior Engineer",
+      "name": "Junior DevOps Engineer",
       "id": 1
     },
-    "created_at": "2022-11-21T15:02:10.929Z",
-    "ideas": []
+    "created_at": "2022-11-23T17:23:24.903Z",
+    "comments": [
+      {
+        "content": "Nice idea",
+        "id": 2,
+        "updated_at": "2022-11-24T10:36:10.190Z",
+        "idea": {
+          "id": 1
+        }
+      },
+    ],
+    "ideas": [
+      {
+        "id": 5,
+        "created_at": "2022-11-29T14:19:22.952Z",
+        "title": "New idea",
+        "content": "Some cool idea, must be implemented."
+      }
+    ],
+    "likes": [
+      {
+        "idea_id": 1
+      }
+    ]
   },
   "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
 }
@@ -297,7 +400,12 @@ avatar: image file
 {
   "id": 1,
   "name": "New name for role",
-  "users": []
+  "users": [
+    {
+      "name": "Victor Mike",
+      "id": 10
+    },
+  ]
 }
 ```
 
@@ -305,22 +413,6 @@ avatar: image file
 ### Required privileges
 - authenticated user
 - admin
-### Request
-`application/json`
-```json
-[
-  {
-    "id": 1,
-    "name": "Senior Developer",
-    "created_at": "2022-11-21T14:54:32.790Z",
-  },
-  {
-    "id": 2,
-    "name": "Senior Engineer",
-    "created_at": "2022-11-21T14:59:22.391Z",
-  }
-]
-```
 
 ### Response
 `application/json`
@@ -411,4 +503,237 @@ avatar: image file
   "id": 1,
   "name": "Senior Developer",
 },
+```
+
+
+# Ideas
+## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "title": "Add coffee machine",
+    "content": "We really should have access to free coffee.",
+    "created_at": "2022-11-23T17:52:40.243Z",
+    "user": {
+      "id": 1,
+      "name": "John Doe"
+    },
+    "comments": [
+      {
+        "content": "Nice idea",
+        "user": {
+          "id": 10,
+          "name": "Victor Mike"
+        },
+        "id": 2,
+        "created_at": "2022-11-24T10:36:10.190Z"
+      },
+    ],
+    "likes": [
+      {
+        "user_id": 1
+      }
+    ],
+    "tags": [
+      {
+        "tag": {
+          "name": "Cafeteria",
+          "id": 15
+        }
+      },
+    ]
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
+### Response
+`application/json`
+```json
+{
+    "id": 1,
+    "title": "Add coffee machine",
+    "content": "We really should have access to free coffee.",
+    "created_at": "2022-11-23T17:52:40.243Z",
+    "user": {
+      "id": 1,
+      "name": "John Doe"
+    },
+    "comments": [
+      {
+        "content": "Nice idea",
+        "user": {
+          "id": 10,
+          "name": "Victor Mike"
+        },
+        "id": 2,
+        "created_at": "2022-11-24T10:36:10.190Z"
+      },
+    ],
+    "likes": [
+      {
+        "user_id": 1
+      }
+    ],
+    "tags": [
+      {
+        "tag": {
+          "name": "Cafeteria",
+          "id": 15
+        }
+      },
+    ]
+  }
+```
+
+
+## <span style="color: #87d65a">`POST`</span> - `/ideas`
+
+### Privileges
+- authenticated user
+
+### Request
+`application/json`
+```json
+{
+  "title": "New idea",
+  "content": "Some cool idea, must be implemented.",
+  "tags": [ 1, 17 ]
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [],
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "content": "Some cool idea, must be implemented.",
+  "likes": [],
+  "title": "New idea",
+  "tags": [
+    {
+      "tag": {
+        "name": "Management",
+        "id": 1
+      }
+    },
+    {
+      "tag": {
+        "name": "RnD",
+        "id": 17
+      }
+    }
+  ]
+}
+```
+
+## <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
+
+### Privileges
+- authenticated owner
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "tags": [ 1 ]
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [
+    {
+      "content": "Not gonna happen",
+      "user": {
+        "id": 1,
+        "name": "John Doe"
+      },
+      "id": 2,
+      "created_at": "2022-11-24T10:36:10.190Z"
+    },
+  ],
+  "likes": [
+    {
+      "user_id": 1
+    }
+  ],
+  "tags": [
+    {
+      "tag": {
+        "name": "Cafeteria",
+        "id": 1
+      }
+    },
+  ]
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
+
+### Privileges
+- authenticated owner
+- admin
+
+
+### Response
+`application/json`
+```json
+{
+  "id": 5,
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "title": "New idea (Updated)",
+  "content": "Some cool idea, must be implemented. (Or not)",
+  "created_at": "2022-11-29T14:19:22.952Z",
+  "comments": [
+    {
+      "content": "Not gonna happen",
+      "user": {
+        "id": 1,
+        "name": "John Doe"
+      },
+      "id": 2,
+      "created_at": "2022-11-24T10:36:10.190Z"
+    },
+  ],
+  "likes": [
+    {
+      "user_id": 1
+    }
+  ],
+  "tags": [
+    {
+      "tag": {
+        "name": "Cafeteria",
+        "id": 1
+      }
+    },
+  ]
+}
 ```

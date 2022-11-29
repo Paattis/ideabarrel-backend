@@ -20,15 +20,15 @@ export type PublicUser = {
 export class UserClient extends AbstractClient {
   public readonly TAG = 'user';
   public readonly publicFields = {
-    comments: { select: { content: true, id: true, created_at: true, idea: true } },
+    comments: {select: { content: true, id: true, updated_at: true, idea: {select: {id: true}}}},
     name: true,
     profile_img: true,
     email: true,
     id: true,
     role: { select: { name: true, id: true } },
     created_at: true,
-    ideas: true,
-    likes: true,
+    ideas: {select: {id: true, created_at: true, title: true, content: true}},
+    likes: {select: {idea_id:true}},
   };
 
   /**
@@ -38,6 +38,7 @@ export class UserClient extends AbstractClient {
    */
   async all() {
     return await this.ctx.prisma.user.findMany({ select: this.publicFields });
+    // return await this.ctx.prisma.user.findMany({ select: {});
   }
 
   /**
