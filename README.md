@@ -58,7 +58,7 @@ $ npm run dev
     "name": "Victor Mike",
     "profile_img": "",
     "email": "victor.mike@nokia.com",
-    "id": 1,
+    "id": 10,
     "role": {
       "name": "Junior DevOps Engineer",
       "id": 1
@@ -99,7 +99,7 @@ $ npm run dev
   "name": "Victor Mike",
   "profile_img": "",
   "email": "victor.mike@nokia.com",
-  "id": 1,
+  "id": 10,
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
@@ -153,7 +153,7 @@ avatar:   image file
   "name": "Victor Mike",
   "profile_img": "1669052777822-668015599.jpg",
   "email": "victor.mike@app.com",
-  "id": 1,
+  "id": 10,
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
@@ -320,7 +320,7 @@ avatar: image file
     "name": "Victor Mike",
     "profile_img": "",
     "email": "victor.mike@nokia.com",
-    "id": 1,
+    "id": 10,
     "role": {
       "name": "Junior DevOps Engineer",
       "id": 1
@@ -403,7 +403,7 @@ avatar: image file
   "users": [
     {
       "name": "Victor Mike",
-      "id": 1
+      "id": 10
     },
   ]
 }
@@ -519,14 +519,14 @@ avatar: image file
     "created_at": "2022-11-23T17:52:40.243Z",
     "user": {
       "id": 1,
-      "name": "admin"
+      "name": "John Doe"
     },
     "comments": [
       {
         "content": "Nice idea",
         "user": {
-          "id": 1,
-          "name": "admin"
+          "id": 10,
+          "name": "Victor Mike"
         },
         "id": 2,
         "created_at": "2022-11-24T10:36:10.190Z"
@@ -560,14 +560,14 @@ avatar: image file
     "created_at": "2022-11-23T17:52:40.243Z",
     "user": {
       "id": 1,
-      "name": "admin"
+      "name": "John Doe"
     },
     "comments": [
       {
         "content": "Nice idea",
         "user": {
-          "id": 1,
-          "name": "admin"
+          "id": 10,
+          "name": "Victor Mike"
         },
         "id": 2,
         "created_at": "2022-11-24T10:36:10.190Z"
@@ -613,7 +613,7 @@ avatar: image file
   "created_at": "2022-11-29T14:19:22.952Z",
   "comments": [],
   "user": {
-    "id": 268,
+    "id": 10,
     "name": "Victor Mike"
   },
   "content": "Some cool idea, must be implemented.",
@@ -622,7 +622,7 @@ avatar: image file
   "tags": [
     {
       "tag": {
-        "name": "admin",
+        "name": "Management",
         "id": 1
       }
     },
@@ -658,7 +658,7 @@ avatar: image file
 {
   "id": 5,
   "user": {
-    "id": 268,
+    "id": 10,
     "name": "Victor Mike"
   },
   "title": "New idea (Updated)",
@@ -669,7 +669,7 @@ avatar: image file
       "content": "Not gonna happen",
       "user": {
         "id": 1,
-        "name": "admin"
+        "name": "John Doe"
       },
       "id": 2,
       "created_at": "2022-11-24T10:36:10.190Z"
@@ -705,7 +705,7 @@ avatar: image file
 {
   "id": 5,
   "user": {
-    "id": 268,
+    "id": 10,
     "name": "Victor Mike"
   },
   "title": "New idea (Updated)",
@@ -716,7 +716,7 @@ avatar: image file
       "content": "Not gonna happen",
       "user": {
         "id": 1,
-        "name": "admin"
+        "name": "John Doe"
       },
       "id": 2,
       "created_at": "2022-11-24T10:36:10.190Z"
