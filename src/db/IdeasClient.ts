@@ -8,10 +8,14 @@ export class IdeasClient extends AbstractClient {
   public readonly TAG = 'idea';
   public readonly publicFields = {
     id: true,
-    comments: {select: {content: true,
-      user: { select: { id: true, name: true } },
-      id: true,
-      created_at: true}},
+    comments: {
+      select: {
+        content: true,
+        user: { select: { id: true, name: true } },
+        id: true,
+        created_at: true,
+      },
+    },
     user: { select: { id: true, name: true } },
     content: true,
     likes: true,
@@ -21,11 +25,11 @@ export class IdeasClient extends AbstractClient {
         tag: {
           select: {
             name: true,
-            id: true
-          }
-        }
-      }
-    }
+            id: true,
+          },
+        },
+      },
+    },
   };
 
   /**
