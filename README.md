@@ -59,11 +59,11 @@ $ npm run dev
     "profile_img": "",
     "email": "victor.mike@nokia.com",
     "id": 10,
+    "created_at": "2022-11-23T17:23:24.903Z",
     "role": {
       "name": "Junior DevOps Engineer",
       "id": 1
     },
-    "created_at": "2022-11-23T17:23:24.903Z",
     "comments": [
       {
         "content": "Nice idea",
@@ -100,11 +100,11 @@ $ npm run dev
   "profile_img": "",
   "email": "victor.mike@nokia.com",
   "id": 10,
+  "created_at": "2022-11-23T17:23:24.903Z",
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
   },
-  "created_at": "2022-11-23T17:23:24.903Z",
   "comments": [
     {
       "content": "Nice idea",
@@ -149,16 +149,16 @@ avatar:   image file
 `application/json`
 ```json
 {
-  "comments": [],
   "name": "Victor Mike",
   "profile_img": "1669052777822-668015599.jpg",
   "email": "victor.mike@app.com",
   "id": 10,
+  "created_at": "2022-11-21T17:46:18.001Z",
   "role": {
     "name": "Junior DevOps Engineer",
     "id": 1
   },
-  "created_at": "2022-11-21T17:46:18.001Z",
+  "comments": [],
   "ideas": [],
   "likes": []
 }
@@ -185,12 +185,19 @@ avatar:   image file
   "profile_img": "1669050855379-231410051.jpg",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -230,12 +237,19 @@ avatar: image file
   "profile_img": "NEW-IMG.jpg",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -271,12 +285,19 @@ avatar: image file
   "profile_img": "",
   "email": "micktor.Vike@app.com",
   "id": 2,
+  "created_at": "2022-11-21T15:02:10.929Z",
   "role": {
     "name": "Senior DevOps Engineer",
     "id":8
   },
-  "created_at": "2022-11-21T15:02:10.929Z",
-  "ideas": [],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
   "comments": [
     {
       "content": "Nice idea",
@@ -316,40 +337,38 @@ avatar: image file
 `application/json`
 ```json
 {
-  "result": {
-    "name": "Victor Mike",
-    "profile_img": "",
-    "email": "victor.mike@nokia.com",
-    "id": 10,
-    "role": {
-      "name": "Junior DevOps Engineer",
-      "id": 1
-    },
-    "created_at": "2022-11-23T17:23:24.903Z",
-    "comments": [
-      {
-        "content": "Nice idea",
-        "id": 2,
-        "updated_at": "2022-11-24T10:36:10.190Z",
-        "idea": {
-          "id": 1
-        }
-      },
-    ],
-    "ideas": [
-      {
-        "id": 5,
-        "created_at": "2022-11-29T14:19:22.952Z",
-        "title": "New idea",
-        "content": "Some cool idea, must be implemented."
-      }
-    ],
-    "likes": [
-      {
-        "idea_id": 1
-      }
-    ]
+  "name": "Victor Mike",
+  "profile_img": "",
+  "email": "victor.mike@nokia.com",
+  "id": 10,
+  "created_at": "2022-11-23T17:23:24.903Z",
+  "role": {
+    "name": "Junior DevOps Engineer",
+    "id": 1
   },
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ],
   "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
 }
 ```
@@ -617,7 +636,11 @@ avatar: image file
     "name": "Victor Mike"
   },
   "content": "Some cool idea, must be implemented.",
-  "likes": [],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ],
   "title": "New idea",
   "tags": [
     {

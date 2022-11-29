@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
