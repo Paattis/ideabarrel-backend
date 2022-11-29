@@ -57,7 +57,7 @@ $ npm run dev
   {
     "name": "Victor Mike",
     "profile_img": "",
-    "email": "victor.mike@nokia.com",
+    "email": "victor.mike@app.com",
     "id": 10,
     "created_at": "2022-11-23T17:23:24.903Z",
     "role": {
@@ -98,7 +98,7 @@ $ npm run dev
 {
   "name": "Victor Mike",
   "profile_img": "",
-  "email": "victor.mike@nokia.com",
+  "email": "victor.mike@app.com",
   "id": 10,
   "created_at": "2022-11-23T17:23:24.903Z",
   "role": {
@@ -339,7 +339,7 @@ avatar: image file
 {
   "name": "Victor Mike",
   "profile_img": "",
-  "email": "victor.mike@nokia.com",
+  "email": "victor.mike@app.com",
   "id": 10,
   "created_at": "2022-11-23T17:23:24.903Z",
   "role": {
@@ -527,6 +527,8 @@ avatar: image file
 
 # Ideas
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
+### Summary
+Get all of the existing ideas.
 ### Response
 `application/json`
 ```json
@@ -569,6 +571,10 @@ avatar: image file
 ```
 
 ## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
+### Summary
+Get idea with specified id.
+### Required privileges
+- authenticated user
 ### Response
 `application/json`
 ```json
@@ -610,9 +616,11 @@ avatar: image file
 
 
 ## <span style="color: #87d65a">`POST`</span> - `/ideas`
-
-### Privileges
+### Summary
+Create new idea.
+### Required Privileges
 - authenticated user
+- admin
 
 ### Request
 `application/json`
@@ -660,8 +668,9 @@ avatar: image file
 ```
 
 ## <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
-
-### Privileges
+### Summary
+Update idea with specified id.
+### Required Privileges
 - authenticated owner
 - admin
 
@@ -716,8 +725,10 @@ avatar: image file
 
 
 ## <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
+### Summary
+Remove idea with specified id.
 
-### Privileges
+### Required Privileges
 - authenticated owner
 - admin
 
@@ -758,5 +769,222 @@ avatar: image file
       }
     },
   ]
+}
+```
+
+
+# Tags
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags`
+### Summary
+Get all of the existing tags.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Food",
+    "description": "Ideas related to food.",
+  },
+  {
+    "id": 2,
+    "name": "Management",
+    "description": "Ideas related to management.",
+  },
+]
+```
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags?usr=1`
+### Summary
+Get all of the existing tags, and include users who have subscribed to them.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "name": "Food",
+    "description": "Ideas related to food.",
+    "users": [
+      {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Management",
+    "description": "Ideas related to management.",
+    "users": [
+      {
+        "name": "John Doe",
+        "id": 2
+      },
+      {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    ]
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id`
+### Summary
+Get tag with specified id.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Food",
+  "description": "Ideas related to food.",
+},
+```
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id?usr=1`
+### Summary
+Get tag with specified id. Include users that have subscribed to it.
+### Required Privileges
+- authenticated user
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Food",
+  "description": "Ideas related to food.",
+  "users": [
+    {
+      "name": "Victor Mike",
+      "id": 10
+    }
+  ]
+},
+```
+
+
+## <span style="color: #87d65a">`POST`</span> - `/tags`
+### Summary
+Create new tag. Description field is optional.
+### Required Privileges
+- admin
+### Request
+`application/json`
+```json
+{
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
+}
+```
+```json
+{
+  "name": "Snacks",
+}
+```
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
+}
+```
+
+## <span style="color: #87d65a">`POST`</span> - `/tags/:tagId/user/:userId`
+### Summary
+User subscribes to specified tag.
+### Required Privileges
+- authenticated user (same as target)
+- admin
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office",
+  "users": [
+    {
+      "user": {
+        "name": "Victor Mike",
+        "id": 10
+      }
+    }
+  ]
+}
+```
+
+
+## <span style="color: #1589F0">`PUT`</span> - `/tags/:tagId`
+### Summary
+Update tag with specified id.
+### Required Privileges
+- admin
+
+### Request
+`application/json`
+```json
+{
+  "name": "Snacks V2",
+  "description": "Ideas related to snacks served in office",
+}
+```
+### Response
+`application/json`
+```json
+{
+  "id": 2,
+  "name": "Snacks V2",
+  "description": "Ideas related to snacks served in office"
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/tags/:tagId/user/:userId`
+### Summary
+User unsubscribes from specified tag.
+
+### Required Privileges
+- authenticated user (same as target)
+- admin
+
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office",
+  "users": []
+}
+```
+
+
+## <span style="color: #e85141">`DELETE`</span> - `/tags/:id`
+### Summary
+Delete specified tag.
+### Required Privileges
+- admin
+### Response
+`application/json`
+```json
+{
+  "id": 1,
+  "name": "Snacks",
+  "description": "Ideas related to snacks served in office"
 }
 ```
