@@ -556,7 +556,7 @@ avatar: image file
 {
   "title": "New idea (Updated)",
   "content": "Some cool idea, must be implemented. (Or not)",
-  "tags": [ 1, 17, 28 ]
+  "tags": [ 1 ]
 }
 ```
 
@@ -595,18 +595,6 @@ avatar: image file
         "id": 1
       }
     },
-    {
-      "tag": {
-        "name": "Management",
-        "id": 17
-      }
-    },
-    {
-      "tag": {
-        "name": "RnD",
-        "id": 28
-      }
-    }
   ]
 }
 ```
@@ -654,18 +642,6 @@ avatar: image file
         "id": 1
       }
     },
-    {
-      "tag": {
-        "name": "Management",
-        "id": 17
-      }
-    },
-    {
-      "tag": {
-        "name": "RnD",
-        "id": 28
-      }
-    }
   ]
 }
 ```
