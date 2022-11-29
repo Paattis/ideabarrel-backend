@@ -412,3 +412,87 @@ avatar: image file
   "name": "Senior Developer",
 },
 ```
+
+
+# Ideas
+## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
+### Response
+`application/json`
+```json
+[
+  {
+    "id": 1,
+    "title": "Add coffee machine",
+    "content": "We really should have access to free coffee.",
+    "created_at": "2022-11-23T17:52:40.243Z",
+    "user": {
+      "id": 1,
+      "name": "admin"
+    },
+    "comments": [
+      {
+        "content": "Nice idea",
+        "user": {
+          "id": 1,
+          "name": "admin"
+        },
+        "id": 2,
+        "created_at": "2022-11-24T10:36:10.190Z"
+      },
+    ],
+    "likes": [
+      {
+        "user_id": 1
+      }
+    ],
+    "tags": [
+      {
+        "tag": {
+          "name": "Cafeteria",
+          "id": 15
+        }
+      },
+    ]
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
+### Response
+`application/json`
+```json
+{
+    "id": 1,
+    "title": "Add coffee machine",
+    "content": "We really should have access to free coffee.",
+    "created_at": "2022-11-23T17:52:40.243Z",
+    "user": {
+      "id": 1,
+      "name": "admin"
+    },
+    "comments": [
+      {
+        "content": "Nice idea",
+        "user": {
+          "id": 1,
+          "name": "admin"
+        },
+        "id": 2,
+        "created_at": "2022-11-24T10:36:10.190Z"
+      },
+    ],
+    "likes": [
+      {
+        "user_id": 1
+      }
+    ],
+    "tags": [
+      {
+        "tag": {
+          "name": "Cafeteria",
+          "id": 15
+        }
+      },
+    ]
+  }
+```
