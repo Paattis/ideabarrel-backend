@@ -8,12 +8,24 @@ export class IdeasClient extends AbstractClient {
   public readonly TAG = 'idea';
   public readonly publicFields = {
     id: true,
-    comments: true,
+    comments: {select: {content: true,
+      user: { select: { id: true, name: true } },
+      id: true,
+      created_at: true}},
     user: { select: { id: true, name: true } },
     content: true,
     likes: true,
     title: true,
-    tags: true,
+    tags: {
+      select: {
+        tag: {
+          select: {
+            name: true,
+            id: true
+          }
+        }
+      }
+    }
   };
 
   /**
@@ -59,10 +71,11 @@ export class IdeasClient extends AbstractClient {
    */
   async select(id: number) {
     try {
-      return await this.ctx.prisma.idea.findFirstOrThrow({
+      const result = await this.ctx.prisma.idea.findFirstOrThrow({
         where: { id },
         select: this.publicFields,
       });
+      return result;
     } catch (err) {
       throw new NoSuchResource('idea', `No idea with id: ${id}`);
     }
