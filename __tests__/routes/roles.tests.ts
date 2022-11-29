@@ -1,24 +1,15 @@
 import { Role, User } from '@prisma/client';
+import { DeepMockProxy, mockReset } from 'jest-mock-extended';
 import request from 'supertest';
 import app from '../../src/app';
-import {
-  MockPrismaContext,
-  createMockContext,
-  swapToMockContext,
-  swapToAppContext,
-} from '../../src/db/context';
+import { Database, DbType, dbMock } from '../../src/db/Database';
 import auth from '../../src/utils/auth';
+import { NoSuchResource } from '../../src/utils/errors';
 
-let mockCtx: MockPrismaContext;
-
-beforeEach(() => {
-  mockCtx = createMockContext();
-  swapToMockContext(mockCtx);
-});
-
-afterAll(() => {
-  swapToAppContext();
-});
+const mockDb: DeepMockProxy<Database> = dbMock(
+  DbType.MOCK_CLIENT
+) as DeepMockProxy<Database>;
+afterEach(() => mockReset(mockDb));
 
 const timestamp = new Date();
 const role: Role = {
@@ -28,8 +19,26 @@ const role: Role = {
   name: 'Test Engineer',
 };
 
-const user: User = {
+const updatedRole: Role = {
   id: 1,
+  created_at: timestamp,
+  updated_at: timestamp,
+  name: 'Updated Engineer',
+};
+
+const admin: User = {
+  id: 1,
+  name: 'Admin',
+  email: 'admin@app.com',
+  profile_img: '',
+  password: 'Password123',
+  role_id: 1,
+  created_at: timestamp,
+  updated_at: timestamp,
+};
+
+const user: User = {
+  id: 2,
   name: 'Test User 1',
   profile_img: '',
   password: 'pw',
@@ -40,8 +49,21 @@ const user: User = {
 };
 
 const JWT = auth.jwt({ id: user.id });
-const mockJWT = () => {
-  mockCtx.prisma.user.findFirstOrThrow.mockResolvedValueOnce(user);
+const mockJWT = (success: boolean) => {
+  if (success) {
+    mockDb.users.select.mockResolvedValueOnce(user as any);
+  } else {
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
+};
+
+const ADMIN_JWT = auth.jwt({ id: admin.id });
+const mockAdminJWT = (success: boolean) => {
+  if (success) {
+    mockDb.users.select.mockResolvedValueOnce(admin as any);
+  } else {
+    mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
+  }
 };
 
 /**
@@ -49,16 +71,20 @@ const mockJWT = () => {
  */
 describe('POST /roles/', () => {
   test('Route should create and return user with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.role.create.mockResolvedValue(role);
+    // Mock ADMIN Authentication
+    mockAdminJWT(true);
+    // Mock resulting action
+    mockDb.roles.create.mockResolvedValue(role as any);
 
+    // Action
     const res = await request(app)
       .post('/roles/')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .send(role)
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject({
       name: 'Test Engineer',
       id: 1,
@@ -66,9 +92,10 @@ describe('POST /roles/', () => {
   });
 
   test('Route should return 401 with invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.role.create.mockResolvedValue(role);
+    // Mock Authentication
+    mockJWT(false);
 
+    // Action
     await request(app)
       .post('/roles/')
       .auth('NOT_JWT', { type: 'bearer' })
@@ -82,14 +109,16 @@ describe('POST /roles/', () => {
  */
 describe('GET /roles/', () => {
   test('Route should return all roles with status 200', async () => {
-    mockCtx.prisma.role.findMany.mockResolvedValue([role]);
+    mockDb.roles.all.mockResolvedValue([role]);
 
+    // Action
     const res = await request(app)
       .get('/roles/')
       .send(role)
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject([
       {
         name: 'Test Engineer',
@@ -104,15 +133,18 @@ describe('GET /roles/', () => {
  */
 describe('GET /roles/:id', () => {
   test('Route should 404 with missing role', async () => {
-    mockJWT();
-    mockCtx.prisma.role.findFirstOrThrow.mockRejectedValue(new Error());
+    // Mock Authentication
+    mockJWT(true);
+    mockDb.roles.select.mockRejectedValue(new NoSuchResource('role'));
 
+    // Action
     const res = await request(app)
-      .get('/roles/1')
+      .get('/roles/10')
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
+    // Results
     expect(res.body).toMatchObject({
       msg: 'No such role exists',
       status: 404,
@@ -120,15 +152,18 @@ describe('GET /roles/:id', () => {
   });
 
   test('Route should return role with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
+    // Mock Authentication
+    mockJWT(true);
+    mockDb.roles.select.mockResolvedValue(role);
 
+    // Action
     const res = await request(app)
       .get('/roles/1')
       .auth(JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject({
       name: 'Test Engineer',
       id: 1,
@@ -136,10 +171,14 @@ describe('GET /roles/:id', () => {
   });
 
   test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.role.findFirstOrThrow.mockResolvedValue(role);
+    // Mock Authentication
+    mockJWT(false);
 
-    await request(app).get('/roles/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
+    // Action
+    const res = await request(app).get('/roles/1').auth('NOT_JWT', { type: 'bearer' });
+
+    // Results
+    expect(res.statusCode).toBe(401);
   });
 });
 
@@ -148,15 +187,19 @@ describe('GET /roles/:id', () => {
  */
 describe('DELETE /roles/:id', () => {
   test('Route should 404 with missing role', async () => {
-    mockJWT();
-    mockCtx.prisma.role.delete.mockRejectedValue(new Error());
+    // Mock ADMIN Authentication
+    mockAdminJWT(true);
+    // Mock resulting action.
+    mockDb.roles.remove.mockRejectedValue(new NoSuchResource('role'));
 
+    // Action
     const res = await request(app)
       .delete('/roles/1')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
+    // Results
     expect(res.body).toMatchObject({
       msg: 'No such role exists',
       status: 404,
@@ -164,15 +207,19 @@ describe('DELETE /roles/:id', () => {
   });
 
   test('Route should return role with status 200', async () => {
-    mockJWT();
-    mockCtx.prisma.role.delete.mockResolvedValue(role);
+    // Mock ADMIN Authentication
+    mockAdminJWT(true);
+    // Mock resulting action.
+    mockDb.roles.remove.mockResolvedValue(role as any);
 
+    // Action
     const res = await request(app)
       .delete('/roles/1')
-      .auth(JWT, { type: 'bearer' })
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject({
       name: 'Test Engineer',
       id: 1,
@@ -180,9 +227,10 @@ describe('DELETE /roles/:id', () => {
   });
 
   test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.role.delete.mockResolvedValue(role);
+    // Mock ADMIN Authentication
+    mockJWT(false);
 
+    // Action
     await request(app).delete('/roles/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });
@@ -192,17 +240,20 @@ describe('DELETE /roles/:id', () => {
  */
 describe('PUT /roles/:id', () => {
   test('Route should 404 with missing role', async () => {
-    mockJWT();
-    const newRole = { name: 'Test Engineer 2' };
-    mockCtx.prisma.role.update.mockRejectedValue(new Error());
+    // Mock ADMIN Authentication
+    mockAdminJWT(true);
+    // Mock resulting action.
+    mockDb.roles.update.mockRejectedValue(new NoSuchResource('role'));
 
+    // Action
     const res = await request(app)
       .put('/roles/1')
-      .send(newRole)
-      .auth(JWT, { type: 'bearer' })
+      .send(updatedRole)
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
+    // Results
     expect(res.body).toMatchObject({
       msg: 'No such role exists',
       status: 404,
@@ -210,33 +261,29 @@ describe('PUT /roles/:id', () => {
   });
 
   test('Route should return role with status 200', async () => {
-    mockJWT();
-    const updateResult: Role = {
-      id: 1,
-      created_at: timestamp,
-      updated_at: timestamp,
-      name: 'Test Engineer 2',
-    };
-    const newRole = { name: 'Test Engineer 2' };
-    mockCtx.prisma.role.update.mockResolvedValue(updateResult);
+    // Mock ADMIN Authentication
+    mockAdminJWT(true);
+    // Mock resulting action.
+    mockDb.roles.update.mockResolvedValue(updatedRole as any);
 
+    // Action
     const res = await request(app)
       .put('/roles/1')
-      .send(newRole)
-      .auth(JWT, { type: 'bearer' })
+      .send(updatedRole)
+      .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(200);
 
+    // Results
     expect(res.body).toMatchObject({
-      name: 'Test Engineer 2',
+      name: 'Updated Engineer',
       id: 1,
     });
   });
 
   test('Route should return 401 on invalid JWT', async () => {
-    mockJWT();
-    mockCtx.prisma.role.update.mockResolvedValue(role);
-
+    mockAdminJWT(false);
+    // Action
     await request(app).delete('/roles/1').auth('NOT_JWT', { type: 'bearer' }).expect(401);
   });
 });

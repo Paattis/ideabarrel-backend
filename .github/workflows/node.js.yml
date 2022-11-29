@@ -6,8 +6,6 @@ env:
   APP_ENV: CI
   ACCESS_TOKEN_SECRET: NOT_A_REAL_SECRET
 on:
-  push:
-    branches: [ "master", "dev" ]
   pull_request:
     branches: [ "master", "dev" ]
 
@@ -29,6 +27,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run checkCodeStyle --if-present
-    - run: npm run build --if-present
+    - run: npm run checkCodeStyle
+    - run: npm run lint
+    - run: npm run build
+    - run: npm run ci-test
     #- run: npm test

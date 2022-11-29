@@ -1,23 +1,12 @@
-import { User, Idea, Tag } from '@prisma/client';
-import ideasClient, { IdeaWithTags } from '../../src/db/ideas';
-import {
-  MockPrismaContext,
-  PrismaContext,
-  createMockContext,
-  swapToAppContext,
-} from '../../src/db/context';
+import { User, Idea, Tag, PrismaClient } from '@prisma/client';
 import { BadRequest, NoSuchResource } from '../../src/utils/errors';
 import { log } from '../../src/logger/log';
+import { mockDeep, mockReset } from 'jest-mock-extended';
+import { DbType, dbMock } from '../../src/db/Database';
 
-let mockCtx: MockPrismaContext;
-let ctx: PrismaContext;
-
-beforeEach(() => {
-  mockCtx = createMockContext();
-  ctx = mockCtx as unknown as PrismaContext;
-});
-
-afterAll(() => swapToAppContext());
+const prismaMock = mockDeep<PrismaClient>();
+const db = dbMock(DbType.MOCK_PRISMA, prismaMock);
+afterEach(() => mockReset(prismaMock));
 
 const timestamp = new Date();
 const tag: Tag = {
@@ -47,7 +36,7 @@ const user1: User = {
   updated_at: timestamp,
 };
 
-const idea: IdeaWithTags = {
+const idea = {
   id: 1,
   title: 'title',
   content: 'Lorem ipsum dolor sit amet',
@@ -57,7 +46,7 @@ const idea: IdeaWithTags = {
   tags: [tag],
 };
 
-const updatedIdea: IdeaWithTags = {
+const updatedIdea = {
   id: 1,
   title: 'title',
   content: 'New content',
@@ -67,7 +56,7 @@ const updatedIdea: IdeaWithTags = {
   tags: [tag2],
 };
 
-const idea2: IdeaWithTags = {
+const idea2 = {
   id: 2,
   title: 'title',
   content: 'New content',
@@ -79,48 +68,47 @@ const idea2: IdeaWithTags = {
 
 describe('Ideas database access client', () => {
   test('Should return idea by its id', async () => {
-    mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
-    await expect(ideasClient.select(1, user1, ctx)).resolves.toMatchObject({ id: 1 });
+    prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
+    await expect(db.ideas.select(1)).resolves.toMatchObject({ id: 1 });
   });
 
   test('Should create idea', async () => {
-    mockCtx.prisma.idea.create.mockResolvedValue(idea);
-    mockCtx.prisma.tag.findMany.mockResolvedValue([tag]);
-    const res = ideasClient.create(
+    prismaMock.idea.create.mockResolvedValue(idea);
+    prismaMock.tag.findMany.mockResolvedValue([tag]);
+    const res = db.ideas.create(
       {
         title: 'title',
         content: 'Lorem ipsum dolor sit amet',
         tags: [1],
       },
-      user1,
-      ctx
+      user1
     );
 
     await expect(res).resolves.toMatchObject(idea);
   });
 
   test('Should throw error when no idea is found', async () => {
-    mockCtx.prisma.idea.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
-    await expect(ideasClient.select(1, user1, ctx)).rejects.toThrow(NoSuchResource);
+    prismaMock.idea.findFirstOrThrow.mockRejectedValue(new Error('Mock Error'));
+    await expect(db.ideas.select(1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should remove existing idea', async () => {
-    mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
-    mockCtx.prisma.idea.delete.mockResolvedValue(idea);
-    const res = await ideasClient.remove(1, user1, ctx);
+    prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
+    prismaMock.idea.delete.mockResolvedValue(idea);
+    const res = await db.ideas.remove(1, user1);
 
     expect(res).not.toBeNull();
     expect(res).toMatchObject({ id: 1 });
   });
 
   test('Should throw error', async () => {
-    mockCtx.prisma.idea.delete.mockRejectedValue(new Error('Mock Error'));
-    expect(ideasClient.remove(666, user1, ctx)).rejects.toThrow(NoSuchResource);
+    prismaMock.idea.delete.mockRejectedValue(new Error('Mock Error'));
+    expect(db.ideas.remove(666, user1)).rejects.toThrow(NoSuchResource);
   });
 
   test('Should return existing ideas', async () => {
-    mockCtx.prisma.idea.findMany.mockResolvedValue([idea, idea2]);
-    const result = await ideasClient.all(ctx, 0, user1, []);
+    prismaMock.idea.findMany.mockResolvedValue([idea, idea2]);
+    const result = await db.ideas.all(0, []);
 
     expect(result).toBeInstanceOf(Array<Idea>);
     expect(result.length).toBe(2);
@@ -134,17 +122,16 @@ describe('Ideas database access client', () => {
   });
 
   test('Should update existing idea', async () => {
-    mockCtx.prisma.idea.update.mockResolvedValue(updatedIdea);
-    mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(updatedIdea);
-    mockCtx.prisma.tag.findMany.mockResolvedValue([tag2]);
-    const res = await ideasClient.update(
+    prismaMock.idea.update.mockResolvedValue(updatedIdea);
+    prismaMock.idea.findFirstOrThrow.mockResolvedValue(updatedIdea);
+    prismaMock.tag.findMany.mockResolvedValue([tag2]);
+    const res = await db.ideas.update(
       {
         title: 'title',
         content: 'New content',
         tags: [2],
       },
-      1,
-      ctx
+      1
     );
 
     expect(res).not.toBeNull();
@@ -161,17 +148,16 @@ describe('Ideas database access client', () => {
   });
 
   test('Should fail to update existing idea if the given tag doesnt exist', async () => {
-    mockCtx.prisma.idea.update.mockResolvedValue(idea);
-    mockCtx.prisma.idea.findFirstOrThrow.mockResolvedValue(idea);
+    prismaMock.idea.update.mockResolvedValue(idea);
+    prismaMock.idea.findFirstOrThrow.mockResolvedValue(idea);
 
-    const res = ideasClient.update(
+    const res = db.ideas.update(
       {
         title: 'title',
         content: 'New content',
         tags: [123],
       },
-      1,
-      ctx
+      1
     );
 
     await expect(res).rejects.toThrow(BadRequest);

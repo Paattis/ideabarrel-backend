@@ -1,19 +1,18 @@
-import { db } from '../db/context';
-import { Router, Response, NextFunction, Request } from 'express';
-import commentsClient, { CommentFields } from '../db/comments';
-import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
-import { PublicUser } from '../db/users';
+import { Router, Response, NextFunction, Request } from 'express';
+import { Comments, db } from '../db/Database';
+import { TRequest as TRequest } from '../utils/types';
 import { User } from '@prisma/client';
+import { throwIfNotValid, validCommentBody } from '../validation/schema';
+import { PublicUser } from '../db/UserClient';
 
 const comments = Router();
 
-const toComment = async (user: User, id: number) =>
-  commentsClient.userOwned(user, id, db);
+const toComment = async (user: User, id: number) => db().comments.userOwns(user, id);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await commentsClient.all(db);
+    const result = await db().comments.all();
     res.json(result);
   } catch (err) {
     next(err);
@@ -25,7 +24,7 @@ comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
 comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const commentId = Number.parseInt(req.params.id, 10);
-    const result = await commentsClient.select(commentId, db);
+    const result = await db().comments.select(commentId);
     return res.json(result);
   } catch (err) {
     next(err);
@@ -36,13 +35,15 @@ comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => 
 
 comments.post(
   '/',
-  async (req: TRequest<CommentFields>, res: Response, next: NextFunction) => {
+  validCommentBody,
+  async (req: TRequest<Comments.Create>, res: Response, next: NextFunction) => {
     try {
+      throwIfNotValid(req);
       const user = req.user as PublicUser;
-      const result = await commentsClient.create(
-        { idea_id: req.body.idea_id, user_id: user.id, content: req.body.content },
-        db
-      );
+      const result = await db().comments.create({
+        ...req.body,
+        user_id: user.id,
+      });
       return res.json(result);
     } catch (err) {
       next(err);
@@ -58,7 +59,7 @@ comments.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
-      const result = await commentsClient.remove(commentId, db);
+      const result = await db().comments.remove(commentId);
       return res.json(result);
     } catch (err) {
       next(err);
@@ -71,10 +72,10 @@ comments.delete(
 comments.put(
   '/:id',
   auth.userHasAccess(toComment),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: TRequest<Comments.Update>, res: Response, next: NextFunction) => {
     try {
       const commentId = Number.parseInt(req.params.id, 10);
-      const result = await commentsClient.update(commentId, req.body, db);
+      const result = await db().comments.update(commentId, req.body);
       return res.json(result);
     } catch (err) {
       next(err);
