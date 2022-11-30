@@ -11,6 +11,10 @@ const comments = Router();
 const toComment = async (user: User, id: number) => db().comments.userOwns(user, id);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: [{$ref: '#/definitions/comment'}]
+    } */
   try {
     const result = await db().comments.all();
     res.json(result);
@@ -22,6 +26,10 @@ comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+        description: "",
+        schema: {$ref: '#/definitions/comment'}
+  } */
   try {
     const commentId = Number.parseInt(req.params.id, 10);
     const result = await db().comments.select(commentId);
@@ -37,6 +45,10 @@ comments.post(
   '/',
   validCommentBody,
   async (req: TRequest<Comments.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/comment'}
+    } */
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
@@ -57,6 +69,10 @@ comments.delete(
   '/:id',
   auth.userHasAccess(toComment),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/comment'}
+    } */
     try {
       const commentId = Number.parseInt(req.params.id, 10);
       const result = await db().comments.remove(commentId);
@@ -73,6 +89,10 @@ comments.put(
   '/:id',
   auth.userHasAccess(toComment),
   async (req: TRequest<Comments.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/comment'}
+    } */
     try {
       const commentId = Number.parseInt(req.params.id, 10);
       const result = await db().comments.update(commentId, req.body);

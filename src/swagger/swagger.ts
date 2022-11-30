@@ -1,6 +1,8 @@
+// this is run as an npm script so the paths are correct
 const outputFile = './src/swagger.json';
 const endpointsFiles = ['./src/app.ts'];
 import swaggerAutogen from 'swagger-autogen';
+import {definitions} from './swagger_definitions';
 
 const doc = {
   info: {
@@ -11,6 +13,11 @@ const doc = {
   },
   host: 'HOST HERE',
   schemes: ['http', 'https'],
-  definitions: {},
+  definitions: definitions,
 };
-swaggerAutogen(outputFile, endpointsFiles, doc);
+
+const options = {
+  openapi: "3.0.0",
+}
+
+swaggerAutogen(options)(outputFile, endpointsFiles, doc);

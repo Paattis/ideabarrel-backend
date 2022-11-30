@@ -8,7 +8,7 @@
     "ci-test": "npx jest --silent=true --verbose=false",
     "start": "ts-node src/index.ts",
     "dev": "nodemon",
-    "swagger": "npx ts-node ./src/swagger.ts",
+    "swagger": "npx ts-node ./src/swagger/swagger.ts",
     "format": "npx prettier src __tests__ --write",
     "checkCodeStyle": "npx prettier src __tests__ --check",
     "lint": "npx tslint --project .",

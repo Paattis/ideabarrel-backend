@@ -770,32 +770,40 @@
             "example": "2022-11-23T17:23:24.903Z"
           },
           "role": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "example": "Junior DevOps Engineer"
-              },
-              "id": {
-                "type": "number",
-                "example": 1
-              }
-            }
+            "xml": {
+              "name": "role"
+            },
+            "$ref": "#/components/schemas/role"
           },
           "comments": {
             "type": "array",
-            "example": [],
-            "items": {}
+            "items": {
+              "xml": {
+                "name": "comment"
+              },
+              "$ref": "#/components/schemas/comment"
+            }
           },
           "ideas": {
             "type": "array",
-            "example": [],
-            "items": {}
+            "items": {
+              "xml": {
+                "name": "idea"
+              },
+              "$ref": "#/components/schemas/idea"
+            }
           },
           "likes": {
             "type": "array",
-            "example": [],
-            "items": {}
+            "items": {
+              "type": "object",
+              "properties": {
+                "idea_id": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
           }
         },
         "xml": {
@@ -826,144 +834,27 @@
             "example": "2022-11-23T17:23:24.903Z"
           },
           "role": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "example": "Junior DevOps Engineer"
-              },
-              "id": {
-                "type": "number",
-                "example": 1
-              }
-            }
+            "xml": {
+              "name": "role"
+            },
+            "$ref": "#/components/schemas/role"
           },
           "comments": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "type": "string",
-                  "example": "Nice idea"
-                },
-                "id": {
-                  "type": "number",
-                  "example": 2
-                },
-                "updated_at": {
-                  "type": "string",
-                  "example": "2022-11-24T10:36:10.190Z"
-                },
-                "idea": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "number",
-                      "example": 1
-                    }
-                  }
-                }
-              }
+              "xml": {
+                "name": "comment"
+              },
+              "$ref": "#/components/schemas/comment"
             }
           },
           "ideas": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number",
-                  "example": 1
-                },
-                "title": {
-                  "type": "string",
-                  "example": "Add coffee machine"
-                },
-                "content": {
-                  "type": "string",
-                  "example": "We really should have access to free coffee."
-                },
-                "created_at": {
-                  "type": "string",
-                  "example": "2022-11-23T17:52:40.243Z"
-                },
-                "user": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "number",
-                      "example": 1
-                    },
-                    "name": {
-                      "type": "string",
-                      "example": "John Doe"
-                    }
-                  }
-                },
-                "comments": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "content": {
-                        "type": "string",
-                        "example": "Nice idea"
-                      },
-                      "id": {
-                        "type": "number",
-                        "example": 2
-                      },
-                      "updated_at": {
-                        "type": "string",
-                        "example": "2022-11-24T10:36:10.190Z"
-                      },
-                      "idea": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "number",
-                            "example": 1
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "likes": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "idea_id": {
-                        "type": "number",
-                        "example": 1
-                      }
-                    }
-                  }
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "tag": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string",
-                            "example": "Cafeteria"
-                          },
-                          "id": {
-                            "type": "number",
-                            "example": 15
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "xml": {
+                "name": "idea"
+              },
+              "$ref": "#/components/schemas/idea"
             }
           },
           "likes": {
@@ -1018,30 +909,10 @@
           "comments": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "type": "string",
-                  "example": "Nice idea"
-                },
-                "id": {
-                  "type": "number",
-                  "example": 2
-                },
-                "updated_at": {
-                  "type": "string",
-                  "example": "2022-11-24T10:36:10.190Z"
-                },
-                "idea": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "number",
-                      "example": 1
-                    }
-                  }
-                }
-              }
+              "xml": {
+                "name": "comment"
+              },
+              "$ref": "#/components/schemas/comment"
             }
           },
           "likes": {
@@ -1049,7 +920,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "idea_id": {
+                "user_id": {
                   "type": "number",
                   "example": 1
                 }

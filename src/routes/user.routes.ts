@@ -19,8 +19,14 @@ const users = Router();
 const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/user'}]
+    } */
+
   try {
     const results = await db().users.all();
+
     res.json(results);
   } catch (err) {
     next(err);
@@ -33,6 +39,10 @@ users.get(
   '/:id',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const id = Number.parseInt(req.params.id, 10);
       const result = await db().users.select(id);
@@ -51,6 +61,10 @@ users.put(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       const userId = parseInt(req.params.id, 10);
@@ -69,6 +83,10 @@ users.delete(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const userId = parseInt(req.params.id, 10);
       const result = await db().users.remove(userId);
@@ -91,6 +109,10 @@ users.put(
   img.upload.single('avatar'),
   img.resize,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       if (req.file) {
@@ -114,6 +136,10 @@ users.delete(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const user = req.user as PublicUser;
       if (!user.profile_img) {
@@ -139,6 +165,10 @@ users.post(
   img.resize,
   validUserBody,
   async (req: TRequest<Users.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       const fields: Users.Create = {
