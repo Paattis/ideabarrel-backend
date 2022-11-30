@@ -70,7 +70,6 @@ likes.delete(
 
 likes.delete(
   '/idea/:id',
-  auth.userHasAccess(toLike),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ideaId = Number.parseInt(req.params.id, 10);
