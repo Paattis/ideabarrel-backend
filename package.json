@@ -13,7 +13,7 @@
     "checkCodeStyle": "npx prettier src __tests__ --check",
     "lint": "npx tslint --project .",
     "build": "npx tsc",
-    "daemon": "npx tsc && pm2 stop app && pm2 start dist/src/index.js --name 'app'",
+    "daemon": "npx tsc && pm2 stop app && pm2 start dist/src/index.js --name 'app'"
   },
   "prisma": {
     "seed": "ts-node src/db/seed.ts"
