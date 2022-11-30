@@ -4,7 +4,8 @@
 
 Bootstrapped based on [these](https://medium.com/swlh/build-a-rest-api-with-express-js-and-typescript-dc2c8da89c52) [instructions](https://medium.com/@sudarshanadayananda/how-to-live-reload-typescript-node-server-bc40171fdb7).
 
-### Development
+
+## Development
 
 To run the backend in development mode
 
@@ -45,17 +46,23 @@ $ npm run build
 $ npm run dev
 ```
 
-<br>
-<br>
 
-# API Endpoints
+## API Endpoints
 
-## Users
 <details>
-<summary></summary>
+<summary><h3>Users</h3></summary>
 
-## <span style="color: #6ec3d4">`GET`</span> - `/users`
-### Response
+### <span style="color: #6ec3d4">`GET`</span> - `/users`
+***Summary***
+
+Get all of the user profiles.
+
+***Required Privileges***
+
+- Authenticated users
+- Admin
+
+ ***Response***
 `application/json`
 ```json
 [
@@ -95,9 +102,19 @@ $ npm run dev
   },
 ]
 ```
+---
 
-## <span style="color: #6ec3d4">`GET`</span> - `/users/:id`
-### Response
+### <span style="color: #6ec3d4">`GET`</span> - `/users/:id`
+***Summary***
+
+Get user profile with specified id.
+
+***Required Privileges***
+
+- Authenticated users
+- Admin
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -136,11 +153,19 @@ $ npm run dev
 },
 ```
 
+---
 
 
+### <span style="color: #87d65a">`POST`</span> - `/users`
+***Summary***
 
-## <span style="color: #87d65a">`POST`</span> - `/users`
-### Request
+Create new user profile.
+
+***Required Privileges***
+
+- all
+
+***Request***
 `multipart/form-data`
 ```
 name:     Victor Mike,
@@ -150,7 +175,7 @@ email:    victor.mike@app.com,
 avatar:   image file
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -168,10 +193,18 @@ avatar:   image file
   "likes": []
 }
 ```
+---
 
+### <span style="color: #1589F0">`PUT`</span> - `/users/:id`
+***Summary***
 
-## <span style="color: #1589F0">`PUT`</span> - `/users/:id`
-### Request
+Update user profile
+
+***Required Privileges***
+- Authenticated users, who are also the target of the update
+- Admins
+
+***Request***
 `application/json`
 ```json
   {
@@ -182,7 +215,7 @@ avatar:   image file
   }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -221,20 +254,25 @@ avatar:   image file
 }
 ```
 
+---
 
+### <span style="color: #1589F0">`PUT`</span> - `/users/:id/img`
+***Summary***
 
-## <span style="color: #1589F0">`PUT`</span> - `/users/:id/img`
-#### Adds image file as specified users avatar.
-### Privileges
+Adds image file as specified users avatar.
+
+***Required Privileges***
+
 - same user as action target
 - admin
-### Request
+
+***Request***
 `multipart/form-data`
 ```
 avatar: image file
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -273,16 +311,19 @@ avatar: image file
 }
 ```
 
+---
 
-## <span style="color: #e85141">`DELETE`</span> - `/users/:id/img`
+### <span style="color: #e85141">`DELETE`</span> - `/users/:id/img`
+***Summary***
 
-#### Deletes profile avatar from specified user, and returns that user.
+Deletes profile avatar from specified user, and returns that user.
 
-### Privileges
+***Required Privileges***
+
 - same user as action target
 - admin
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -322,16 +363,19 @@ avatar: image file
 ```
 </details>
 
-## Authentication
 <details>
-<summary></summary>
+<summary><h3>Authentication</h3></summary>
 
-## <span style="color: #87d65a">`POST`</span> - `/auth/login`
+### <span style="color: #87d65a">`POST`</span> - `/auth/login`
+***Summary***
 
-### Privileges
+Authenticate user with email and password.
+
+***Required Privileges***
+
 - all users
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -340,7 +384,7 @@ avatar: image file
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -381,16 +425,18 @@ avatar: image file
 ```
 </details>
 
-## Roles
 <details>
-<summary></summary>
+<summary><h3>Roles</h3></summary>
 
-## <span style="color: #87d65a">`POST`</span> - `/roles`
+### <span style="color: #87d65a">`POST`</span> - `/roles`
+***Summary***
 
-### Required privileges
+Create new role.
+
+***Required privileges***
 - admin
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -398,7 +444,7 @@ avatar: image file
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -407,14 +453,18 @@ avatar: image file
   "users": []
 }
 ```
+---
+
+### <span style="color: #1589F0">`PUT`</span> - `/roles/:id`
+***Summary***
+
+Update role with specifed id.
 
 
-## <span style="color: #1589F0">`PUT`</span> - `/roles/:id`
-
-### Required privileges
+***Required privileges***
 - admin
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -422,7 +472,7 @@ avatar: image file
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -437,12 +487,19 @@ avatar: image file
 }
 ```
 
-## <span style="color: #6ec3d4">`GET`</span> - `/roles`
-### Required privileges
+---
+
+### <span style="color: #6ec3d4">`GET`</span> - `/roles`
+***Summary***
+
+Get all of the roles.
+
+***Required privileges***
+
 - authenticated user
 - admin
 
-### Response
+ ***Response***
 `application/json`
 ```json
 [
@@ -456,12 +513,19 @@ avatar: image file
   },
 ]
 ```
+---
 
-## <span style="color: #6ec3d4">`GET`</span> - `/roles?usr=1`
-### Required privileges
+### <span style="color: #6ec3d4">`GET`</span> - `/roles?usr=1`
+***Summary***
+
+Get all of the roles, with subscribed users attached to them.
+
+***Required privileges***
+
 - authenticated user
 - admin
-### Response
+
+***Response***
 `application/json`
 ```json
 [
@@ -488,11 +552,13 @@ avatar: image file
 ]
 ```
 
-## <span style="color: #6ec3d4">`GET`</span> - `/roles/:id`
+---
+
+### <span style="color: #6ec3d4">`GET`</span> - `/roles/:id`
 ### Required privileges
 - authenticated user
 - admin
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -501,11 +567,19 @@ avatar: image file
 }
 ```
 
-## <span style="color: #6ec3d4">`GET`</span> - `/roles/:id?usr=1`
-### Required privileges
+---
+
+### <span style="color: #6ec3d4">`GET`</span> - `/roles/:id?usr=1`
+***Summary***
+
+Get role with specified id, with all users subscribed to it.
+
+***Required privileges***
+
 - authenticated user
 - admin
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -520,11 +594,13 @@ avatar: image file
 }
 ```
 
-## <span style="color: #e85141">`DELETE`</span> - `/roles/:id`
-### Required privileges
+---
+
+### <span style="color: #e85141">`DELETE`</span> - `/roles/:id`
+***Required privileges***
 - admin
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -534,14 +610,15 @@ avatar: image file
 ```
 </details>
 
-## Ideas
 <details>
-<summary></summary>
+<summary><h3>Ideas</h3></summary>
 
-## <span style="color: #6ec3d4">`GET`</span> - `/ideas`
-### Summary
+### <span style="color: #6ec3d4">`GET`</span> - `/ideas`
+***Summary***
+
 Get all of the existing ideas.
-### Response
+
+ ***Response***
 `application/json`
 ```json
 [
@@ -582,14 +659,18 @@ Get all of the existing ideas.
 ]
 ```
 
+---
 
+### <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
+***Summary***
 
-## <span style="color: #6ec3d4">`GET`</span> - `/ideas/:id`
-### Summary
 Get idea with specified id.
-### Required privileges
+
+***Required privileges***
+
 - authenticated user
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -628,15 +709,18 @@ Get idea with specified id.
   }
 ```
 
+---
 
-## <span style="color: #87d65a">`POST`</span> - `/ideas`
-### Summary
+### <span style="color: #87d65a">`POST`</span> - `/ideas`
+***Summary***
+
 Create new idea.
-### Required Privileges
+***Required Privileges***
+
 - authenticated user
 - admin
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -646,7 +730,7 @@ Create new idea.
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -681,14 +765,19 @@ Create new idea.
 }
 ```
 
-## <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
-### Summary
+---
+
+### <span style="color: #1589F0">`PUT`</span> - `/ideas/:id`
+***Summary***
+
 Update idea with specified id.
-### Required Privileges
+
+***Required Privileges***
+
 - authenticated owner
 - admin
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -698,7 +787,7 @@ Update idea with specified id.
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -736,18 +825,20 @@ Update idea with specified id.
   ]
 }
 ```
+---
 
+### <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
+***Summary***
 
-## <span style="color: #e85141">`DELETE`</span> - `/ideas/:id`
-### Summary
 Remove idea with specified id.
 
-### Required Privileges
+***Required Privileges***
+
 - authenticated owner
 - admin
 
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -788,16 +879,19 @@ Remove idea with specified id.
 
 </details>
 
-## Tags
 <details>
-<summary></summary>
+<summary><h3>Tags</h3></summary>
 
-## <span style="color: #6ec3d4">`GET`</span> - `/tags`
-### Summary
+### <span style="color: #6ec3d4">`GET`</span> - `/tags`
+***Summary***
+
 Get all of the existing tags.
-### Required Privileges
+
+***Required Privileges***
+
 - authenticated user
-### Response
+
+ ***Response***
 `application/json`
 ```json
 [
@@ -816,11 +910,15 @@ Get all of the existing tags.
 
 
 ## <span style="color: #6ec3d4">`GET`</span> - `/tags?usr=1`
-### Summary
+***Summary***
+
 Get all of the existing tags, and include users who have subscribed to them.
-### Required Privileges
+
+***Required Privileges***
+
 - authenticated user
-### Response
+
+***Response***
 `application/json`
 ```json
 [
@@ -852,13 +950,18 @@ Get all of the existing tags, and include users who have subscribed to them.
   },
 ]
 ```
+---
 
-## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id`
-### Summary
+### <span style="color: #6ec3d4">`GET`</span> - `/tags/:id`
+***Summary***
+
 Get tag with specified id.
-### Required Privileges
+
+***Required Privileges***
+
 - authenticated user
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -867,14 +970,17 @@ Get tag with specified id.
   "description": "Ideas related to food.",
 },
 ```
+---
 
+### <span style="color: #6ec3d4">`GET`</span> - `/tags/:id?usr=1`
+***Summary***
 
-## <span style="color: #6ec3d4">`GET`</span> - `/tags/:id?usr=1`
-### Summary
 Get tag with specified id. Include users that have subscribed to it.
-### Required Privileges
+***Required Privileges***
+
 - authenticated user
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -889,14 +995,17 @@ Get tag with specified id. Include users that have subscribed to it.
   ]
 },
 ```
+---
 
+### <span style="color: #87d65a">`POST`</span> - `/tags`
+***Summary***
 
-## <span style="color: #87d65a">`POST`</span> - `/tags`
-### Summary
 Create new tag. Description field is optional.
-### Required Privileges
+
+***Required Privileges***
 - admin
-### Request
+
+***Request***
 `application/json`
 ```json
 {
@@ -910,7 +1019,7 @@ Create new tag. Description field is optional.
 }
 ```
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -919,14 +1028,18 @@ Create new tag. Description field is optional.
   "description": "Ideas related to snacks served in office"
 }
 ```
+---
 
-## <span style="color: #87d65a">`POST`</span> - `/tags/:tagId/user/:userId`
-### Summary
+### <span style="color: #87d65a">`POST`</span> - `/tags/:tagId/user/:userId`
+***Summary***
 User subscribes to specified tag.
-### Required Privileges
+
+***Required Privileges***
+
 - authenticated user (same as target)
 - admin
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -944,14 +1057,18 @@ User subscribes to specified tag.
 }
 ```
 
+---
 
-## <span style="color: #1589F0">`PUT`</span> - `/tags/:tagId`
-### Summary
+### <span style="color: #1589F0">`PUT`</span> - `/tags/:tagId`
+***Summary***
+
 Update tag with specified id.
-### Required Privileges
+
+***Required Privileges***
+
 - admin
 
-### Request
+***Request***
 `application/json`
 ```json
 {
@@ -959,7 +1076,7 @@ Update tag with specified id.
   "description": "Ideas related to snacks served in office",
 }
 ```
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -969,16 +1086,19 @@ Update tag with specified id.
 }
 ```
 
+---
 
-## <span style="color: #e85141">`DELETE`</span> - `/tags/:tagId/user/:userId`
-### Summary
+### <span style="color: #e85141">`DELETE`</span> - `/tags/:tagId/user/:userId`
+***Summary***
+
 User unsubscribes from specified tag.
 
-### Required Privileges
+***Required Privileges***
+
 - authenticated user (same as target)
 - admin
 
-### Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -988,14 +1108,18 @@ User unsubscribes from specified tag.
   "users": []
 }
 ```
+---
 
+### <span style="color: #e85141">`DELETE`</span> - `/tags/:id`
+***Summary***
 
-## <span style="color: #e85141">`DELETE`</span> - `/tags/:id`
-### Summary
 Delete specified tag.
-### Required Privileges
+
+***Required Privileges***
+
 - admin
-### Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -1008,18 +1132,21 @@ Delete specified tag.
 </details>
 
 
-## Comments
 <details>
-<summary></summary>
+<summary><h3>Comments</h3></summary>
 
 
-## <span style="color: #87d65a">`POST`</span> - `/users`
-### Summary
+### <span style="color: #87d65a">`POST`</span> - `/users`
+***Summary***
+
 Create new comment on idea.
-### Required Privileges
+
+***Required Privileges***
+
 - Authenticated user.
 - admin
-### Request
+
+***Request***
 `application/json`
 ```json
 {
@@ -1027,7 +1154,7 @@ Create new comment on idea.
   "idea_id": 1
 }
 ```
-### Response
+ ***Response***
 `application/json`
 ```json
   {
@@ -1044,14 +1171,19 @@ Create new comment on idea.
   "created_at": "2022-11-24T10:36:10.190Z"
 }
 ```
+---
 
-## <span style="color: #e85141">`DELETE`</span> - `/comments/:id`
-### Summary
+### <span style="color: #e85141">`DELETE`</span> - `/comments/:id`
+***Summary***
+
 Delete specified Comment.
-### Required Privileges
+
+***Required Privileges***
+
 - Authenticated user who owns the comment
 - admin
-### Response
+
+ ***Response***
 `application/json`
 ```json
   {
@@ -1068,21 +1200,26 @@ Delete specified Comment.
   "created_at": "2022-11-24T10:36:10.190Z"
 }
 ```
+---
 
-## <span style="color: #1589F0">`PUT`</span> - `/comments/:id`
-### Summary
+### <span style="color: #1589F0">`PUT`</span> - `/comments/:id`
+***Summary***
+
 Update specified Comment.
-### Required Privileges
+
+***Required Privileges***
+
 - Authenticated user who owns the comment
 - admin
-### Request
+
+***Request***
 `application/json`
 ```json
 {
   "content": "Updated comment content",
 }
 ```
-### Response
+ ***Response***
 `application/json`
 ```json
   {
@@ -1099,16 +1236,17 @@ Update specified Comment.
   "created_at": "2022-11-24T10:36:10.190Z"
 }
 ```
+---
 
-
-## <span style="color: #6ec3d4">`GET`</span> - `/comments`
-DELETE
+### <span style="color: #6ec3d4">`GET`</span> - `/comments`
 Get all of the comments.
-### Required Privileges
+
+***Required Privileges***
+
 - Authenticated user
 - admin
 
-## Response
+ ***Response***
 `application/json`
 ```json
 [
@@ -1127,15 +1265,19 @@ Get all of the comments.
   },
 ]
 ```
+---
 
-## <span style="color: #6ec3d4">`GET`</span> - `/comments/:id`
-### Summary
+### <span style="color: #6ec3d4">`GET`</span> - `/comments/:id`
+***Summary***
+
 Get comment with specified id.
-### Required Privileges
+
+***Required Privileges***
+
 - Authenticated user
 - admin
 
-## Response
+ ***Response***
 `application/json`
 ```json
 {
@@ -1157,18 +1299,20 @@ Get comment with specified id.
 
 
 
-## Likes
 <details>
-<summary></summary>
+<summary><h3>Likes</h3></summary>
 
+### <span style="color: #87d65a">`POST`</span> - `/likes/idea/:ideaId`
+***Summary***
 
-## <span style="color: #87d65a">`POST`</span> - `/likes/idea/:ideaId`
-### Summary
 User likes specified idea.
-### Required Privileges
+
+***Required***
+
 - Authenticated user
 - admin
-## Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -1185,13 +1329,19 @@ User likes specified idea.
 }
 ```
 
-## <span style="color: #e85141">`DELETE`</span> - `/likes/idea/:ideaId`
-### Summary
+---
+
+### <span style="color: #e85141">`DELETE`</span> - `/likes/idea/:ideaId`
+***Summary***
+
 User removes his/hers like on specified idea.
+
 ### Required Privileges
+
 - Authenticated user
 - admin
-## Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -1208,12 +1358,18 @@ User removes his/hers like on specified idea.
 }
 ```
 
-## <span style="color: #6ec3d4">`GET`</span> - `/likes`
-### Summary
+---
+
+### <span style="color: #6ec3d4">`GET`</span> - `/likes`
+***Summary***
+
 Get all of the likes.
-### Required Privileges
+
+***Required Privileges***
+
 - admin
-## Response
+
+ ***Response***
 `application/json`
 ```json
 [
@@ -1231,13 +1387,17 @@ Get all of the likes.
   }
 ]
 ```
+---
 
-## <span style="color: #6ec3d4">`GET`</span> - `/likes/:likeId`
-### Summary
+### <span style="color: #6ec3d4">`GET`</span> - `/likes/:likeId`
+***Summary***
+
 Get like with specified id
-### Required Privileges
+
+***Required***
 - admin
-## Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -1253,13 +1413,18 @@ Get like with specified id
   "created_at": "2022-11-30T19:01:28.126Z"
 }
 ```
+---
 
-## <span style="color: #e85141">`DELETE`</span> - `/likes/:likeId`
-### Summary
+### <span style="color: #e85141">`DELETE`</span> - `/likes/:likeId`
+***Summary***
+
 Admin can remove any like.
-### Required Privileges
+
+***Required Privileges***
+
 - admin
-## Response
+
+ ***Response***
 `application/json`
 ```json
 {
@@ -1275,6 +1440,6 @@ Admin can remove any like.
   "created_at": "2022-11-30T19:01:28.126Z"
 }
 ```
-
+---
 
 </details>
