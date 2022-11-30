@@ -1006,3 +1006,206 @@ Delete specified tag.
 ```
 
 </details>
+
+
+## Comments
+<details>
+<summary></summary>
+
+
+## <span style="color: #87d65a">`POST`</span> - `/users`
+### Summary
+Create new comment on idea.
+### Required Privileges
+- Authenticated user.
+- admin
+### Request
+`application/json`
+```json
+{
+  "content": "Cool idea :)",
+  "idea_id": 1
+}
+```
+### Response
+`application/json`
+```json
+  {
+  "content": "Cool idea :)",
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 2,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-24T10:36:10.190Z"
+}
+```
+
+## <span style="color: #e85141">`DELETE`</span> - `/comments/:id`
+### Summary
+Delete specified Comment.
+### Required Privileges
+- Authenticated user who owns the comment
+- admin
+### Response
+`application/json`
+```json
+  {
+  "content": "Comment on some idea",
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 2,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-24T10:36:10.190Z"
+}
+```
+
+## <span style="color: #1589F0">`PUT`</span> - `/comments/:id`
+### Summary
+Update specified Comment.
+### Required Privileges
+- Authenticated user who owns the comment
+- admin
+### Request
+`application/json`
+```json
+{
+  "content": "Updated comment content",
+}
+```
+### Response
+`application/json`
+```json
+  {
+  "content": "Updated comment content",
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 2,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-24T10:36:10.190Z"
+}
+```
+
+
+## <span style="color: #6ec3d4">`GET`</span> - `/comments`
+DELETE
+Get all of the comments.
+### Required Privileges
+- Authenticated user
+- admin
+
+## Response
+`application/json`
+```json
+[
+  {
+    "content": "Nice idea",
+    "user": {
+      "id": 10,
+      "name": "Victor Mike"
+    },
+    "id": 2,
+    "idea": {
+      "id": 1,
+      "user_id": 1
+    },
+    "created_at": "2022-11-24T10:36:10.190Z"
+  },
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/comments/:id`
+### Summary
+Get comment with specified id.
+### Required Privileges
+- Authenticated user
+- admin
+
+## Response
+`application/json`
+```json
+{
+  "content": "Nice idea",
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 2,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-24T10:36:10.190Z"
+},
+```
+
+</details>
+
+
+
+## Likes
+<details>
+<summary></summary>
+
+
+## <span style="color: #87d65a">`POST`</span> - `/likes/idea/:ideaId`
+### Summary
+User likes specified idea.
+### Required Privileges
+- Authenticated user
+- admin
+## Response
+`application/json`
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "admin"
+  },
+  "id": 30,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-30T19:01:28.126Z"
+}
+```
+
+## <span style="color: #e85141">`DELETE`</span> - `/likes/idea/:ideaId`
+### Summary
+User removes his/hers like on specified idea.
+### Required Privileges
+- Authenticated user
+- admin
+## Response
+`application/json`
+```json
+{
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 30,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-30T19:01:28.126Z"
+}
+```
+
+</details>
