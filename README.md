@@ -1208,4 +1208,73 @@ User removes his/hers like on specified idea.
 }
 ```
 
+## <span style="color: #6ec3d4">`GET`</span> - `/likes`
+### Summary
+Get all of the likes.
+### Required Privileges
+- admin
+## Response
+`application/json`
+```json
+[
+  {
+    "user": {
+      "id": 10,
+      "name": "Victor Mike"
+    },
+    "id": 30,
+    "idea": {
+      "id": 1,
+      "user_id": 1
+    },
+    "created_at": "2022-11-30T19:01:28.126Z"
+  }
+]
+```
+
+## <span style="color: #6ec3d4">`GET`</span> - `/likes/:likeId`
+### Summary
+Get like with specified id
+### Required Privileges
+- admin
+## Response
+`application/json`
+```json
+{
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 30,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-30T19:01:28.126Z"
+}
+```
+
+## <span style="color: #e85141">`DELETE`</span> - `/likes/:likeId`
+### Summary
+Admin can remove any like.
+### Required Privileges
+- admin
+## Response
+`application/json`
+```json
+{
+  "user": {
+    "id": 10,
+    "name": "Victor Mike"
+  },
+  "id": 30,
+  "idea": {
+    "id": 1,
+    "user_id": 1
+  },
+  "created_at": "2022-11-30T19:01:28.126Z"
+}
+```
+
+
 </details>
