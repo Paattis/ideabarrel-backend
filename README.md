@@ -1466,6 +1466,43 @@ Get like with specified id
   "created_at": "2022-11-30T19:01:28.126Z"
 }
 ```
+
+---
+
+### <span style="color: #6ec3d4">`GET`</span> - `/likes/idea/{ideaId}`
+***Summary***
+
+Get all of the likes associated with specified idea.
+Also includes count of the ideas.
+
+***Required Privileges***
+- Authenticated users
+- Admin
+
+ ***Response***
+`application/json`
+```json
+{
+  "count": 2
+  "likes": [
+    {
+      "id": 1,
+      "user": {
+        "id": 10,
+        "name": "Victor Mike"
+      }
+    },
+    {
+      "id": 2,
+      "user": {
+        "id": 20,
+        "name": "Bob Mike"
+      }
+    }
+  ],
+}
+```
+
 ---
 
 ### <span style="color: #e85141">`DELETE`</span> - `/likes/:likeId`

@@ -32,6 +32,18 @@ likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+likes.get('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const ideaId = Number.parseInt(req.params.id, 10);
+    const result = await db().likes.forIdea(ideaId);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  } finally {
+    next();
+  }
+});
+
 likes.post(
   '/',
   validLikeBody,
