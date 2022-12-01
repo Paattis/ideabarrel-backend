@@ -1,20 +1,26 @@
 import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
-import { db } from '../db/context';
-import usersClient, { PublicUser, UserData } from '../db/users';
+import { db, Users } from '../db/Database';
+import { PublicUser } from '../db/UserClient';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { NoSuchResource, ServerError } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
+import {
+  throwIfNotValid,
+  validAvatar,
+  validEmailCheck,
+  validUserBody,
+} from '../validation/schema';
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => usersClient.userOwns(user, id, db);
+const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
   try {
-    const results = await usersClient.all(db);
+    const results = await db().users.all();
     res.json(results);
   } catch (err) {
     next(err);
@@ -29,7 +35,7 @@ users.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
-      const result = await usersClient.select(id, db);
+      const result = await db().users.select(id);
       res.json(result);
     } catch (err) {
       next(err);
@@ -41,12 +47,14 @@ users.get(
 
 users.put(
   '/:id',
+  validUserBody,
   auth.required,
   auth.userHasAccess(toUser),
-  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+  async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
     try {
-      const userId = Number.parseInt(req.params.id, 10);
-      const result = await usersClient.update(req.body, userId, db);
+      throwIfNotValid(req);
+      const userId = parseInt(req.params.id, 10);
+      const result = await db().users.update(req.body, userId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -62,8 +70,8 @@ users.delete(
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = Number.parseInt(req.params.id, 10);
-      const result = await usersClient.remove(userId, db);
+      const userId = parseInt(req.params.id, 10);
+      const result = await db().users.remove(userId);
       img.remove(result.profile_img);
       result.profile_img = '';
       res.json(result);
@@ -77,22 +85,20 @@ users.delete(
 
 users.put(
   '/:id/img',
+  validAvatar,
   auth.required,
   auth.userHasAccess(toUser),
   img.upload.single('avatar'),
   img.resize,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = Number.parseInt(req.params.id, 10);
+      throwIfNotValid(req);
       if (req.file) {
-        const user = req.user as UserData;
-        const result = await usersClient.updateAvatar(
-          userId,
-          user.profile_img,
-          req.file.filename,
-          db
+        const result = await db().users.updateAvatar(
+          parseInt(req.params.id, 10),
+          req.file.filename
         );
-        log.debug('Updated avatar for user ' + userId);
+        log.debug('Updated avatar for user ' + req.params.id);
         return res.json(result);
       } else throw ServerError;
     } catch (err) {
@@ -113,7 +119,11 @@ users.delete(
       if (!user.profile_img) {
         throw new NoSuchResource('avatar');
       }
-      const result = await usersClient.updateAvatar(user.id, user.profile_img, '', db);
+      const EMPTY_AVATAR = '';
+      const result = await db().users.updateAvatar(
+        parseInt(req.params.id, 10),
+        EMPTY_AVATAR
+      );
       return res.json(result);
     } catch (err) {
       next(err);
@@ -127,19 +137,37 @@ users.post(
   '/',
   img.upload.single('avatar'),
   img.resize,
-  async (req: TRequest<UserData>, res: Response, next: NextFunction) => {
+  validUserBody,
+  async (req: TRequest<Users.Create>, res: Response, next: NextFunction) => {
     try {
-      const fields: UserData = {
+      throwIfNotValid(req);
+      const fields: Users.Create = {
         email: req.body.email,
         name: req.body.name,
         password: await auth.hash(req.body.password),
         profile_img: req.file?.filename ?? '',
-        role_id: Number.parseInt(req.body.role_id as unknown as string | '0', 10),
+        role_id: parseInt(req.body.role_id as any as string | '0', 10),
       };
-      const result = await usersClient.create(fields, db);
+      const result = await db().users.create(fields);
       res.json(result);
     } catch (err) {
       next(err);
+    } finally {
+      next();
+    }
+  }
+);
+
+users.post(
+  '/email/free',
+  validEmailCheck,
+  async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    try {
+      throwIfNotValid(req);
+      const exist = await db().users.emailExists(req.body.email);
+      return res.json({ free: !exist });
+    } catch (error) {
+      next(error);
     } finally {
       next();
     }

@@ -1,14 +1,13 @@
 import bcrypt from 'bcryptjs';
 import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { getAppEnvVar } from './env';
-import { db } from '../db/context';
-import usersClient from '../db/users';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextFunction } from 'express';
 import { log } from '../logger/log';
 import { Forbidden, Unauthorized } from './errors';
+import { db } from '../db/Database';
 
 const SECRET = getAppEnvVar('ACCESS_TOKEN_SECRET');
 const SALT = 10;
@@ -27,7 +26,7 @@ export type UserPayload = {
 passport.use(
   new JWTStrategy(options, async (payload: UserPayload, done) => {
     try {
-      const user = await usersClient.select(payload.id, db);
+      const user = await db().users.select(payload.id);
       return done(null, user);
     } catch (err) {
       return done(new Unauthorized());
@@ -50,7 +49,7 @@ const required = [
   (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
     if (user !== null) {
-      log.info(`User ${user?.id}:${user?.name}`);
+      log.info(`Authenticated user  --  id:{${user?.id}} name:{${user?.name}}`);
     }
     next();
   },
