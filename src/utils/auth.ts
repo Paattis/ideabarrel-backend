@@ -49,7 +49,7 @@ const required = [
   (req: any, _: any, next: NextFunction) => {
     const user = req.user as User | null;
     if (user !== null) {
-      log.info(`User ${user?.id}:${user?.name}`);
+      log.info(`Authenticated user  --  id:{${user?.id}} name:{${user?.name}}`);
     }
     next();
   },
