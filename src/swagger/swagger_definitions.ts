@@ -9,10 +9,27 @@ const userInfo = {
   "role": role,
 }
 
-const tag = {"tag": {"name": "Cafeteria", "id": 15 } }
+const userShort = {
+  "id": userInfo.id,
+  "name": userInfo.name
+}
 
-const like = {
+const ideaShort = {
+    "id": 1,
+    "user_id": 1
+  }
+
+const tag = {"tag": {"name": "Cafeteria", "id": 15, "description": "Ideas related to food" } }
+
+const likeShort = {
     "idea_id": 1
+}
+
+const likeFull = {
+  "user": userShort,
+  "id": 30,
+  "idea": ideaShort,
+  "created_at": "2022-11-30T19:01:28.126Z"
 }
 
 const comment = {
@@ -21,33 +38,50 @@ const comment = {
   "updated_at": "2022-11-24T10:36:10.190Z",
   "idea": {
     "id": 1
-  }
+  },
+  "user": userShort,
 }
 
 const newUser = {
   ...userInfo,
+  "profile_img": "1669052777822-668015599.jpg",
   "comments": [], "ideas": [], "likes": [] 
 }
+
+
+
+
+
+
 
 const ideaInfo = {
   "id": 1,
   "title": "Add coffee machine",
   "content": "We really should have access to free coffee.",
   "created_at": "2022-11-23T17:52:40.243Z",
-  "user": {
-    "id": 1,
-    "name": "John Doe"
-  },
+  "user": userShort,
+}
+
+const ideaNoUser = {
+  "id": ideaInfo.id,
+  "title": ideaInfo.title,
+  "description": "Ideas related to snacks",
+  "users": []
+}
+
+const ideaWithUser = {
+  ...ideaNoUser,
+  "users": [userShort]
 }
 
 const idea = {
     ...ideaInfo,
     "comments": [comment],
-    "likes": [like],
+    "likes": [likeShort],
     "tags": [tag]
 }
 
-const _user = {
+const user = {
   ...userInfo,
   "comments": [
     comment
@@ -56,19 +90,26 @@ const _user = {
     idea
   ], 
   "likes": [
-    like
+    likeShort
   ] 
 }
 
+const userWithToken = {
+  ...user,
+  "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
+}
 
-
-
+const emailFree = { "free": Boolean }
 
 
 export const definitions = {
   newUser: newUser,
-  user: _user,
+  user: user,
+  userWithToken: userWithToken,
   idea: idea,
+  ideaWithUser: ideaWithUser,
   comment: comment,
-  role: role
+  role: role,
+  likeFull: likeFull,
+  emailFree: emailFree,
 }

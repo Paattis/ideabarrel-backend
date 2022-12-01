@@ -10,6 +10,8 @@ const likes = Router();
 const toLike = async (user: User, id: number) => db().likes.userOwns(user, id);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
+
+
   try {
     const result = await db().likes.all();
     res.json(result);
@@ -20,7 +22,22 @@ likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier 
+  than trying to debug a JS library */
+likes.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/likeFull'}]
+    } */ 
+})
+
 likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */
   try {
     const likeId = Number.parseInt(req.params.id, 10);
     const result = await db().likes.select(likeId);
@@ -33,6 +50,10 @@ likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 likes.get('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+  } */ 
   try {
     const ideaId = Number.parseInt(req.params.id, 10);
     const result = await db().likes.forIdea(ideaId);
@@ -48,6 +69,10 @@ likes.post(
   '/',
   validLikeBody,
   async (req: TRequest<Likes.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/likeFull'}
+    } */ 
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
@@ -68,6 +93,10 @@ likes.delete(
   '/:id',
   auth.userHasAccess(toLike),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/likeFull'}
+    } */ 
     try {
       const likeId = Number.parseInt(req.params.id, 10);
       const result = await db().likes.remove(likeId);
@@ -81,6 +110,10 @@ likes.delete(
 );
 
 likes.delete('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */ 
   try {
     const ideaId = Number.parseInt(req.params.id, 10);
     const user = req.user as User;
@@ -94,6 +127,10 @@ likes.delete('/idea/:id', async (req: Request, res: Response, next: NextFunction
 });
 
 likes.post('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */ 
   try {
     const ideaId = Number.parseInt(req.params.id, 10);
     const user = req.user as User;

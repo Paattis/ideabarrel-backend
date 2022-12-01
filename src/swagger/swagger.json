@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://HOST HERE/"
+      "url": "http://10.114.34.65/"
     },
     {
-      "url": "https://HOST HERE/"
+      "url": "https://10.114.34.65/"
     }
   ],
   "paths": {
@@ -18,7 +18,35 @@
       "get": {
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "post": {
         "description": "",
@@ -225,7 +253,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/emailFree"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/emailFree"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -250,7 +290,31 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -259,7 +323,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
           }
         }
       }
@@ -279,7 +355,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
           }
         }
       },
@@ -297,7 +385,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
           }
         }
       },
@@ -315,7 +415,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
           }
         }
       }
@@ -335,7 +447,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              }
+            }
           }
         }
       }
@@ -355,7 +479,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              }
+            }
           }
         }
       },
@@ -373,7 +509,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaNoUser"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaNoUser"
+                }
+              }
+            }
           }
         }
       },
@@ -391,7 +539,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/tag"
+                }
+              }
+            }
           }
         }
       }
@@ -419,7 +579,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaWithUser"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaWithUser"
+                }
+              }
+            }
           }
         }
       },
@@ -445,7 +617,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaNoUser"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ideaNoUser"
+                }
+              }
+            }
           }
         }
       }
@@ -456,7 +640,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userWithToken"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/userWithToken"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -478,33 +674,89 @@
         }
       }
     },
-    "/ideas/": {
-      "get": {
+    "/auth/login/token": {
+      "post": {
         "description": "",
         "parameters": [
           {
-            "name": "page_num",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "tags",
-            "in": "query",
+            "name": "authorization",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userWithToken"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/userWithToken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ideas/": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/idea"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/idea"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "post": {
         "description": "",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              }
+            }
           }
         }
       }
@@ -524,7 +776,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              }
+            }
           }
         }
       },
@@ -542,7 +806,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              }
+            }
           }
         }
       },
@@ -560,7 +836,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              }
+            }
           }
         }
       }
@@ -569,14 +857,54 @@
       "get": {
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/likeFull"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/likeFull"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "post": {
         "description": "",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -610,7 +938,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              }
+            }
           }
         }
       },
@@ -628,12 +968,54 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              }
+            }
           }
         }
       }
     },
     "/likes/idea/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/idea"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "description": "",
         "parameters": [
@@ -648,7 +1030,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              }
+            }
           }
         }
       },
@@ -666,7 +1060,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/likeFull"
+                }
+              }
+            }
           }
         }
       }
@@ -675,14 +1081,54 @@
       "get": {
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/comment"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/comment"
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "post": {
         "description": "",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
           }
         }
       }
@@ -702,7 +1148,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
           }
         }
       },
@@ -720,7 +1178,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
           }
         }
       },
@@ -738,7 +1208,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
           }
         }
       }
@@ -755,7 +1237,7 @@
           },
           "profile_img": {
             "type": "string",
-            "example": ""
+            "example": "1669052777822-668015599.jpg"
           },
           "email": {
             "type": "string",
@@ -770,40 +1252,32 @@
             "example": "2022-11-23T17:23:24.903Z"
           },
           "role": {
-            "xml": {
-              "name": "role"
-            },
-            "$ref": "#/components/schemas/role"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Junior DevOps Engineer"
+              },
+              "id": {
+                "type": "number",
+                "example": 1
+              }
+            }
           },
           "comments": {
             "type": "array",
-            "items": {
-              "xml": {
-                "name": "comment"
-              },
-              "$ref": "#/components/schemas/comment"
-            }
+            "example": [],
+            "items": {}
           },
           "ideas": {
             "type": "array",
-            "items": {
-              "xml": {
-                "name": "idea"
-              },
-              "$ref": "#/components/schemas/idea"
-            }
+            "example": [],
+            "items": {}
           },
           "likes": {
             "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "idea_id": {
-                  "type": "number",
-                  "example": 1
-                }
-              }
-            }
+            "example": [],
+            "items": {}
           }
         },
         "xml": {
@@ -834,27 +1308,174 @@
             "example": "2022-11-23T17:23:24.903Z"
           },
           "role": {
-            "xml": {
-              "name": "role"
-            },
-            "$ref": "#/components/schemas/role"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Junior DevOps Engineer"
+              },
+              "id": {
+                "type": "number",
+                "example": 1
+              }
+            }
           },
           "comments": {
             "type": "array",
             "items": {
-              "xml": {
-                "name": "comment"
-              },
-              "$ref": "#/components/schemas/comment"
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "example": "Nice idea"
+                },
+                "id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "2022-11-24T10:36:10.190Z"
+                },
+                "idea": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Victor Mike"
+                    }
+                  }
+                }
+              }
             }
           },
           "ideas": {
             "type": "array",
             "items": {
-              "xml": {
-                "name": "idea"
-              },
-              "$ref": "#/components/schemas/idea"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Add coffee machine"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "We really should have access to free coffee."
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "2022-11-23T17:52:40.243Z"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Victor Mike"
+                    }
+                  }
+                },
+                "comments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string",
+                        "example": "Nice idea"
+                      },
+                      "id": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "example": "2022-11-24T10:36:10.190Z"
+                      },
+                      "idea": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          }
+                        }
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 10
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Victor Mike"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "likes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "idea_id": {
+                        "type": "number",
+                        "example": 1
+                      }
+                    }
+                  }
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "Cafeteria"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 15
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Ideas related to food"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           "likes": {
@@ -872,6 +1493,221 @@
         },
         "xml": {
           "name": "user"
+        }
+      },
+      "userWithToken": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Victor Mike"
+          },
+          "profile_img": {
+            "type": "string",
+            "example": ""
+          },
+          "email": {
+            "type": "string",
+            "example": "victor.mike@app.com"
+          },
+          "id": {
+            "type": "number",
+            "example": 10
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2022-11-23T17:23:24.903Z"
+          },
+          "role": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Junior DevOps Engineer"
+              },
+              "id": {
+                "type": "number",
+                "example": 1
+              }
+            }
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "example": "Nice idea"
+                },
+                "id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "2022-11-24T10:36:10.190Z"
+                },
+                "idea": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Victor Mike"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ideas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Add coffee machine"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "We really should have access to free coffee."
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "2022-11-23T17:52:40.243Z"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Victor Mike"
+                    }
+                  }
+                },
+                "comments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string",
+                        "example": "Nice idea"
+                      },
+                      "id": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "example": "2022-11-24T10:36:10.190Z"
+                      },
+                      "idea": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          }
+                        }
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 10
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Victor Mike"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "likes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "idea_id": {
+                        "type": "number",
+                        "example": 1
+                      }
+                    }
+                  }
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "Cafeteria"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 15
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Ideas related to food"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "likes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "idea_id": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
+          }
+        },
+        "xml": {
+          "name": "userWithToken"
         }
       },
       "idea": {
@@ -898,21 +1734,54 @@
             "properties": {
               "id": {
                 "type": "number",
-                "example": 1
+                "example": 10
               },
               "name": {
                 "type": "string",
-                "example": "John Doe"
+                "example": "Victor Mike"
               }
             }
           },
           "comments": {
             "type": "array",
             "items": {
-              "xml": {
-                "name": "comment"
-              },
-              "$ref": "#/components/schemas/comment"
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "example": "Nice idea"
+                },
+                "id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "2022-11-24T10:36:10.190Z"
+                },
+                "idea": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Victor Mike"
+                    }
+                  }
+                }
+              }
             }
           },
           "likes": {
@@ -920,7 +1789,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "user_id": {
+                "idea_id": {
                   "type": "number",
                   "example": 1
                 }
@@ -942,6 +1811,10 @@
                     "id": {
                       "type": "number",
                       "example": 15
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Ideas related to food"
                     }
                   }
                 }
@@ -951,6 +1824,42 @@
         },
         "xml": {
           "name": "idea"
+        }
+      },
+      "ideaWithUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Add coffee machine"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ideas related to snacks"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 10
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Victor Mike"
+                }
+              }
+            }
+          }
+        },
+        "xml": {
+          "name": "ideaWithUser"
         }
       },
       "comment": {
@@ -976,6 +1885,19 @@
                 "example": 1
               }
             }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 10
+              },
+              "name": {
+                "type": "string",
+                "example": "Victor Mike"
+              }
+            }
           }
         },
         "xml": {
@@ -996,6 +1918,59 @@
         },
         "xml": {
           "name": "role"
+        }
+      },
+      "likeFull": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 10
+              },
+              "name": {
+                "type": "string",
+                "example": "Victor Mike"
+              }
+            }
+          },
+          "id": {
+            "type": "number",
+            "example": 30
+          },
+          "idea": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 1
+              },
+              "user_id": {
+                "type": "number",
+                "example": 1
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2022-11-30T19:01:28.126Z"
+          }
+        },
+        "xml": {
+          "name": "likeFull"
+        }
+      },
+      "emailFree": {
+        "type": "object",
+        "properties": {
+          "free": {
+            "type": "function"
+          }
+        },
+        "xml": {
+          "name": "emailFree"
         }
       }
     }

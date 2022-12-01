@@ -18,22 +18,30 @@ const users = Router();
 
 const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
-users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
-    /* #swagger.responses[200] = {
-            description: "",
-            schema: [{$ref: '#/definitions/user'}]
-    } */
+
+users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const results = await db().users.all();
 
-    res.json(results);
+    res.send(results);
   } catch (err) {
     next(err);
   } finally {
     next();
   }
 });
+
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier 
+  than trying to debug a JS library */
+users.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/user'}]
+    } */ 
+})
 
 users.get(
   '/:id',
@@ -192,6 +200,10 @@ users.post(
   '/email/free',
   validEmailCheck,
   async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/emailFree'}
+    } */
     try {
       throwIfNotValid(req);
       const exist = await db().users.emailExists(req.body.email);
