@@ -32,7 +32,7 @@ router.post(
       const { password, ...result } = user;
       const token = auth.jwt({ id: user.id, role: user.role.id });
 
-      log.info(`SUCCESS - User ${user.id} logged in with password`)
+      log.info(`SUCCESS - User ${user.id} logged in with password`);
       res.json({ ...result, token });
     } catch (err) {
       next(err);
@@ -47,7 +47,7 @@ router.post(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let token = ""
+      let token = '';
       const bearer = req.headers.authorization?.match(BEARER_REGEX);
       if (bearer && bearer[1]) {
         const jwt = bearer[1];
@@ -57,8 +57,8 @@ router.post(
 
       const user: PublicUser | null = req.user as PublicUser;
       if (user && token) {
-        log.info(`SUCCESS - User ${user.id} logged in with JWT`)
-        return res.json({token, ...user})
+        log.info(`SUCCESS - User ${user.id} logged in with JWT`);
+        return res.json({ token, ...user });
       } else {
         throw new BadRequest('Invalid or expired token');
       }
