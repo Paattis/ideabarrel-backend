@@ -373,7 +373,7 @@ Authenticate user with email and password.
 
 ***Required Privileges***
 
-- all users
+- none
 
 ***Request***
 `application/json`
@@ -423,6 +423,59 @@ Authenticate user with email and password.
   "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
 }
 ```
+
+
+
+### <span style="color: #87d65a">`POST`</span> - `/auth/login/token`
+***Summary***
+
+Authenticate user with JWT (Bearer)
+
+***Required Privileges***
+
+- Authenticated users
+- Admin
+
+ ***Response***
+`application/json`
+```json
+{
+  "name": "Victor Mike",
+  "profile_img": "",
+  "email": "victor.mike@app.com",
+  "id": 10,
+  "created_at": "2022-11-23T17:23:24.903Z",
+  "role": {
+    "name": "Junior DevOps Engineer",
+    "id": 1
+  },
+  "comments": [
+    {
+      "content": "Nice idea",
+      "id": 2,
+      "updated_at": "2022-11-24T10:36:10.190Z",
+      "idea": {
+        "id": 1
+      }
+    },
+  ],
+  "ideas": [
+    {
+      "id": 5,
+      "created_at": "2022-11-29T14:19:22.952Z",
+      "title": "New idea",
+      "content": "Some cool idea, must be implemented."
+    }
+  ],
+  "likes": [
+    {
+      "idea_id": 1
+    }
+  ],
+  "token": "JWT_TOKEN_WITH_ID_AND_ROLE_ID"
+}
+```
+
 </details>
 
 <details>

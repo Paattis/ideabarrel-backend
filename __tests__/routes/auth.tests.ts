@@ -19,6 +19,57 @@ const incorrectLogin = {
   email: 'user@app.com',
 };
 
+const timestamp = new Date();
+const user = {
+  id: 1,
+  name: 'Test User',
+  profile_img: '',
+  password: 'pw',
+  email: 'user@app.com',
+  role_id: 1,
+  created_at: timestamp,
+  updated_at: timestamp,
+};
+
+const JWT = auth.jwt({ id: user.id });
+const mockJWT = (success: boolean) => {
+  if (success) {
+    mockDb.users.select.mockResolvedValueOnce(user as any);
+  } else {
+    mockDb.users.select.mockRejectedValueOnce(new Error('No such user'));
+  }
+};
+
+describe('POST /auth/login/token', () => {
+  test('Route should return 200 when user token is valid', async () => {
+    // Mock resulting actions
+    mockJWT(true);
+    // Action
+    const res = await request(app)
+      .post('/auth/login/token')
+      .auth(JWT, { type: 'bearer' })
+      .expect(200);
+
+    // Result
+    expect(res.body).toMatchObject({
+      name: 'Test User',
+      email: 'user@app.com',
+      id: 1,
+      token: JWT,
+    });
+  });
+
+  test('Route should return 401 when user token is invalid', async () => {
+    // Mock resulting actions
+    mockJWT(false);
+    // Action
+    await request(app)
+      .post('/auth/login/token')
+      .auth(JWT, { type: 'bearer' })
+      .expect(401);
+  });
+});
+
 describe('POST /auth/login', () => {
   test('Route should return 404 when user is not found', async () => {
     // Mock resulting actions
@@ -33,7 +84,7 @@ describe('POST /auth/login', () => {
 
   test('Route should return 400 when user password is wrong', async () => {
     // Mock resulting actions
-    const user = {
+    const user2 = {
       id: 1,
       name: 'Test User',
       email: 'user@app.com',
@@ -41,7 +92,7 @@ describe('POST /auth/login', () => {
       password: await auth.hash('password'),
       role_id: 1,
     };
-    mockDb.users.selectByEmailSecret.mockResolvedValue(user as any);
+    mockDb.users.selectByEmailSecret.mockResolvedValue(user2 as any);
 
     // Action
     const res = await request(app).post('/auth/login').send(incorrectLogin);
@@ -52,7 +103,7 @@ describe('POST /auth/login', () => {
 
   test('Route should return 200 when user password is right', async () => {
     // Mock resulting actions
-    const user = {
+    const user2 = {
       id: 1,
       name: 'Test User',
       email: 'user@app.com',
@@ -63,7 +114,7 @@ describe('POST /auth/login', () => {
       },
       role_id: 1,
     };
-    mockDb.users.selectByEmailSecret.mockResolvedValue(user as any);
+    mockDb.users.selectByEmailSecret.mockResolvedValue(user2 as any);
 
     // Action
     const res = await request(app).post('/auth/login').send(login).expect(200);
