@@ -11,7 +11,6 @@ const comments = Router();
 const toComment = async (user: User, id: number) => db().comments.userOwns(user, id);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
-
   try {
     const result = await db().comments.all();
     res.json(result);
@@ -27,12 +26,11 @@ comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   It will read this stub just fine though and this is infinitely easier 
   than trying to debug a JS library */
 comments.get('/', async (_: Request, __: Response, ___: NextFunction) => {
-    /* #swagger.responses[200] = {
+  /* #swagger.responses[200] = {
             description: "",
             schema: [{$ref: '#/definitions/comment'}]
-    } */ 
-})
-
+    } */
+});
 
 comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   /* #swagger.responses[200] = {

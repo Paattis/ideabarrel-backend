@@ -12,7 +12,6 @@ const ideas = Router();
 const toIdea = async (user: User, id: number) => db().ideas.userOwns(user, id);
 
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
-
   try {
     const pageNum = parseInt((req.query.page_num || '0') as string, 10);
     log.info(`tags: ${JSON.stringify(req.query.tags)}`);
@@ -34,11 +33,11 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   It will read this stub just fine though and this is infinitely easier 
   than trying to debug a JS library */
 ideas.get('/', async (_: Request, __: Response, ___: NextFunction) => {
-    /* #swagger.responses[200] = {
+  /* #swagger.responses[200] = {
             description: "",
             schema: [{$ref: '#/definitions/idea'}]
-    } */ 
-})
+    } */
+});
 
 ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   /* #swagger.responses[200] = {
@@ -61,7 +60,7 @@ ideas.post(
   '/',
   validIdeaBody,
   async (req: TRequest<Ideas.Create>, res: Response, next: NextFunction) => {
-      /* #swagger.responses[200] = {
+    /* #swagger.responses[200] = {
           description: "",
           schema: {$ref: '#/definitions/idea'}
     } */
@@ -83,7 +82,7 @@ ideas.put(
   validIdeaBody,
   auth.userHasAccess(toIdea),
   async (req: TRequest<Ideas.Update>, res: Response, next: NextFunction) => {
-      /* #swagger.responses[200] = {
+    /* #swagger.responses[200] = {
           description: "",
           schema: {$ref: '#/definitions/idea'}
     } */

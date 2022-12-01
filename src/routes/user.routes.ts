@@ -18,9 +18,7 @@ const users = Router();
 
 const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
-
 users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
-
   try {
     const results = await db().users.all();
 
@@ -37,11 +35,11 @@ users.get('/', auth.required, async (req: Request, res: Response, next: NextFunc
   It will read this stub just fine though and this is infinitely easier 
   than trying to debug a JS library */
 users.get('/', async (_: Request, __: Response, ___: NextFunction) => {
-    /* #swagger.responses[200] = {
+  /* #swagger.responses[200] = {
             description: "",
             schema: [{$ref: '#/definitions/user'}]
-    } */ 
-})
+    } */
+});
 
 users.get(
   '/:id',

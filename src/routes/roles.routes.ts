@@ -31,11 +31,11 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
   It will read this stub just fine though and this is infinitely easier 
   than trying to debug a JS library */
 roles.get('/', async (_: Request, __: Response, ___: NextFunction) => {
-    /* #swagger.responses[200] = {
+  /* #swagger.responses[200] = {
             description: "",
             schema: [{$ref: '#/definitions/role'}]
-    } */ 
-})
+    } */
+});
 
 roles.get(
   '/:id',
@@ -44,7 +44,7 @@ roles.get(
     /* #swagger.responses[200] = {
             description: "",
             schema: {$ref: '#/definitions/role'}
-    } */ 
+    } */
     try {
       const roleId = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
@@ -68,10 +68,10 @@ roles.post(
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Roles.Create>, res: Response, next: NextFunction) => {
-      /* #swagger.responses[200] = {
+    /* #swagger.responses[200] = {
             description: "",
             schema: {$ref: '#/definitions/role'}
-    } */ 
+    } */
     try {
       throwIfNotValid(req);
       const result = await db().roles.create(req.body);
@@ -93,7 +93,7 @@ roles.put(
     /* #swagger.responses[200] = {
             description: "",
             schema: {$ref: '#/definitions/role'}
-    } */ 
+    } */
     try {
       throwIfNotValid(req);
       const roleId = Number.parseInt(req.params.id, 10);

@@ -2,7 +2,7 @@
 const outputFile = './src/swagger/swagger.json';
 const endpointsFiles = ['./src/app.ts'];
 import swaggerAutogen from 'swagger-autogen';
-import {definitions} from './swagger_definitions';
+import { definitions } from './swagger_definitions';
 
 const doc = {
   info: {
@@ -17,7 +17,7 @@ const doc = {
 };
 
 const options = {
-  openapi: "3.0.0",
-}
+  openapi: '3.0.0',
+};
 
 swaggerAutogen(options)(outputFile, endpointsFiles, doc);
