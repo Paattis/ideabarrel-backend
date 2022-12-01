@@ -25,18 +25,21 @@ export const throwIfNotValid = (req: TRequest<any>) => {
 
 export const validIdeaBody = checkSchema({
   title: {
+    exists: true,
     isString,
     notEmpty,
     isLength: max(40),
     trim: true,
   },
   content: {
+    exists: true,
     isString,
     notEmpty,
     isLength: max(1000),
     trim: true,
   },
   tags: {
+    exists: true,
     isArray,
     notEmpty,
   },
@@ -47,6 +50,7 @@ export const validIdeaBody = checkSchema({
 
 export const validTagBody = checkSchema({
   name: {
+    exists: true,
     isString,
     notEmpty,
     isLength: max(255),
@@ -63,6 +67,7 @@ export const validTagBody = checkSchema({
 
 export const validEmailCheck = checkSchema({
   email: {
+    exists: true,
     isString,
     notEmpty,
     isEmail,
@@ -71,11 +76,13 @@ export const validEmailCheck = checkSchema({
 
 export const validAuthBody = checkSchema({
   email: {
+    exists: true,
     isString,
     notEmpty,
     isEmail,
   },
   password: {
+    exists: true,
     isString,
     notEmpty,
   },
@@ -83,6 +90,7 @@ export const validAuthBody = checkSchema({
 
 export const validLikeBody = checkSchema({
   idea_id: {
+    exists: true,
     isInt: isPositive,
     toInt: true,
   },
@@ -90,6 +98,7 @@ export const validLikeBody = checkSchema({
 
 export const validRoleBody = checkSchema({
   name: {
+    exists: true,
     isString,
     notEmpty,
     trim: true,
@@ -99,6 +108,7 @@ export const validRoleBody = checkSchema({
 
 export const validUserBody = checkSchema({
   name: {
+    exists: true,
     isString,
     notEmpty,
     isLength: inRange(3, 20),
@@ -109,15 +119,18 @@ export const validUserBody = checkSchema({
     trim: true,
   },
   role_id: {
+    exists: true,
     toInt: true,
     isInt: isPositive,
     custom: role.exists,
   },
   password: {
+    exists: true,
     isString,
     isStrongPassword: isStrong,
   },
   email: {
+    exists: true,
     isString,
     isEmail,
     custom: email.notInUse,
@@ -132,11 +145,13 @@ export const validCommentBody = checkSchema({
   content: {
     trim: true,
     customSanitizer: capitalize,
+    exists: true,
     isString,
     notEmpty,
     isLength: max(500),
   },
   idea_id: {
+    exists: true,
     toInt: true,
     isInt: isPositive,
   },

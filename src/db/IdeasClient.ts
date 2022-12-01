@@ -53,6 +53,7 @@ export class IdeasClient extends AbstractClient {
       select: this.publicFields,
       skip: page * resultsPerPage,
       take: resultsPerPage,
+      orderBy: {likes: {_count: 'desc'}},
     };
 
     if (tags.length > 0) {
@@ -67,7 +68,6 @@ export class IdeasClient extends AbstractClient {
         },
       };
     }
-    log.info(`query ${JSON.stringify(query)} tags: ${tags}`);
     return await this.ctx.prisma.idea.findMany(query);
   }
 
