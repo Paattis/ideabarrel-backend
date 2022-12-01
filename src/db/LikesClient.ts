@@ -23,6 +23,40 @@ export class LikesClient extends AbstractClient {
   }
 
   /**
+   * Selects all of the likes that are associated with
+   * specified idea id.
+   *
+   * @param ideaId Id of the idea
+   * @returns Array of the ideas, with count
+   */
+  async forIdea(ideaId: number) {
+    const select = {
+      likes: {
+        select: {
+          id: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    };
+    const result = await this.ctx.prisma.idea.findFirst({
+      where: { id: ideaId },
+      select,
+    });
+    if (!result) {
+      throw new NoSuchResource('idea');
+    }
+    return {
+      likes: result.likes,
+      count: result.likes?.length ?? 0,
+    };
+  }
+
+  /**
    * Get single like.
    *
    * @param likeId Id of the like
