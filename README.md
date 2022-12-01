@@ -1336,7 +1336,7 @@ User likes specified idea.
 
 User removes his/hers like on specified idea.
 
-### Required Privileges
+***Required Privileges***
 
 - Authenticated user
 - admin
@@ -1394,7 +1394,7 @@ Get all of the likes.
 
 Get like with specified id
 
-***Required***
+***Required Privileges***
 - admin
 
  ***Response***
