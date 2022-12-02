@@ -46,6 +46,8 @@ $ npm run build
 $ npm run dev
 ```
 
+## Updating in production
+`$ make update_prod`
 
 ## API Endpoints
 
