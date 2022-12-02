@@ -13,7 +13,7 @@ const doc = {
   },
   host: '10.114.34.65',
   schemes: ['http', 'https'],
-  definitions: definitions,
+  definitions,
 };
 
 const options = {

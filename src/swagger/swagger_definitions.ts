@@ -6,7 +6,7 @@ const userInfo = {
   email: 'victor.mike@app.com',
   id: 10,
   created_at: '2022-11-23T17:23:24.903Z',
-  role: role,
+  role,
 };
 
 const userShort = {
@@ -92,13 +92,13 @@ const userWithToken = {
 const emailFree = { free: Boolean };
 
 export const definitions = {
-  newUser: newUser,
-  user: user,
-  userWithToken: userWithToken,
-  idea: idea,
-  ideaWithUser: ideaWithUser,
-  comment: comment,
-  role: role,
-  likeFull: likeFull,
-  emailFree: emailFree,
+  newUser,
+  user,
+  userWithToken,
+  idea,
+  ideaWithUser,
+  comment,
+  role,
+  likeFull,
+  emailFree,
 };

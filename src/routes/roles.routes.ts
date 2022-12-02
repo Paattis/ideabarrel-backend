@@ -28,8 +28,8 @@ roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 /* for whatever reason Swagger-Autogen actively refuses to read
   comments inside route controllers call a method that uses the `Prisma.findMany()` method.
-  It will read this stub just fine though and this is infinitely easier 
-  than trying to debug a JS library */
+  It will read this stub just fine though and this is infinitely easier
+  than trying to debug a compatibility issue between two libraries */
 roles.get('/', async (_: Request, __: Response, ___: NextFunction) => {
   /* #swagger.responses[200] = {
             description: "",
