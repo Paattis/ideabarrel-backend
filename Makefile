@@ -1,4 +1,4 @@
-deploy_prod:
+update_prod:
 	pm2 stop app 
 	git pull --rebase 
 	npm install 
