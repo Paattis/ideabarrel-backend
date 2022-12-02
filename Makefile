@@ -3,6 +3,5 @@ deploy_prod:
 	git pull --rebase 
 	npm install 
 	npx prisma migrate deploy 
-	npm run swagger
 	pm2 stop app 
 	pm2 start dist/src/index.js --name 'app'
