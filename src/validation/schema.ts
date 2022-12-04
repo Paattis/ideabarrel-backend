@@ -120,14 +120,14 @@ export const validUserBody = checkSchema({
   email: {
     isString,
     isEmail,
-    custom: email.isSameOrUnique
+    custom: email.isSameOrUnique,
   },
 });
 
 export const validAvatar = checkSchema({
   id: {
     in: 'params',
-    isInt: isPositive
+    isInt: isPositive,
   },
   avatar: avatar.exists,
 });

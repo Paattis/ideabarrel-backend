@@ -126,7 +126,11 @@ users.put(
           parseInt(req.params.id, 10),
           req.file.filename
         );
-        log.info(`${isUserAdmin(req?.user as User) ? 'Admin':''} Updated avatar for user ${req.params.id}`);
+        log.info(
+          `${isUserAdmin(req?.user as User) ? 'Admin' : ''} Updated avatar for user ${
+            req.params.id
+          }`
+        );
         return res.json(result);
       } else throw new BadRequest('asd');
     } catch (err) {

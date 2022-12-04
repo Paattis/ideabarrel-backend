@@ -19,7 +19,7 @@ const options: StrategyOptions = {
 
 const ADMIN_ID = 1;
 
-export const isUserAdmin = (user: {id: number}|undefined) => user?.id === ADMIN_ID
+export const isUserAdmin = (user: { id: number } | undefined) => user?.id === ADMIN_ID;
 
 export type UserPayload = {
   id: number;
