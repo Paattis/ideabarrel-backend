@@ -3,8 +3,8 @@ import { Router, Response, NextFunction, Request } from 'express';
 import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
 import { log } from '../logger/log';
-import auth from '../utils/auth';
-import { NoSuchResource, ServerError } from '../utils/errors';
+import auth, { isUserAdmin } from '../utils/auth';
+import { NoSuchResource, BadRequest } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 import {
@@ -109,11 +109,11 @@ users.delete(
 
 users.put(
   '/:id/img',
-  validAvatar,
   auth.required,
   auth.userHasAccess(toUser),
   img.upload.single('avatar'),
   img.resize,
+  validAvatar,
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
             description: "",
@@ -126,9 +126,9 @@ users.put(
           parseInt(req.params.id, 10),
           req.file.filename
         );
-        log.debug('Updated avatar for user ' + req.params.id);
+        log.info(`${isUserAdmin(req?.user as User) ? 'Admin':''} Updated avatar for user ${req.params.id}`);
         return res.json(result);
-      } else throw ServerError;
+      } else throw new BadRequest('asd');
     } catch (err) {
       return next(err);
     } finally {

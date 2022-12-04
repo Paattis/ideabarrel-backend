@@ -48,7 +48,8 @@ export const email = {
   },
   isSameOrUnique: {
     options: async (value: string, {req}: Meta) => {
-      const ok = await db().users.emailIsSameOrUnique(value, req.user);
+      const id = parseInt( req.params?.id, 10);
+      const ok = await db().users.emailIsSameOrUnique(value, id);
       if (!ok) {
         throw new Error('email')
       }

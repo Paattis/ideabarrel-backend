@@ -125,6 +125,10 @@ export const validUserBody = checkSchema({
 });
 
 export const validAvatar = checkSchema({
+  id: {
+    in: 'params',
+    isInt: isPositive
+  },
   avatar: avatar.exists,
 });
 

@@ -163,18 +163,18 @@ export class UserClient extends AbstractClient {
     }
   }
 
-  async emailIsSameOrUnique(email: string, user: User|undefined) {
+  async emailIsSameOrUnique(email: string, id: number) {
     try {
       const result = await this.ctx.prisma.user.findFirst( {where: {email}});
       if (!result) {
         log.debug(`Email ${email} is unique`)
         return true;
       }
-      if (result.id === user?.id) {
-        log.debug(`Email ${email} is same as before,
-         but belongs to the user`)
+      if (result.id === id) {
+        log.debug(`Email ${email} is same as user's current email`)
         return true
       }
+      log.debug('asdasdasdas')
       return false;
     } catch (error) {
       throw error;
@@ -205,8 +205,11 @@ export class UserClient extends AbstractClient {
         await img.remove(user.profile_img);
       }
       return result;
-    } catch (err) {
-      throw new BadRequest('');
+    } catch (err: any) {
+      if (err?.name === 'NotFoundError') {
+        throw new NoSuchResource('user');
+      }
+      throw new BadRequest('Jeesus');
     }
   }
 
