@@ -120,7 +120,9 @@ export class UserClient extends AbstractClient {
    * @returns User as a {@link PublicUser}
    */
   async update(from: Users.Update, userId: number) {
-    from.password = await auth.hash(from.password);
+    if (from.password) {
+      from.password = await auth.hash(from.password);
+    }
     try {
       const user = await this.ctx.prisma.user.update({
         where: { id: userId },

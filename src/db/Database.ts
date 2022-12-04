@@ -76,10 +76,10 @@ export namespace Users {
   };
 
   export type Update = {
-    name: string;
-    role_id: number;
-    password: string;
-    email: string;
+    name: string | undefined;
+    role_id: number | undefined;
+    password: string | undefined;
+    email: string | undefined;
   };
 }
 

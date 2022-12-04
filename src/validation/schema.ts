@@ -124,6 +124,37 @@ export const validUserBody = checkSchema({
   },
 });
 
+export const validUserUpdateBody = checkSchema({
+  name: {
+    optional: true,
+    isString,
+    notEmpty,
+    isLength: inRange(3, 20),
+    matches: {
+      options: /^[a-zA-ZäöüÄÖÜß ,.'-]+$/i,
+      errorMessage: 'must not contain special characters',
+    },
+    trim: true,
+  },
+  role_id: {
+    optional: true,
+    toInt: true,
+    isInt: isPositive,
+    custom: role.exists,
+  },
+  password: {
+    optional: true,
+    isString,
+    isStrongPassword: isStrong,
+  },
+  email: {
+    optional: true,
+    isString,
+    isEmail,
+    custom: email.isSameOrUnique,
+  },
+});
+
 export const validAvatar = checkSchema({
   id: {
     in: 'params',

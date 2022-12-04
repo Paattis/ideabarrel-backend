@@ -12,6 +12,7 @@ import {
   validAvatar,
   validEmailCheck,
   validUserBody,
+  validUserUpdateBody,
 } from '../validation/schema';
 
 const users = Router();
@@ -65,7 +66,7 @@ users.put(
   '/:id',
   auth.required,
   auth.userHasAccess(toUser),
-  validUserBody,
+  validUserUpdateBody,
   async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
             description: "",
