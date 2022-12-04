@@ -1,5 +1,6 @@
 import { Meta } from 'express-validator';
 import { db } from '../db/Database';
+import { log } from '../logger/log';
 
 export const capitalize = {
   options: (value: string, _: any) => {
@@ -41,6 +42,15 @@ export const email = {
       const exists = await db().users.emailExists(value);
       if (exists) {
         throw new Error('email');
+      }
+    },
+    errorMessage: 'is already taken',
+  },
+  isSameOrUnique: {
+    options: async (value: string, {req}: Meta) => {
+      const ok = await db().users.emailIsSameOrUnique(value, req.user);
+      if (!ok) {
+        throw new Error('email')
       }
     },
     errorMessage: 'is already taken',

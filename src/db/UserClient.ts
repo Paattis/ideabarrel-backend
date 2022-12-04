@@ -163,6 +163,24 @@ export class UserClient extends AbstractClient {
     }
   }
 
+  async emailIsSameOrUnique(email: string, user: User|undefined) {
+    try {
+      const result = await this.ctx.prisma.user.findFirst( {where: {email}});
+      if (!result) {
+        log.debug(`Email ${email} is unique`)
+        return true;
+      }
+      if (result.id === user?.id) {
+        log.debug(`Email ${email} is same as before,
+         but belongs to the user`)
+        return true
+      }
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * Updates user's avatar.
    *

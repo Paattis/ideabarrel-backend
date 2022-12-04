@@ -63,9 +63,9 @@ users.get(
 
 users.put(
   '/:id',
-  validUserBody,
   auth.required,
   auth.userHasAccess(toUser),
+  validUserBody,
   async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
             description: "",
