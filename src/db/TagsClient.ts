@@ -119,14 +119,14 @@ export class TagsClient extends AbstractClient {
         // exists and checking this with a query is distractingly difficult
         throw new BadRequest('User is already subscribed to this tag');
       } else if (err?.code === 'P2025') {
-        let cause = ''
-        if ((await this.ctx.prisma.user.findFirst({where: {id: userId}})) === null) {
-          cause += `User ${userId} does not exist.`
+        let cause = '';
+        if ((await this.ctx.prisma.user.findFirst({ where: { id: userId } })) === null) {
+          cause += `User ${userId} does not exist.`;
         }
-        if ((await this.ctx.prisma.tag.findFirst({where: {id:tagId}})) === null) {
+        if ((await this.ctx.prisma.tag.findFirst({ where: { id: tagId } })) === null) {
           cause += ` Tag ${tagId} does not exist.`;
         }
-        throw new BadRequest(cause)
+        throw new BadRequest(cause);
       }
     }
   }
