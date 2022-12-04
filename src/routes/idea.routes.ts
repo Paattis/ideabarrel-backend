@@ -28,7 +28,23 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier
+  than trying to debug a compatibility issue between two libraries */
+ideas.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+  /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/idea'}]
+    } */
+});
+
 ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+  } */
+
   try {
     const id = Number.parseInt(req.params.id, 10);
     const result = await db().ideas.select(id);
@@ -44,6 +60,11 @@ ideas.post(
   '/',
   validIdeaBody,
   async (req: TRequest<Ideas.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+    } */
+
     try {
       throwIfNotValid(req);
       const result = await db().ideas.create(req.body, req.user as User);
@@ -61,6 +82,10 @@ ideas.put(
   validIdeaBody,
   auth.userHasAccess(toIdea),
   async (req: TRequest<Ideas.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+    } */
     try {
       throwIfNotValid(req);
       const ideaId = Number.parseInt(req.params.id, 10);
@@ -78,6 +103,10 @@ ideas.delete(
   '/:id',
   auth.userHasAccess(toIdea),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+    } */
     try {
       const ideaId = Number.parseInt(req.params.id, 10);
       const result = await db().ideas.remove(ideaId, req.user as User);

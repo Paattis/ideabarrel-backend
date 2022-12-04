@@ -18,10 +18,11 @@ const users = Router();
 
 const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
 
-users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
+users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const results = await db().users.all();
-    res.json(results);
+
+    res.send(results);
   } catch (err) {
     next(err);
   } finally {
@@ -29,10 +30,25 @@ users.get('/', auth.required, async (_: Request, res: Response, next: NextFuncti
   }
 });
 
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier
+  than trying to debug a compatibility issue between two libraries */
+users.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+  /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/user'}]
+    } */
+});
+
 users.get(
   '/:id',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const id = Number.parseInt(req.params.id, 10);
       const result = await db().users.select(id);
@@ -51,6 +67,10 @@ users.put(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       const userId = parseInt(req.params.id, 10);
@@ -69,6 +89,10 @@ users.delete(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const userId = parseInt(req.params.id, 10);
       const result = await db().users.remove(userId);
@@ -91,6 +115,10 @@ users.put(
   img.upload.single('avatar'),
   img.resize,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       if (req.file) {
@@ -114,6 +142,10 @@ users.delete(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const user = req.user as PublicUser;
       if (!user.profile_img) {
@@ -139,6 +171,10 @@ users.post(
   img.resize,
   validUserBody,
   async (req: TRequest<Users.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       const fields: Users.Create = {
@@ -162,6 +198,10 @@ users.post(
   '/email/free',
   validEmailCheck,
   async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/emailFree'}
+    } */
     try {
       throwIfNotValid(req);
       const exist = await db().users.emailExists(req.body.email);

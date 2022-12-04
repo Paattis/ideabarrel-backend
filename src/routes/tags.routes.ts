@@ -33,6 +33,10 @@ tags.get(
   '/:id',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (queryisPresent(req, 'usr')) {
@@ -56,6 +60,10 @@ tags.post(
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
       throwIfNotValid(req);
       const result = await db().tags.create(req.body);
@@ -73,6 +81,10 @@ tags.post(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaWithUser'}
+    } */
     try {
       const result = await db().tags.addUserToTag(
         parseInt(req.params.tagId, 10),
@@ -92,6 +104,10 @@ tags.delete(
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Delete>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaNoUser'}
+    } */
     try {
       const result = await db().tags.removeUserFromTag(
         parseInt(req.params.tagId, 10),
@@ -112,6 +128,10 @@ tags.put(
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaNoUser'}
+    } */
     try {
       throwIfNotValid(req);
       const id = Number.parseInt(req.params.id, 10);
@@ -130,6 +150,10 @@ tags.delete(
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
       const id = Number.parseInt(req.params.id, 10);
       const result = await db().tags.remove(id);

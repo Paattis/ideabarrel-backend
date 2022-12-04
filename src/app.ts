@@ -10,7 +10,7 @@ import { httpBegin as httpLogger, httpEnd as httpEndLogger } from './logger/log'
 import auth from './utils/auth';
 import { httpHandler as httpErrorHandler } from './utils/errors';
 import swaggerUi from 'swagger-ui-express';
-import * as swaggerDocument from './swagger.json';
+import * as swaggerDocument from './swagger/swagger.json';
 
 const app: Application = express();
 

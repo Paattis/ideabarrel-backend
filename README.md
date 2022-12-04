@@ -4,6 +4,7 @@
 
 Bootstrapped based on [these](https://medium.com/swlh/build-a-rest-api-with-express-js-and-typescript-dc2c8da89c52) [instructions](https://medium.com/@sudarshanadayananda/how-to-live-reload-typescript-node-server-bc40171fdb7).
 
+API documentation available at `/docs` endpoint
 
 ## Development
 

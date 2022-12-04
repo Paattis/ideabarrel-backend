@@ -20,6 +20,10 @@ router.post(
   '/login',
   validAuthBody,
   async (req: TRequest<AuthBody>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/userWithToken'}
+    } */
     try {
       throwIfNotValid(req);
       const user = await db().users.selectByEmailSecret(req.body.email);
@@ -46,6 +50,10 @@ router.post(
   '/login/token',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/userWithToken'}
+    } */
     try {
       let token = '';
       const bearer = req.headers.authorization?.match(BEARER_REGEX);
