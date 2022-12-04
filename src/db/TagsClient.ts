@@ -111,13 +111,22 @@ export class TagsClient extends AbstractClient {
           },
         },
       });
-
       return result;
-    } catch (err) {
+    } catch (err: any) {
+      log.error(err?.meta?.cause);
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         // just return since this error signifies that the relation already
         // exists and checking this with a query is distractingly difficult
         throw new BadRequest('User is already subscribed to this tag');
+      } else if (err?.code === 'P2025') {
+        let cause = ''
+        if ((await this.ctx.prisma.user.findFirst({where: {id: userId}})) === null) {
+          cause += `User ${userId} does not exist.`
+        }
+        if ((await this.ctx.prisma.tag.findFirst({where: {id:tagId}})) === null) {
+          cause += ` Tag ${tagId} does not exist.`;
+        }
+        throw new BadRequest(cause)
       }
     }
   }
@@ -141,7 +150,7 @@ export class TagsClient extends AbstractClient {
       if (del) {
         return await this.selectWithUsers(tagId);
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new BadRequest('User is not subscribed to this tag');
     }
   }
