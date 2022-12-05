@@ -1,4 +1,4 @@
-import { PrismaClient, Role, User } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { getAppEnvVar } from '../utils/env';
@@ -8,11 +8,31 @@ const email = getAppEnvVar('ADMIN_EMAIL');
 const password = getAppEnvVar('ADMIN_PW');
 
 const seed = async () => {
-  const adminRole: Role = await prisma.role.upsert({
-    where: { id: 1 },
-    update: {},
-    create: { name: 'admin' },
-  });
+  // ************* Clear *************
+  // await prisma.user.deleteMany({});
+  // await prisma.tag.deleteMany({});
+  // await prisma.role.deleteMany({})
+  // *******************************
+
+  const tags = [
+    { name: 'admin', description: 'Admin' },
+    { name: 'Coffee', description: 'Ideas about coffee' },
+    { name: 'Office space', description: 'Ideas about office' },
+    { name: 'Food', description: 'Ideas about food' },
+    { name: 'Software', description: 'Ideas about software' },
+    { name: 'Hardware', description: 'Ideas about hardware' },
+    { name: 'R&R', description: 'Ideas about R&R' },
+    { name: 'New project', description: 'Ideas about a new project' },
+  ];
+
+  for (const tag of tags) {
+    await prisma.tag.upsert({
+      where: { name: tag.name },
+      update: {},
+      create: { ...tag },
+    });
+    log.info(`Created tag: ${JSON.stringify(tag)}`);
+  }
 
   const admin: User = await prisma.user.upsert({
     where: { email },
@@ -22,19 +42,13 @@ const seed = async () => {
       password: await auth.hash(password),
       name: 'admin',
       profile_img: '',
-      role_id: adminRole.id,
+      role: { create: { name: 'admin' } },
+      tags: { create: { tag: { connect: { name: 'admin' } } } },
     },
   });
-
-  log.info(`Admin email: ${admin.email}   --   password: ${password}`);
-
-  const tag = await prisma.tag.upsert({
-    where: { id: 1 },
-    update: {},
-    create: { name: 'admin', description: 'none' },
-  });
-
-  log.info(`Created tag: ${JSON.stringify(tag)}`);
+  log.info('\n');
+  log.info(`Admin id: ${admin.id} email: ${admin.email}   --   password: ${password}`);
+  log.info(`JWT:\n${auth.jwt({ id: admin.id, role: admin.role_id })}`);
 };
 
 seed()
@@ -42,7 +56,7 @@ seed()
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    log.error(e);
+    log.error(JSON.stringify(e));
     await prisma.$disconnect();
     process.exit(1);
   });

@@ -2,10 +2,6 @@ import { CommentsClient } from './CommentClient';
 import { AppPrismaContext } from './context';
 import { IdeasClient } from './IdeasClient';
 import { LikesClient } from './LikesClient';
-
-
-
-
 import { RolesClient } from './RolesClient';
 import { TagsClient } from './TagsClient';
 import { UserClient } from './UserClient';

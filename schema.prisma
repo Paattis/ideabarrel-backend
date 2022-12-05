@@ -17,7 +17,7 @@ model User {
   email String @db.VarChar(255) @unique
   profile_img String @db.VarChar(255)
   role_id Int @default(0)
-  role Role @relation(fields: [role_id], references:[id])
+  role Role @relation(fields: [role_id], references:[id], onDelete: Cascade)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   ideas Idea[]
@@ -33,7 +33,7 @@ model Idea {
   title String @db.VarChar(100)
   content String @db.VarChar(1000)
   user_id Int @default(0)
-  user User @relation(fields: [user_id], references:[id])
+  user User @relation(fields: [user_id], references:[id], onDelete: Cascade)
   tags IdeaTag[]
   comments Comment[]
   likes Like[]
@@ -45,9 +45,9 @@ model Comment {
   updated_at DateTime @updatedAt
   content String @db.VarChar(500)
   user_id Int
-  user User @relation(fields: [user_id], references:[id])
+  user User @relation(fields: [user_id], references:[id], onDelete: Cascade)
   idea_id Int
-  idea Idea @relation(fields: [idea_id], references:[id])
+  idea Idea @relation(fields: [idea_id], references:[id], onDelete: Cascade)
 }
 
 model IdeaTag {
@@ -55,9 +55,9 @@ model IdeaTag {
   updated_at DateTime @updatedAt
 
   idea_id Int
-  idea Idea @relation(fields: [idea_id], references:[id])
+  idea Idea @relation(fields: [idea_id], references:[id], onDelete: Cascade)
   tag_id Int
-  tag Tag @relation(fields: [tag_id], references:[id])
+  tag Tag @relation(fields: [tag_id], references:[id], onDelete: Cascade)
 
   @@id([idea_id, tag_id])
 }
@@ -67,9 +67,9 @@ model TagUser {
   updated_at DateTime @updatedAt
 
   user_id Int
-  user User @relation(fields: [user_id], references:[id])
+  user User @relation(fields: [user_id], references:[id], onDelete: Cascade)
   tag_id Int
-  tag Tag @relation(fields: [tag_id], references:[id])
+  tag Tag @relation(fields: [tag_id], references:[id], onDelete: Cascade)
 
   @@id([user_id, tag_id])
 }
@@ -96,8 +96,8 @@ model Like {
   id Int @id @default(autoincrement())
   user_id Int
   idea_id Int
-  user User @relation(fields: [user_id], references:[id])
-  idea Idea @relation(fields: [idea_id], references:[id])
+  user User @relation(fields: [user_id], references:[id], onDelete: Cascade)
+  idea Idea @relation(fields: [idea_id], references:[id], onDelete: Cascade)
   created_at DateTime @default(now())
   @@unique([user_id, idea_id], name: "likeIdentifier")
 }

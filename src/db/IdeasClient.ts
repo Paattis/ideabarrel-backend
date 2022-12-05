@@ -100,16 +100,6 @@ export class IdeasClient extends AbstractClient {
   async remove(id: number, user: User) {
     log.info(`id ${id} user.id ${user.id}`);
     try {
-      // delete m2m relationship between Tag(s) and the Idea
-      await this.ctx.prisma.idea.update({
-        where: { id },
-        data: {
-          tags: {
-            deleteMany: {},
-          },
-        },
-      });
-
       const ideaDeleteResult = await this.ctx.prisma.idea.delete({
         where: { id },
         select: this.publicFields,
@@ -117,6 +107,7 @@ export class IdeasClient extends AbstractClient {
       if (ideaDeleteResult === null) throw new NoSuchResource('idea');
       return ideaDeleteResult;
     } catch (err) {
+      log.debug(JSON.stringify(err));
       throw new NoSuchResource('idea', `No idea with id: ${id}`);
     }
   }
