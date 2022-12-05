@@ -45,6 +45,16 @@ export const email = {
     },
     errorMessage: 'is already taken',
   },
+  isSameOrUnique: {
+    options: async (value: string, { req }: Meta) => {
+      const id = parseInt(req.params?.id, 10);
+      const ok = await db().users.emailIsSameOrUnique(value, id);
+      if (!ok) {
+        throw new Error('email');
+      }
+    },
+    errorMessage: 'is already taken',
+  },
 };
 
 export const role = {

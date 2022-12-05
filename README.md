@@ -1192,7 +1192,7 @@ Delete specified tag.
 <summary><h3>Comments</h3></summary>
 
 
-### <span style="color: #87d65a">`POST`</span> - `/users`
+### <span style="color: #87d65a">`POST`</span> - `/comments`
 ***Summary***
 
 Create new comment on idea.

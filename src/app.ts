@@ -11,6 +11,7 @@ import auth from './utils/auth';
 import { httpHandler as httpErrorHandler } from './utils/errors';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from './swagger/swagger.json';
+import { getAppEnvVar } from './utils/env';
 
 const app: Application = express();
 
@@ -33,7 +34,9 @@ app.use('/comments', auth.required, commentRoutes);
 app.use('/static/', express.static('uploads'));
 // --------------------------------
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+if (getAppEnvVar('APP_ENV') !== 'DEVELOPEMENT') {
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 app.use(httpErrorHandler);
 app.use(httpEndLogger);
