@@ -19,23 +19,31 @@ $ npm install
 * populate the .env file
 ```properties
 #App variables
-APP_ENV=DEVELOPEMENT | PRODUCTION | CI
+APP_ENV=DEVELOPEMENT
+# APP_ENV=PRODUCTION
+# APP_ENV=CI
+
 DATABASE_URL=(your database url)
 PORT=(port)
-ACCESS_TOKEN_SECRET=(JWT signing secret)
+ACCESS_TOKEN_SECRET=(your JWT secret)
 
 # Admin user created with seeding script (/src/db/seed.ts)
 ADMIN_EMAIL=(your admin email)
 ADMIN_PW=(your admin password)
 ```
 
-* run the Prisma migrations to add the tables to your development database
+* Run the Prisma migrations to add the tables to your development database
 ```
 $ npx prisma db migrate dev
+```
+
+* Create typescript types for Prisma autogen models (if changes to schema)
+```
 $ npx prisma generate
 ```
 
-* Run seed script
+
+* Run seed script (if not ran automatically when you migrated)
 
 ```bash
 $ npx prisma db seed

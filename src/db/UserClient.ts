@@ -91,6 +91,7 @@ export class UserClient extends AbstractClient {
       if (user === null) throw new NoSuchResource(this.TAG);
       return user;
     } catch (err) {
+      log.error(JSON.stringify(err));
       throw new NoSuchResource(this.TAG);
     }
   }
