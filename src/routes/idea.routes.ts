@@ -26,8 +26,8 @@ ideas.get(
       }
 
       const results = await db().ideas.all(
-        req.query.page_num as unknown as number ?? 0,
-        req.query.tags as unknown as number[] ?? [],
+        (req.query.page_num as unknown as number) ?? 0,
+        (req.query.tags as unknown as number[]) ?? [],
         sort as string,
         method as string
       );
