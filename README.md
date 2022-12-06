@@ -686,7 +686,8 @@ Get all of the existing ideas.
 ```
 ?desc=<likes|comments|date>
 ?asc=<likes|comments|date>
-?pageNum=<page>
+?page_num=<page>
+?tags=<tag_id_1,tag_id_2>
 ```
 
  ***Response***

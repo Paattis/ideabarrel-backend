@@ -1,45 +1,44 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { User } from '@prisma/client';
-import { log } from '../logger/log';
 import { TRequest as TRequest } from '../utils/types';
 import { respondWithError } from '../utils/errors';
 import auth from '../utils/auth';
-import { throwIfNotValid, validIdeaBody } from '../validation/schema';
+import { throwIfNotValid, validIdeaBody, validIdeaQuery } from '../validation/schema';
 import { db, Ideas } from '../db/Database';
 
 const ideas = Router();
 
 const toIdea = async (user: User, id: number) => db().ideas.userOwns(user, id);
 
-ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let method = 'desc';
-    let sort = req.query.desc ?? '';
+ideas.get(
+  '/',
+  validIdeaQuery,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      throwIfNotValid(req);
 
-    if (!sort) {
-      sort = req.query.asc ?? '';
-      method = 'asc';
+      let method = 'desc';
+      let sort = req.query.desc ?? '';
+
+      if (!sort) {
+        sort = req.query.asc ?? '';
+        method = 'asc';
+      }
+
+      const results = await db().ideas.all(
+        req.query.page_num as unknown as number ?? 0,
+        req.query.tags as unknown as number[] ?? [],
+        sort as string,
+        method as string
+      );
+      res.json(results);
+    } catch (err) {
+      return respondWithError(res, err);
+    } finally {
+      next();
     }
-
-    const pageNum = parseInt((req.query.page_num || '0') as string, 10);
-    log.info(`tags: ${JSON.stringify(req.query.tags)}`);
-
-    const tags = req.query.tags as string[];
-    const tagIds = tags ? tags.map(Number) : [];
-
-    const results = await db().ideas.all(
-      pageNum,
-      tagIds,
-      sort as string,
-      method as string
-    );
-    res.json(results);
-  } catch (err) {
-    return respondWithError(res, err);
-  } finally {
-    next();
   }
-});
+);
 
 /* for whatever reason Swagger-Autogen actively refuses to read
   comments inside route controllers call a method that uses the `Prisma.findMany()` method.

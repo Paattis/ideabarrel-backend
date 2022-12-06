@@ -14,6 +14,8 @@ import {
   avatar,
   isStrong,
   role,
+  toIntArray,
+  sort,
 } from './helpers';
 
 export const throwIfNotValid = (req: TRequest<any>) => {
@@ -121,6 +123,36 @@ export const validUserBody = checkSchema({
     isString,
     isEmail,
     custom: email.isSameOrUnique,
+  },
+});
+
+export const validIdeaQuery = checkSchema({
+  tags: {
+    in: 'query',
+    optional: true,
+    matches: {
+      options: /^[0-9]+(,[0-9]+)*$/,
+      errorMessage: 'should be tag ids (int), separated by comma.',
+    },
+    customSanitizer: toIntArray,
+  },
+  page_num: {
+    in: 'query',
+    optional: true,
+    isNumeric: { errorMessage: 'page number must be integer' },
+    toInt: true,
+  },
+  asc: {
+    in: 'query',
+    optional: true,
+    isString: true,
+    custom: sort.asc,
+  },
+  desc: {
+    in: 'query',
+    optional: true,
+    isString: true,
+    custom: sort.desc,
   },
 });
 

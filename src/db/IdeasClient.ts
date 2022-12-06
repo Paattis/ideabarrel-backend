@@ -44,12 +44,7 @@ export class IdeasClient extends AbstractClient {
    * @param tags the tag ids
    * @returns Array of all ideas.
    */
-  async all(
-    page: number,
-    tags: number[],
-    sort?: string,
-    method: string = 'desc'
-  ) {
+  async all(page: number, tags: number[], sort?: string, method: string = 'desc') {
     const resultsPerPage = 20;
 
     // construct query out of parts
