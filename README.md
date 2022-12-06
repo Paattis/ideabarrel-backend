@@ -682,6 +682,13 @@ Get role with specified id, with all users subscribed to it.
 
 Get all of the existing ideas.
 
+***Querystring***
+```
+?desc=<likes|comments|date>
+?asc=<likes|comments|date>
+?pageNum=<page>
+```
+
  ***Response***
 `application/json`
 ```json
