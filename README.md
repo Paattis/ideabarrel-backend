@@ -684,10 +684,10 @@ Get all of the existing ideas.
 
 ***Querystring***
 ```
-?desc=<likes|comments|date>
-?asc=<likes|comments|date>
-?page_num=<page>
-?tags=<tag_id_1,tag_id_2>
+?desc=likes               # or comments, or date
+?asc=likes                # or comments, or date
+?page_num=1
+?tags=1,2,3
 ```
 
  ***Response***
