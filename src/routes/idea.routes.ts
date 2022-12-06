@@ -13,13 +13,21 @@ const toIdea = async (user: User, id: number) => db().ideas.userOwns(user, id);
 
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    let method = 'desc'
+    let sort = req.query.desc ?? '';
+
+    if (!sort) {
+      sort = req.query.asc ?? ''
+      method = 'asc';
+    }
+
     const pageNum = parseInt((req.query.page_num || '0') as string, 10);
     log.info(`tags: ${JSON.stringify(req.query.tags)}`);
 
     const tags = req.query.tags as string[];
     const tagIds = tags ? tags.map(Number) : [];
 
-    const results = await db().ideas.all(pageNum, tagIds);
+    const results = await db().ideas.all(pageNum, tagIds, sort as string, method as string);
     res.json(results);
   } catch (err) {
     return respondWithError(res, err);

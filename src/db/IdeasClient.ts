@@ -44,7 +44,7 @@ export class IdeasClient extends AbstractClient {
    * @param tags the tag ids
    * @returns Array of all ideas.
    */
-  async all(page: number, tags: number[]) {
+  async all(page: number, tags: number[], sort: string|undefined, method: string = 'desc') {
     const resultsPerPage = 20;
 
     // construct query out of parts
@@ -55,19 +55,14 @@ export class IdeasClient extends AbstractClient {
       take: resultsPerPage,
     };
 
+    query = this.setOrderBy(query, method, sort);
     if (tags.length > 0) {
       query = {
         ...query,
-        where: {
-          tags: {
-            some: {
-              tag_id: { in: tags },
-            },
-          },
+        where: { tags: { some: { tag_id: { in: tags } },},
         },
       };
     }
-    log.info(`query ${JSON.stringify(query)} tags: ${tags}`);
     return await this.ctx.prisma.idea.findMany(query);
   }
 
@@ -219,5 +214,19 @@ export class IdeasClient extends AbstractClient {
     } catch (err) {
       throw err;
     }
+  }
+
+  private setOrderBy(query: any, method: string, sort: string|undefined) {
+    // Make sure sort method is correct
+    if (method !== 'asc') method = 'desc'
+
+    // Set orderBy field and method.
+    if (sort === 'comments')
+     return {...query, orderBy: {comments: {_count: method}}}
+    else if (sort === 'likes')
+      return {...query, orderBy: {likes: {_count: method}}}
+    else if (sort === 'date')
+      return {...query, orderBy: {created_at: method}}
+    else return query
   }
 }
