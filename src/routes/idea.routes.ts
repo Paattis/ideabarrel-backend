@@ -13,11 +13,11 @@ const toIdea = async (user: User, id: number) => db().ideas.userOwns(user, id);
 
 ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let method = 'desc'
+    let method = 'desc';
     let sort = req.query.desc ?? '';
 
     if (!sort) {
-      sort = req.query.asc ?? ''
+      sort = req.query.asc ?? '';
       method = 'asc';
     }
 
@@ -27,7 +27,12 @@ ideas.get('/', async (req: Request, res: Response, next: NextFunction) => {
     const tags = req.query.tags as string[];
     const tagIds = tags ? tags.map(Number) : [];
 
-    const results = await db().ideas.all(pageNum, tagIds, sort as string, method as string);
+    const results = await db().ideas.all(
+      pageNum,
+      tagIds,
+      sort as string,
+      method as string
+    );
     res.json(results);
   } catch (err) {
     return respondWithError(res, err);
