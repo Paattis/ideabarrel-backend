@@ -11,6 +11,38 @@ export const capitalize = {
   },
 };
 
+export const toIntArray = {
+  options: (value: string, _: any) => {
+    return value
+      ?.trim()
+      ?.split(',')
+      ?.map((n) => parseInt(n, 10));
+  },
+};
+
+export const sort = {
+  desc: {
+    options: (value: string, { req }: Meta) => {
+      const fields = ['likes', 'comments', 'date'];
+      if (!fields.find((f) => f === value)) {
+        throw new Error('desc');
+      }
+      return value;
+    },
+    errorMessage: `should ne of [${['likes', 'comments', 'date'].join(',')}]`,
+  },
+  asc: {
+    options: (value: string, { req }: Meta) => {
+      const fields = ['likes', 'comments', 'date'];
+      if (!fields.find((f) => f === value)) {
+        throw new Error('asc');
+      }
+      return value;
+    },
+    errorMessage: `should ne of [${['likes', 'comments', 'date'].join(',')}]`,
+  },
+};
+
 export const isString = {
   errorMessage: 'must be of string type',
 };
