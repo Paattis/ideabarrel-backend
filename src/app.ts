@@ -8,7 +8,7 @@ import { router as authRoutes } from './routes/auth.routes';
 import { router as ideaRoutes } from './routes/idea.routes';
 import { httpBegin as httpLogger, httpEnd as httpEndLogger } from './logger/log';
 import auth from './utils/auth';
-import {httpsRedirect} from './utils/httpsRedirect';
+import { httpsRedirect } from './utils/httpsRedirect';
 import { httpHandler as httpErrorHandler } from './utils/errors';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from './swagger/swagger.json';
@@ -16,7 +16,7 @@ import { getAppEnvVar } from './utils/env';
 
 const app: Application = express();
 
-app.enable('trust proxy')
+app.enable('trust proxy');
 
 // Pre router middleware
 app.use(express.json());
@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // Loggers for http requests.
 app.use(httpLogger);
 
-app.use(httpsRedirect)
+app.use(httpsRedirect);
 
 app.use(auth.passport.initialize());
 
