@@ -17,7 +17,14 @@ export class IdeasClient extends AbstractClient {
         created_at: true,
       },
     },
-    user: { select: { id: true, name: true } },
+    user: {
+      select: {
+        profile_img: true,
+        id: true,
+        name: true,
+        role: { select: { name: true, id: true } },
+      },
+    },
     content: true,
     likes: {
       select: {

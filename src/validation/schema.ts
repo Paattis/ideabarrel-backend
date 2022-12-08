@@ -29,12 +29,14 @@ export const validIdeaBody = checkSchema({
     notEmpty,
     isLength: max(40),
     trim: true,
+    customSanitizer: capitalize,
   },
   content: {
     isString,
     notEmpty,
     isLength: max(1000),
     trim: true,
+    customSanitizer: capitalize,
   },
   tags: {
     isArray,
