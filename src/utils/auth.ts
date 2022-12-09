@@ -25,12 +25,11 @@ const ADMIN_ID = 1;
 }*/
 
 export const isUserAdmin = (user: User | undefined) => {
-
-  if(user?.role_id) {
-    log.info(`isAdmin? ${user?.role_id === ADMIN_ID}`)
-    return user?.role_id === ADMIN_ID
-   }
-   return false
+  if (user?.role_id) {
+    log.info(`isAdmin? ${user?.role_id === ADMIN_ID}`);
+    return user?.role_id === ADMIN_ID;
+  }
+  return false;
 };
 
 export type UserPayload = {
@@ -73,7 +72,7 @@ export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
 const userHasAccess = (predicate: Predicate) => {
   return async (req: any, _: any, next: NextFunction) => {
-    log.info(`userHasAccess ${JSON.stringify(req.user)}`)
+    log.info(`userHasAccess ${JSON.stringify(req.user)}`);
     const user = req.user as User | null;
     if (user) {
       if (isUserAdmin(user as User)) {
@@ -95,7 +94,9 @@ const userHasAccess = (predicate: Predicate) => {
   };
 };
 
-const onlyAdmin = async () => {return false};
+const onlyAdmin = async () => {
+  return false;
+};
 
 export default {
   hash: createHash,
@@ -105,5 +106,5 @@ export default {
   required,
   userHasAccess,
   onlyAdmin,
-  ADMIN_ID:ADMIN_ID,
+  ADMIN_ID: ADMIN_ID,
 };

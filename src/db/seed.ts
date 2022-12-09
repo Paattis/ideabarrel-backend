@@ -4,12 +4,9 @@ import auth from '../utils/auth';
 import { getAppEnvVar } from '../utils/env';
 import { ADMIN_ROLE_NAME } from '../utils/types';
 
-
 const prisma = new PrismaClient();
 const email = getAppEnvVar('ADMIN_EMAIL');
 const password = getAppEnvVar('ADMIN_PW');
-
-
 
 const seed = async () => {
   // ************* Clear *************

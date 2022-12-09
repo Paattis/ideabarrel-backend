@@ -44,7 +44,7 @@ const mockJWT = (success: boolean) => {
   }
 };
 
-const ADMIN_JWT = auth.jwt({ id: admin.id, role_id: auth.ADMIN_ID});
+const ADMIN_JWT = auth.jwt({ id: admin.id, role_id: auth.ADMIN_ID });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
     mockDb.users.select.mockResolvedValueOnce(admin as any);
@@ -249,12 +249,13 @@ describe('DELETE /likes/:id', () => {
     mockDb.likes.remove.mockRejectedValue(new NoSuchResource('like'));
 
     // Action
-    const res = await request(app).delete('/likes/10000')
+    const res = await request(app)
+      .delete('/likes/10000')
       .auth(ADMIN_JWT, { type: 'bearer' })
       .expect('Content-Type', /json/)
       .expect(404);
 
-     console.log("res code", res.status)
+    console.log('res code', res.status);
     // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
