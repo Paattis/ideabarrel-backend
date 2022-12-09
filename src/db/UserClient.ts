@@ -1,4 +1,4 @@
-import { Idea, Role, User } from '@prisma/client';
+import { Idea, Role } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
@@ -223,7 +223,7 @@ export class UserClient extends AbstractClient {
    * @param userId Target of the check.
    * @returns true if user owns this specified resource.
    */
-  async userOwns(user: User, userId: number) {
+  async userOwns(user: PublicUser, userId: number) {
     try {
       const result = await this.ctx.prisma.user.findFirst({
         where: { id: userId },

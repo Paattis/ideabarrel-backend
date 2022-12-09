@@ -3,6 +3,7 @@ import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
 import { Ideas } from './Database';
+import { PublicUser } from './UserClient';
 
 export class IdeasClient extends AbstractClient {
   public readonly TAG = 'idea';
@@ -200,7 +201,7 @@ export class IdeasClient extends AbstractClient {
     }
   }
 
-  async userOwns(user: User, ideaId: number) {
+  async userOwns(user: PublicUser, ideaId: number) {
     try {
       const result = await this.ctx.prisma.idea.findFirst({
         where: { id: ideaId },

@@ -2,13 +2,13 @@ import auth from '../utils/auth';
 import { Router, Response, NextFunction, Request } from 'express';
 import { Comments, db } from '../db/Database';
 import { TRequest as TRequest } from '../utils/types';
-import { User } from '@prisma/client';
 import { throwIfNotValid, validCommentBody } from '../validation/schema';
 import { PublicUser } from '../db/UserClient';
 
 const comments = Router();
 
-const toComment = async (user: User, id: number) => db().comments.userOwns(user, id);
+const toComment = async (user: PublicUser, id: number) =>
+  db().comments.userOwns(user, id);
 
 comments.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {

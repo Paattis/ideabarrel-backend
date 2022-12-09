@@ -1,13 +1,13 @@
-import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validTagBody } from '../validation/schema';
 import { db, Tags } from '../db/Database';
+import { PublicUser } from '../db/UserClient';
 
 const tags = Router();
 
-const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = async (user: PublicUser, id: number) => db().users.userOwns(user, id);
 
 type QueryParam = 'usr';
 const queryisPresent = (req: Request, param: QueryParam): boolean =>

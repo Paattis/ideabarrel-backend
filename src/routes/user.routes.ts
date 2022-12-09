@@ -1,4 +1,3 @@
-import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
@@ -16,7 +15,7 @@ import {
 
 const users = Router();
 
-const toUser = (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = (user: PublicUser, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -5,10 +5,11 @@ import { respondWithError } from '../utils/errors';
 import auth from '../utils/auth';
 import { throwIfNotValid, validIdeaBody, validIdeaQuery } from '../validation/schema';
 import { db, Ideas } from '../db/Database';
+import { PublicUser } from '../db/UserClient';
 
 const ideas = Router();
 
-const toIdea = async (user: User, id: number) => db().ideas.userOwns(user, id);
+const toIdea = async (user: PublicUser, id: number) => db().ideas.userOwns(user, id);
 
 ideas.get(
   '/',

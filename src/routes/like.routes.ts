@@ -7,7 +7,7 @@ import { PublicUser } from '../db/UserClient';
 import { db, Likes } from '../db/Database';
 
 const likes = Router();
-const toLike = async (user: User, id: number) => db().likes.userOwns(user, id);
+const toLike = async (user: PublicUser, id: number) => db().likes.userOwns(user, id);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
