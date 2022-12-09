@@ -3,12 +3,11 @@ import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-j
 import { getAppEnvVar } from './env';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { User, Role } from '@prisma/client';
+import { User } from '@prisma/client';
 import { NextFunction } from 'express';
 import { log } from '../logger/log';
 import { Forbidden, Unauthorized } from './errors';
 import { db } from '../db/Database';
-import { ADMIN_ROLE_NAME } from './types';
 
 const SECRET = getAppEnvVar('ACCESS_TOKEN_SECRET');
 const SALT = 10;
@@ -106,5 +105,5 @@ export default {
   required,
   userHasAccess,
   onlyAdmin,
-  ADMIN_ID: ADMIN_ID,
+  ADMIN_ID,
 };
