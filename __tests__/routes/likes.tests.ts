@@ -255,7 +255,6 @@ describe('DELETE /likes/:id', () => {
       .expect('Content-Type', /json/)
       .expect(404);
 
-    console.log('res code', res.status);
     // Results
     expect(res.body).toMatchObject({
       msg: 'No such like exists',
