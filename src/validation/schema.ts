@@ -188,7 +188,7 @@ export const validUserUpdateBody = checkSchema({
 });
 
 export const validAvatar = checkSchema({
-  id: {
+  resId: {
     in: 'params',
     isInt: isPositive,
   },

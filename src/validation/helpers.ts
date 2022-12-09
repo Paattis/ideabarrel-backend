@@ -57,16 +57,6 @@ export const isPositive = {
   options: { min: 1 },
 };
 
-export const user = {
-  id: {
-    params: {
-      in: 'params',
-      exists: true,
-      toInt: true,
-      isInt: isPositive,
-    },
-  },
-};
 export const email = {
   notInUse: {
     options: async (value: string) => {
