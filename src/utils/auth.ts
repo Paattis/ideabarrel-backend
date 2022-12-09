@@ -3,11 +3,12 @@ import { Strategy as JWTStrategy, ExtractJwt, StrategyOptions } from 'passport-j
 import { getAppEnvVar } from './env';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { User } from '@prisma/client';
+import { User, Role } from '@prisma/client';
 import { NextFunction } from 'express';
 import { log } from '../logger/log';
 import { Forbidden, Unauthorized } from './errors';
 import { db } from '../db/Database';
+import { ADMIN_ROLE_NAME } from './types';
 
 const SECRET = getAppEnvVar('ACCESS_TOKEN_SECRET');
 const SALT = 10;
@@ -19,7 +20,18 @@ const options: StrategyOptions = {
 
 const ADMIN_ID = 1;
 
-export const isUserAdmin = (user: { id: number } | undefined) => user?.id === ADMIN_ID;
+/*interface User extends User {
+  role: Role
+}*/
+
+export const isUserAdmin = (user: User | undefined) => {
+
+  if(user?.role_id) {
+    log.info(`isAdmin? ${user?.role_id === ADMIN_ID}`)
+    return user?.role_id === ADMIN_ID
+   }
+   return false
+};
 
 export type UserPayload = {
   id: number;
@@ -61,9 +73,10 @@ export type Predicate = (user: User, idParam: number) => Promise<boolean>;
 
 const userHasAccess = (predicate: Predicate) => {
   return async (req: any, _: any, next: NextFunction) => {
+    log.info(`userHasAccess ${JSON.stringify(req.user)}`)
     const user = req.user as User | null;
     if (user) {
-      if (user.id === ADMIN_ID) {
+      if (isUserAdmin(user as User)) {
         return next();
       }
 
@@ -82,7 +95,7 @@ const userHasAccess = (predicate: Predicate) => {
   };
 };
 
-const onlyAdmin = async () => false;
+const onlyAdmin = async () => {return false};
 
 export default {
   hash: createHash,
@@ -92,4 +105,5 @@ export default {
   required,
   userHasAccess,
   onlyAdmin,
+  ADMIN_ID:ADMIN_ID,
 };

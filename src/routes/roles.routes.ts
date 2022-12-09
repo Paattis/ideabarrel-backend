@@ -10,6 +10,7 @@ type QueryParam = 'usr';
 const queryisPresent = (req: Request, param: QueryParam): boolean =>
   Boolean(req.query[param]);
 
+// temporary addition to debug, delete asap
 roles.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (queryisPresent(req, 'usr')) {

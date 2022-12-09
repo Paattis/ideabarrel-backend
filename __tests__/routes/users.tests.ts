@@ -19,7 +19,7 @@ const admin: User = {
   email: 'admin@app.com',
   profile_img: '',
   password: 'Password123',
-  role_id: 1,
+  role_id: auth.ADMIN_ID,
   created_at: timestamp,
   updated_at: timestamp,
 };
@@ -30,7 +30,7 @@ const user: User = {
   email: 'user1@app.com',
   profile_img: '',
   password: 'Password123',
-  role_id: 1,
+  role_id: 2,
   created_at: timestamp,
   updated_at: timestamp,
 };
@@ -85,7 +85,7 @@ describe('POST /users/', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
       email: 'user1@app.com',
     });
   });
@@ -161,7 +161,7 @@ describe('DELETE /users/:id', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
     });
   });
 
@@ -229,7 +229,7 @@ describe('GET /users/:id', () => {
     expect(res.body).toMatchObject({
       id: 10,
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
     });
   });
 

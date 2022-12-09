@@ -17,7 +17,7 @@ import {
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = (user: User, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -127,11 +127,11 @@ users.put(
           parseInt(req.params.id, 10),
           req.file.filename
         );
-        log.info(
+        /*log.info(
           `${isUserAdmin(req?.user as User) ? 'Admin' : ''} Updated avatar for user ${
             req.params.id
           }`
-        );
+        );*/
         return res.json(result);
       } else throw new BadRequest('asd');
     } catch (err) {

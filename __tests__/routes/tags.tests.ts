@@ -26,7 +26,7 @@ const user: User = {
   profile_img: '',
   password: 'pw',
   email: 'user@app.com',
-  role_id: 1,
+  role_id: 2,
   created_at: timestamp,
   updated_at: timestamp,
 };
