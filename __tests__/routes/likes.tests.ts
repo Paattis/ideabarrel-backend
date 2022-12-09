@@ -47,7 +47,7 @@ const mockJWT = (success: boolean) => {
 const ADMIN_JWT = auth.jwt({ id: admin.id, role_id: auth.ADMIN_ID });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce({ ...admin, role: { id: 1 } } as any);
   } else {
     mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
