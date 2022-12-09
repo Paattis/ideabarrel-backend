@@ -52,14 +52,14 @@ ideas.get('/', async (_: Request, __: Response, ___: NextFunction) => {
     } */
 });
 
-ideas.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+ideas.get('/:resId', async (req: Request, res: Response, next: NextFunction) => {
   /* #swagger.responses[200] = {
           description: "",
           schema: {$ref: '#/definitions/idea'}
   } */
 
   try {
-    const id = Number.parseInt(req.params.id, 10);
+    const id = Number.parseInt(req.params.resId, 10);
     const result = await db().ideas.select(id);
     res.json(result);
   } catch (err) {
@@ -91,7 +91,7 @@ ideas.post(
 );
 
 ideas.put(
-  '/:id',
+  '/:resId',
   validIdeaBody,
   auth.userHasAccess(toIdea),
   async (req: TRequest<Ideas.Update>, res: Response, next: NextFunction) => {
@@ -101,7 +101,7 @@ ideas.put(
     } */
     try {
       throwIfNotValid(req);
-      const ideaId = Number.parseInt(req.params.id, 10);
+      const ideaId = Number.parseInt(req.params.resId, 10);
       const result = await db().ideas.update(req.body, ideaId);
       res.json(result);
     } catch (err) {
@@ -113,7 +113,7 @@ ideas.put(
 );
 
 ideas.delete(
-  '/:id',
+  '/:resId',
   auth.userHasAccess(toIdea),
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
@@ -121,7 +121,7 @@ ideas.delete(
           schema: {$ref: '#/definitions/idea'}
     } */
     try {
-      const ideaId = Number.parseInt(req.params.id, 10);
+      const ideaId = Number.parseInt(req.params.resId, 10);
       const result = await db().ideas.remove(ideaId, req.user as User);
       res.json(result);
     } catch (err) {

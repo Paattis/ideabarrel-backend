@@ -39,7 +39,7 @@ roles.get('/', async (_: Request, __: Response, ___: NextFunction) => {
 });
 
 roles.get(
-  '/:id',
+  '/:resId',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
@@ -47,7 +47,7 @@ roles.get(
             schema: {$ref: '#/definitions/role'}
     } */
     try {
-      const roleId = Number.parseInt(req.params.id, 10);
+      const roleId = Number.parseInt(req.params.resId, 10);
       if (queryisPresent(req, 'usr')) {
         const result = await db().roles.selectWithUsers(roleId);
         res.json(result);
@@ -86,7 +86,7 @@ roles.post(
 );
 
 roles.put(
-  '/:id',
+  '/:resId',
   validRoleBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
@@ -97,7 +97,7 @@ roles.put(
     } */
     try {
       throwIfNotValid(req);
-      const roleId = Number.parseInt(req.params.id, 10);
+      const roleId = Number.parseInt(req.params.resId, 10);
       const result = await db().roles.update(roleId, req.body);
       res.json(result);
     } catch (err) {
@@ -109,7 +109,7 @@ roles.put(
 );
 
 roles.delete(
-  '/:id',
+  '/:resId',
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -118,7 +118,7 @@ roles.delete(
             schema: {$ref: '#/definitions/role'}
     } */
     try {
-      const roleId = Number.parseInt(req.params.id, 10);
+      const roleId = Number.parseInt(req.params.resId, 10);
       const result = await db().roles.remove(roleId);
       res.json(result);
     } catch (err) {

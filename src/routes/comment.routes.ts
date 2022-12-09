@@ -32,13 +32,13 @@ comments.get('/', async (_: Request, __: Response, ___: NextFunction) => {
     } */
 });
 
-comments.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+comments.get('/:resId', async (req: Request, res: Response, next: NextFunction) => {
   /* #swagger.responses[200] = {
         description: "",
         schema: {$ref: '#/definitions/comment'}
   } */
   try {
-    const commentId = Number.parseInt(req.params.id, 10);
+    const commentId = Number.parseInt(req.params.resId, 10);
     const result = await db().comments.select(commentId);
     return res.json(result);
   } catch (err) {
@@ -73,7 +73,7 @@ comments.post(
 );
 
 comments.delete(
-  '/:id',
+  '/:resId',
   auth.userHasAccess(toComment),
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
@@ -81,7 +81,7 @@ comments.delete(
           schema: {$ref: '#/definitions/comment'}
     } */
     try {
-      const commentId = Number.parseInt(req.params.id, 10);
+      const commentId = Number.parseInt(req.params.resId, 10);
       const result = await db().comments.remove(commentId);
       return res.json(result);
     } catch (err) {
@@ -93,7 +93,7 @@ comments.delete(
 );
 
 comments.put(
-  '/:id',
+  '/:resId',
   auth.userHasAccess(toComment),
   async (req: TRequest<Comments.Update>, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
@@ -101,7 +101,7 @@ comments.put(
           schema: {$ref: '#/definitions/comment'}
     } */
     try {
-      const commentId = Number.parseInt(req.params.id, 10);
+      const commentId = Number.parseInt(req.params.resId, 10);
       const result = await db().comments.update(commentId, req.body);
       return res.json(result);
     } catch (err) {

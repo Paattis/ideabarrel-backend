@@ -66,9 +66,9 @@ const userHasAccess = (predicate: Predicate) => {
         return next();
       }
 
-      const id = Number.parseInt(req.params.id, 10);
+      const resource = Number.parseInt(req.params.resId, 10);
       try {
-        if (await predicate(user, id)) {
+        if (await predicate(user, resource)) {
           return next();
         } else {
           return next(new Forbidden());
