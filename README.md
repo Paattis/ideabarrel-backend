@@ -23,6 +23,9 @@ APP_ENV=DEVELOPEMENT
 # APP_ENV=PRODUCTION
 # APP_ENV=CI
 
+# only needed when running production
+SERVER_IP= 
+
 DATABASE_URL=(your database url)
 PORT=(port)
 ACCESS_TOKEN_SECRET=(your JWT secret)
