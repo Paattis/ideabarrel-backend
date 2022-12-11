@@ -1,13 +1,13 @@
-import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { TRequest as TRequest } from '../utils/types';
 import auth from '../utils/auth';
 import { throwIfNotValid, validTagBody } from '../validation/schema';
 import { db, Tags } from '../db/Database';
+import { PublicUser } from '../db/UserClient';
 
 const tags = Router();
 
-const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = async (user: PublicUser, id: number) => db().users.userOwns(user, id);
 
 type QueryParam = 'usr';
 const queryisPresent = (req: Request, param: QueryParam): boolean =>
@@ -30,11 +30,15 @@ tags.get('/', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 tags.get(
-  '/:id',
+  '/:resId',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
-      const id = Number.parseInt(req.params.id, 10);
+      const id = Number.parseInt(req.params.resId, 10);
       if (queryisPresent(req, 'usr')) {
         const result = await db().tags.selectWithUsers(id);
         res.json(result);
@@ -56,6 +60,10 @@ tags.post(
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
       throwIfNotValid(req);
       const result = await db().tags.create(req.body);
@@ -69,14 +77,18 @@ tags.post(
 );
 
 tags.post(
-  '/:tagId/user/:userId',
+  '/:tagId/user/:resId',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaWithUser'}
+    } */
     try {
       const result = await db().tags.addUserToTag(
         parseInt(req.params.tagId, 10),
-        parseInt(req.params.userId, 10)
+        parseInt(req.params.resId, 10)
       );
       res.json(result);
     } catch (err) {
@@ -88,14 +100,18 @@ tags.post(
 );
 
 tags.delete(
-  '/:tagId/user/:userId',
+  '/:tagId/user/:resId',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: TRequest<Tags.Delete>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaNoUser'}
+    } */
     try {
       const result = await db().tags.removeUserFromTag(
         parseInt(req.params.tagId, 10),
-        parseInt(req.params.userId, 10)
+        parseInt(req.params.resId, 10)
       );
       res.json(result);
     } catch (err) {
@@ -107,14 +123,18 @@ tags.delete(
 );
 
 tags.put(
-  '/:id',
+  '/:resId',
   validTagBody,
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: TRequest<Tags.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/ideaNoUser'}
+    } */
     try {
       throwIfNotValid(req);
-      const id = Number.parseInt(req.params.id, 10);
+      const id = Number.parseInt(req.params.resId, 10);
       const result = await db().tags.update(id, req.body);
       res.json(result);
     } catch (err) {
@@ -126,12 +146,16 @@ tags.put(
 );
 
 tags.delete(
-  '/:id',
+  '/:resId',
   auth.required,
   auth.userHasAccess(auth.onlyAdmin),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/tag'}
+    } */
     try {
-      const id = Number.parseInt(req.params.id, 10);
+      const id = Number.parseInt(req.params.resId, 10);
       const result = await db().tags.remove(id);
       res.json(result);
     } catch (err) {

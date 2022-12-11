@@ -4,6 +4,7 @@
 
 Bootstrapped based on [these](https://medium.com/swlh/build-a-rest-api-with-express-js-and-typescript-dc2c8da89c52) [instructions](https://medium.com/@sudarshanadayananda/how-to-live-reload-typescript-node-server-bc40171fdb7).
 
+API documentation available at `/docs` endpoint
 
 ## Development
 
@@ -18,23 +19,34 @@ $ npm install
 * populate the .env file
 ```properties
 #App variables
-APP_ENV=DEVELOPEMENT | PRODUCTION | CI
+APP_ENV=DEVELOPEMENT
+# APP_ENV=PRODUCTION
+# APP_ENV=CI
+
+# only needed when running production
+SERVER_IP= 
+
 DATABASE_URL=(your database url)
 PORT=(port)
-ACCESS_TOKEN_SECRET=(JWT signing secret)
+ACCESS_TOKEN_SECRET=(your JWT secret)
 
 # Admin user created with seeding script (/src/db/seed.ts)
 ADMIN_EMAIL=(your admin email)
 ADMIN_PW=(your admin password)
 ```
 
-* run the Prisma migrations to add the tables to your development database
+* Run the Prisma migrations to add the tables to your development database
 ```
 $ npx prisma db migrate dev
+```
+
+* Create typescript types for Prisma autogen models (if changes to schema)
+```
 $ npx prisma generate
 ```
 
-* Run seed script
+
+* Run seed script (if not ran automatically when you migrated)
 
 ```bash
 $ npx prisma db seed
@@ -46,6 +58,8 @@ $ npm run build
 $ npm run dev
 ```
 
+## Updating in production
+`$ make update_prod`
 
 ## API Endpoints
 
@@ -671,6 +685,14 @@ Get role with specified id, with all users subscribed to it.
 
 Get all of the existing ideas.
 
+***Querystring***
+```
+?desc=likes               # or comments, or date
+?asc=likes                # or comments, or date
+?page_num=1
+?tags=1,2,3
+```
+
  ***Response***
 `application/json`
 ```json
@@ -1189,7 +1211,7 @@ Delete specified tag.
 <summary><h3>Comments</h3></summary>
 
 
-### <span style="color: #87d65a">`POST`</span> - `/users`
+### <span style="color: #87d65a">`POST`</span> - `/comments`
 ***Summary***
 
 Create new comment on idea.

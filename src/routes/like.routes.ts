@@ -7,7 +7,7 @@ import { PublicUser } from '../db/UserClient';
 import { db, Likes } from '../db/Database';
 
 const likes = Router();
-const toLike = async (user: User, id: number) => db().likes.userOwns(user, id);
+const toLike = async (user: PublicUser, id: number) => db().likes.userOwns(user, id);
 
 likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,9 +20,24 @@ likes.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier
+  than trying to debug a compatibility issue between two libraries */
+likes.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+  /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/likeFull'}]
+    } */
+});
+
+likes.get('/:resId', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */
   try {
-    const likeId = Number.parseInt(req.params.id, 10);
+    const likeId = Number.parseInt(req.params.resId, 10);
     const result = await db().likes.select(likeId);
     return res.json(result);
   } catch (err) {
@@ -32,9 +47,13 @@ likes.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-likes.get('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+likes.get('/idea/:resId', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/idea'}
+  } */
   try {
-    const ideaId = Number.parseInt(req.params.id, 10);
+    const ideaId = Number.parseInt(req.params.resId, 10);
     const result = await db().likes.forIdea(ideaId);
     return res.json(result);
   } catch (err) {
@@ -48,6 +67,10 @@ likes.post(
   '/',
   validLikeBody,
   async (req: TRequest<Likes.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/likeFull'}
+    } */
     try {
       throwIfNotValid(req);
       const user = req.user as PublicUser;
@@ -65,11 +88,15 @@ likes.post(
 );
 
 likes.delete(
-  '/:id',
+  '/:resId',
   auth.userHasAccess(toLike),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/likeFull'}
+    } */
     try {
-      const likeId = Number.parseInt(req.params.id, 10);
+      const likeId = Number.parseInt(req.params.resId, 10);
       const result = await db().likes.remove(likeId);
       return res.json(result);
     } catch (err) {
@@ -80,9 +107,13 @@ likes.delete(
   }
 );
 
-likes.delete('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+likes.delete('/idea/:resId', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */
   try {
-    const ideaId = Number.parseInt(req.params.id, 10);
+    const ideaId = Number.parseInt(req.params.resId, 10);
     const user = req.user as User;
     const result = await db().likes.removeFromIdea(ideaId, user.id);
     return res.json(result);
@@ -93,9 +124,13 @@ likes.delete('/idea/:id', async (req: Request, res: Response, next: NextFunction
   }
 });
 
-likes.post('/idea/:id', async (req: Request, res: Response, next: NextFunction) => {
+likes.post('/idea/:resId', async (req: Request, res: Response, next: NextFunction) => {
+  /* #swagger.responses[200] = {
+          description: "",
+          schema: {$ref: '#/definitions/likeFull'}
+  } */
   try {
-    const ideaId = Number.parseInt(req.params.id, 10);
+    const ideaId = Number.parseInt(req.params.resId, 10);
     const user = req.user as User;
     const result = await db().likes.createForIdea(ideaId, user.id);
     return res.json(result);

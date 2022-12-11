@@ -14,6 +14,8 @@ import {
   avatar,
   isStrong,
   role,
+  toIntArray,
+  sort,
 } from './helpers';
 
 export const throwIfNotValid = (req: TRequest<any>) => {
@@ -120,11 +122,76 @@ export const validUserBody = checkSchema({
   email: {
     isString,
     isEmail,
-    custom: email.notInUse,
+    custom: email.isSameOrUnique,
+  },
+});
+
+export const validIdeaQuery = checkSchema({
+  tags: {
+    in: 'query',
+    optional: true,
+    matches: {
+      options: /^[0-9]+(,[0-9]+)*$/,
+      errorMessage: 'should be tag ids (int), separated by comma.',
+    },
+    customSanitizer: toIntArray,
+  },
+  page_num: {
+    in: 'query',
+    optional: true,
+    isNumeric: { errorMessage: 'page number must be integer' },
+    toInt: true,
+  },
+  asc: {
+    in: 'query',
+    optional: true,
+    isString: true,
+    custom: sort.asc,
+  },
+  desc: {
+    in: 'query',
+    optional: true,
+    isString: true,
+    custom: sort.desc,
+  },
+});
+
+export const validUserUpdateBody = checkSchema({
+  name: {
+    optional: true,
+    isString,
+    notEmpty,
+    isLength: inRange(3, 20),
+    matches: {
+      options: /^[a-zA-ZäöüÄÖÜß ,.'-]+$/i,
+      errorMessage: 'must not contain special characters',
+    },
+    trim: true,
+  },
+  role_id: {
+    optional: true,
+    toInt: true,
+    isInt: isPositive,
+    custom: role.exists,
+  },
+  password: {
+    optional: true,
+    isString,
+    isStrongPassword: isStrong,
+  },
+  email: {
+    optional: true,
+    isString,
+    isEmail,
+    custom: email.isSameOrUnique,
   },
 });
 
 export const validAvatar = checkSchema({
+  resId: {
+    in: 'params',
+    isInt: isPositive,
+  },
   avatar: avatar.exists,
 });
 

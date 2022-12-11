@@ -1,4 +1,4 @@
-import { Idea, Role, User } from '@prisma/client';
+import { Idea, Role } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { BadRequest, NoSuchResource } from '../utils/errors';
@@ -91,6 +91,7 @@ export class UserClient extends AbstractClient {
       if (user === null) throw new NoSuchResource(this.TAG);
       return user;
     } catch (err) {
+      log.error(JSON.stringify(err));
       throw new NoSuchResource(this.TAG);
     }
   }
@@ -120,7 +121,9 @@ export class UserClient extends AbstractClient {
    * @returns User as a {@link PublicUser}
    */
   async update(from: Users.Update, userId: number) {
-    from.password = await auth.hash(from.password);
+    if (from.password) {
+      from.password = await auth.hash(from.password);
+    }
     try {
       const user = await this.ctx.prisma.user.update({
         where: { id: userId },
@@ -163,6 +166,24 @@ export class UserClient extends AbstractClient {
     }
   }
 
+  async emailIsSameOrUnique(email: string, id: number) {
+    try {
+      const result = await this.ctx.prisma.user.findFirst({ where: { email } });
+      if (!result) {
+        log.debug(`Email ${email} is unique`);
+        return true;
+      }
+      if (result.id === id) {
+        log.debug(`Email ${email} is same as user's current email`);
+        return true;
+      }
+      log.debug('asdasdasdas');
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * Updates user's avatar.
    *
@@ -187,8 +208,11 @@ export class UserClient extends AbstractClient {
         await img.remove(user.profile_img);
       }
       return result;
-    } catch (err) {
-      throw new BadRequest('');
+    } catch (err: any) {
+      if (err?.name === 'NotFoundError') {
+        throw new NoSuchResource('user');
+      }
+      throw new BadRequest('Jeesus');
     }
   }
 
@@ -199,7 +223,7 @@ export class UserClient extends AbstractClient {
    * @param userId Target of the check.
    * @returns true if user owns this specified resource.
    */
-  async userOwns(user: User, userId: number) {
+  async userOwns(user: PublicUser, userId: number) {
     try {
       const result = await this.ctx.prisma.user.findFirst({
         where: { id: userId },

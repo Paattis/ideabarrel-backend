@@ -1,10 +1,8 @@
-import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
-import { log } from '../logger/log';
 import auth from '../utils/auth';
-import { NoSuchResource, ServerError } from '../utils/errors';
+import { NoSuchResource, BadRequest } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
 import {
@@ -12,16 +10,18 @@ import {
   validAvatar,
   validEmailCheck,
   validUserBody,
+  validUserUpdateBody,
 } from '../validation/schema';
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = (user: PublicUser, id: number) => db().users.userOwns(user, id);
 
-users.get('/', auth.required, async (_: Request, res: Response, next: NextFunction) => {
+users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const results = await db().users.all();
-    res.json(results);
+
+    res.send(results);
   } catch (err) {
     next(err);
   } finally {
@@ -29,12 +29,27 @@ users.get('/', auth.required, async (_: Request, res: Response, next: NextFuncti
   }
 });
 
+/* for whatever reason Swagger-Autogen actively refuses to read
+  comments inside route controllers call a method that uses the `Prisma.findMany()` method.
+  It will read this stub just fine though and this is infinitely easier
+  than trying to debug a compatibility issue between two libraries */
+users.get('/', async (_: Request, __: Response, ___: NextFunction) => {
+  /* #swagger.responses[200] = {
+            description: "",
+            schema: [{$ref: '#/definitions/user'}]
+    } */
+});
+
 users.get(
-  '/:id',
+  '/:resId',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
-      const id = Number.parseInt(req.params.id, 10);
+      const id = Number.parseInt(req.params.resId, 10);
       const result = await db().users.select(id);
       res.json(result);
     } catch (err) {
@@ -46,14 +61,18 @@ users.get(
 );
 
 users.put(
-  '/:id',
-  validUserBody,
+  '/:resId',
   auth.required,
   auth.userHasAccess(toUser),
+  validUserUpdateBody,
   async (req: TRequest<Users.Update>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
-      const userId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.resId, 10);
       const result = await db().users.update(req.body, userId);
       res.json(result);
     } catch (err) {
@@ -65,12 +84,16 @@ users.put(
 );
 
 users.delete(
-  '/:id',
+  '/:resId',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.resId, 10);
       const result = await db().users.remove(userId);
       img.remove(result.profile_img);
       result.profile_img = '';
@@ -84,23 +107,27 @@ users.delete(
 );
 
 users.put(
-  '/:id/img',
-  validAvatar,
+  '/:resId/img',
   auth.required,
   auth.userHasAccess(toUser),
   img.upload.single('avatar'),
   img.resize,
+  validAvatar,
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       if (req.file) {
         const result = await db().users.updateAvatar(
-          parseInt(req.params.id, 10),
+          parseInt(req.params.resId, 10),
           req.file.filename
         );
-        log.debug('Updated avatar for user ' + req.params.id);
+
         return res.json(result);
-      } else throw ServerError;
+      } else throw new BadRequest('asd');
     } catch (err) {
       return next(err);
     } finally {
@@ -110,10 +137,14 @@ users.put(
 );
 
 users.delete(
-  '/:id/img',
+  '/:resId/img',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       const user = req.user as PublicUser;
       if (!user.profile_img) {
@@ -121,7 +152,7 @@ users.delete(
       }
       const EMPTY_AVATAR = '';
       const result = await db().users.updateAvatar(
-        parseInt(req.params.id, 10),
+        parseInt(req.params.resId, 10),
         EMPTY_AVATAR
       );
       return res.json(result);
@@ -139,6 +170,10 @@ users.post(
   img.resize,
   validUserBody,
   async (req: TRequest<Users.Create>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/user'}
+    } */
     try {
       throwIfNotValid(req);
       const fields: Users.Create = {
@@ -162,6 +197,10 @@ users.post(
   '/email/free',
   validEmailCheck,
   async (req: TRequest<{ email: string }>, res: Response, next: NextFunction) => {
+    /* #swagger.responses[200] = {
+            description: "",
+            schema: {$ref: '#/definitions/emailFree'}
+    } */
     try {
       throwIfNotValid(req);
       const exist = await db().users.emailExists(req.body.email);

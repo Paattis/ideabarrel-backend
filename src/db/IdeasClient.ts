@@ -3,6 +3,7 @@ import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
 import { Ideas } from './Database';
+import { PublicUser } from './UserClient';
 
 export class IdeasClient extends AbstractClient {
   public readonly TAG = 'idea';
@@ -44,7 +45,7 @@ export class IdeasClient extends AbstractClient {
    * @param tags the tag ids
    * @returns Array of all ideas.
    */
-  async all(page: number, tags: number[]) {
+  async all(page: number, tags: number[], sort?: string, method: string = 'desc') {
     const resultsPerPage = 20;
 
     // construct query out of parts
@@ -55,19 +56,13 @@ export class IdeasClient extends AbstractClient {
       take: resultsPerPage,
     };
 
+    query = this.setOrderBy(query, method, sort);
     if (tags.length > 0) {
       query = {
         ...query,
-        where: {
-          tags: {
-            some: {
-              tag_id: { in: tags },
-            },
-          },
-        },
+        where: { tags: { some: { tag_id: { in: tags } } } },
       };
     }
-    log.info(`query ${JSON.stringify(query)} tags: ${tags}`);
     return await this.ctx.prisma.idea.findMany(query);
   }
 
@@ -100,16 +95,6 @@ export class IdeasClient extends AbstractClient {
   async remove(id: number, user: User) {
     log.info(`id ${id} user.id ${user.id}`);
     try {
-      // delete m2m relationship between Tag(s) and the Idea
-      await this.ctx.prisma.idea.update({
-        where: { id },
-        data: {
-          tags: {
-            deleteMany: {},
-          },
-        },
-      });
-
       const ideaDeleteResult = await this.ctx.prisma.idea.delete({
         where: { id },
         select: this.publicFields,
@@ -117,6 +102,7 @@ export class IdeasClient extends AbstractClient {
       if (ideaDeleteResult === null) throw new NoSuchResource('idea');
       return ideaDeleteResult;
     } catch (err) {
+      log.debug(JSON.stringify(err));
       throw new NoSuchResource('idea', `No idea with id: ${id}`);
     }
   }
@@ -215,7 +201,7 @@ export class IdeasClient extends AbstractClient {
     }
   }
 
-  async userOwns(user: User, ideaId: number) {
+  async userOwns(user: PublicUser, ideaId: number) {
     try {
       const result = await this.ctx.prisma.idea.findFirst({
         where: { id: ideaId },
@@ -228,5 +214,18 @@ export class IdeasClient extends AbstractClient {
     } catch (err) {
       throw err;
     }
+  }
+
+  private setOrderBy(query: any, method: string, sort: string | undefined) {
+    // Make sure sort method is correct
+    if (method !== 'asc') method = 'desc';
+
+    // Set orderBy field and method.
+    if (sort === 'comments')
+      return { ...query, orderBy: { comments: { _count: method } } };
+    else if (sort === 'likes')
+      return { ...query, orderBy: { likes: { _count: method } } };
+    else if (sort === 'date') return { ...query, orderBy: { created_at: method } };
+    else return query;
   }
 }

@@ -19,7 +19,7 @@ const admin: User = {
   email: 'admin@app.com',
   profile_img: '',
   password: 'Password123',
-  role_id: 1,
+  role_id: auth.ADMIN_ID,
   created_at: timestamp,
   updated_at: timestamp,
 };
@@ -30,7 +30,7 @@ const user: User = {
   email: 'user1@app.com',
   profile_img: '',
   password: 'Password123',
-  role_id: 1,
+  role_id: 2,
   created_at: timestamp,
   updated_at: timestamp,
 };
@@ -58,7 +58,7 @@ const mockJWT = (success: boolean) => {
 const ADMIN_JWT = auth.jwt({ id: admin.id });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce({ ...admin, role: { id: 1 } } as any);
   } else {
     mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }
@@ -70,7 +70,7 @@ const mockAdminJWT = (success: boolean) => {
 describe('POST /users/', () => {
   test('Route should create and return user with status 200', async () => {
     // Mock Request prerequisites
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
     mockDb.roles.exists.mockResolvedValue(true);
     // Mock resulting action
     mockDb.users.create.mockResolvedValue(user as any);
@@ -85,7 +85,7 @@ describe('POST /users/', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
       email: 'user1@app.com',
     });
   });
@@ -118,7 +118,7 @@ describe('POST /users/', () => {
 
   test('Route should return 400 when role id doesnt exist', async () => {
     // Mock Request prerequisites
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
     mockDb.roles.exists.mockResolvedValue(false);
 
     // Action
@@ -161,7 +161,7 @@ describe('DELETE /users/:id', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
     });
   });
 
@@ -229,7 +229,7 @@ describe('GET /users/:id', () => {
     expect(res.body).toMatchObject({
       id: 10,
       name: 'Test User',
-      role_id: 1,
+      role_id: 2,
     });
   });
 
@@ -298,7 +298,7 @@ describe('PUT /users/:id', () => {
     // Mock ADMIN Authentication
     mockAdminJWT(true);
     // Mock Request prerequisites
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
     mockDb.roles.exists.mockResolvedValue(true);
     // Mock Resulting action
     mockDb.users.update.mockRejectedValue(new NoSuchResource('user'));
@@ -323,7 +323,7 @@ describe('PUT /users/:id', () => {
     mockJWT(true);
     mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Request prerequisites
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
     mockDb.roles.exists.mockResolvedValue(false);
 
     // Action
@@ -339,6 +339,7 @@ describe('PUT /users/:id', () => {
       status: 400,
       errors: [
         {
+          location: 'body',
           param: 'role_id',
           msg: 'doesnt exist',
           value: 1000,
@@ -352,7 +353,7 @@ describe('PUT /users/:id', () => {
     mockJWT(true);
     mockDb.users.userOwns.mockResolvedValue(true);
     // Mock Request prerequisites
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
     mockDb.roles.exists.mockResolvedValue(true);
     // Mock Resulting action
     mockDb.users.update.mockResolvedValue(updatedUser as any);
@@ -388,7 +389,7 @@ describe('PUT /users/:id', () => {
 describe('POST /users/email/free', () => {
   test('Route should return response with true and status code of 200, when email is free', async () => {
     // Mock Resulting action
-    mockDb.users.emailExists.mockResolvedValue(false);
+    mockDb.users.emailIsSameOrUnique.mockResolvedValue(true);
 
     // Action
     const res = await request(app)

@@ -11,6 +11,38 @@ export const capitalize = {
   },
 };
 
+export const toIntArray = {
+  options: (value: string, _: any) => {
+    return value
+      ?.trim()
+      ?.split(',')
+      ?.map((n) => parseInt(n, 10));
+  },
+};
+
+export const sort = {
+  desc: {
+    options: (value: string, { req }: Meta) => {
+      const fields = ['likes', 'comments', 'date'];
+      if (!fields.find((f) => f === value)) {
+        throw new Error('desc');
+      }
+      return value;
+    },
+    errorMessage: `should ne of [${['likes', 'comments', 'date'].join(',')}]`,
+  },
+  asc: {
+    options: (value: string, { req }: Meta) => {
+      const fields = ['likes', 'comments', 'date'];
+      if (!fields.find((f) => f === value)) {
+        throw new Error('asc');
+      }
+      return value;
+    },
+    errorMessage: `should ne of [${['likes', 'comments', 'date'].join(',')}]`,
+  },
+};
+
 export const isString = {
   errorMessage: 'must be of string type',
 };
@@ -25,21 +57,21 @@ export const isPositive = {
   options: { min: 1 },
 };
 
-export const user = {
-  id: {
-    params: {
-      in: 'params',
-      exists: true,
-      toInt: true,
-      isInt: isPositive,
-    },
-  },
-};
 export const email = {
   notInUse: {
     options: async (value: string) => {
       const exists = await db().users.emailExists(value);
       if (exists) {
+        throw new Error('email');
+      }
+    },
+    errorMessage: 'is already taken',
+  },
+  isSameOrUnique: {
+    options: async (value: string, { req }: Meta) => {
+      const id = parseInt(req.params?.id, 10);
+      const ok = await db().users.emailIsSameOrUnique(value, id);
+      if (!ok) {
         throw new Error('email');
       }
     },
