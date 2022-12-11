@@ -1,9 +1,7 @@
-import { User } from '@prisma/client';
 import { Router, Response, NextFunction, Request } from 'express';
 import { db, Users } from '../db/Database';
 import { PublicUser } from '../db/UserClient';
-import { log } from '../logger/log';
-import auth, { isUserAdmin } from '../utils/auth';
+import auth from '../utils/auth';
 import { NoSuchResource, BadRequest } from '../utils/errors';
 import img from '../utils/img';
 import { TRequest as TRequest } from '../utils/types';
@@ -17,7 +15,7 @@ import {
 
 const users = Router();
 
-const toUser = async (user: User, id: number) => db().users.userOwns(user, id);
+const toUser = (user: PublicUser, id: number) => db().users.userOwns(user, id);
 
 users.get('/', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -43,7 +41,7 @@ users.get('/', async (_: Request, __: Response, ___: NextFunction) => {
 });
 
 users.get(
-  '/:id',
+  '/:resId',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.responses[200] = {
@@ -51,7 +49,7 @@ users.get(
             schema: {$ref: '#/definitions/user'}
     } */
     try {
-      const id = Number.parseInt(req.params.id, 10);
+      const id = Number.parseInt(req.params.resId, 10);
       const result = await db().users.select(id);
       res.json(result);
     } catch (err) {
@@ -63,7 +61,7 @@ users.get(
 );
 
 users.put(
-  '/:id',
+  '/:resId',
   auth.required,
   auth.userHasAccess(toUser),
   validUserUpdateBody,
@@ -74,7 +72,7 @@ users.put(
     } */
     try {
       throwIfNotValid(req);
-      const userId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.resId, 10);
       const result = await db().users.update(req.body, userId);
       res.json(result);
     } catch (err) {
@@ -86,7 +84,7 @@ users.put(
 );
 
 users.delete(
-  '/:id',
+  '/:resId',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -95,7 +93,7 @@ users.delete(
             schema: {$ref: '#/definitions/user'}
     } */
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.resId, 10);
       const result = await db().users.remove(userId);
       img.remove(result.profile_img);
       result.profile_img = '';
@@ -109,7 +107,7 @@ users.delete(
 );
 
 users.put(
-  '/:id/img',
+  '/:resId/img',
   auth.required,
   auth.userHasAccess(toUser),
   img.upload.single('avatar'),
@@ -124,14 +122,10 @@ users.put(
       throwIfNotValid(req);
       if (req.file) {
         const result = await db().users.updateAvatar(
-          parseInt(req.params.id, 10),
+          parseInt(req.params.resId, 10),
           req.file.filename
         );
-        log.info(
-          `${isUserAdmin(req?.user as User) ? 'Admin' : ''} Updated avatar for user ${
-            req.params.id
-          }`
-        );
+
         return res.json(result);
       } else throw new BadRequest('asd');
     } catch (err) {
@@ -143,7 +137,7 @@ users.put(
 );
 
 users.delete(
-  '/:id/img',
+  '/:resId/img',
   auth.required,
   auth.userHasAccess(toUser),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -158,7 +152,7 @@ users.delete(
       }
       const EMPTY_AVATAR = '';
       const result = await db().users.updateAvatar(
-        parseInt(req.params.id, 10),
+        parseInt(req.params.resId, 10),
         EMPTY_AVATAR
       );
       return res.json(result);

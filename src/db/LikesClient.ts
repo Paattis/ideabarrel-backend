@@ -1,8 +1,9 @@
-import { Like, User } from '@prisma/client';
+import { Like } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
 import { Likes } from './Database';
+import { PublicUser } from './UserClient';
 
 export class LikesClient extends AbstractClient {
   public readonly TAG = 'like';
@@ -156,7 +157,7 @@ export class LikesClient extends AbstractClient {
    * @param likeId Target like
    * @returns true if user owns the like.
    */
-  async userOwns(user: User, likeId: number) {
+  async userOwns(user: PublicUser, likeId: number) {
     try {
       const result = await this.ctx.prisma.like.findFirst({
         where: { id: likeId },

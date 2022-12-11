@@ -17,7 +17,7 @@ const user = {
   name: 'Test User 1',
   profile_img: '',
   email: 'user@app.com',
-  role_id: 1,
+  role_id: 2,
 };
 
 const admin = {
@@ -25,7 +25,7 @@ const admin = {
   name: 'Test User 1',
   profile_img: '',
   email: 'user@app.com',
-  role_id: 2,
+  role_id: auth.ADMIN_ID,
 };
 
 const like = {
@@ -44,10 +44,10 @@ const mockJWT = (success: boolean) => {
   }
 };
 
-const ADMIN_JWT = auth.jwt({ id: admin.id });
+const ADMIN_JWT = auth.jwt({ id: admin.id, role_id: auth.ADMIN_ID });
 const mockAdminJWT = (success: boolean) => {
   if (success) {
-    mockDb.users.select.mockResolvedValueOnce(admin as any);
+    mockDb.users.select.mockResolvedValueOnce({ ...admin, role: { id: 1 } } as any);
   } else {
     mockDb.users.select.mockRejectedValueOnce(new Error('No suck user'));
   }

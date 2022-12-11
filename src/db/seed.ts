@@ -2,6 +2,7 @@ import { PrismaClient, User } from '@prisma/client';
 import { log } from '../logger/log';
 import auth from '../utils/auth';
 import { getAppEnvVar } from '../utils/env';
+import { ADMIN_ROLE_NAME } from '../utils/types';
 
 const prisma = new PrismaClient();
 const email = getAppEnvVar('ADMIN_EMAIL');
@@ -42,7 +43,7 @@ const seed = async () => {
       password: await auth.hash(password),
       name: 'admin',
       profile_img: '',
-      role: { create: { name: 'admin' } },
+      role: { create: { name: ADMIN_ROLE_NAME } },
       tags: { create: { tag: { connect: { name: 'admin' } } } },
     },
   });

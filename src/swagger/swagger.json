@@ -93,12 +93,12 @@
         }
       }
     },
-    "/users/{id}": {
+    "/users/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -128,7 +128,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -158,7 +158,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -185,12 +185,12 @@
         }
       }
     },
-    "/users/{id}/img": {
+    "/users/{resId}/img": {
       "put": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -220,7 +220,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -340,12 +340,12 @@
         }
       }
     },
-    "/roles/{id}": {
+    "/roles/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -375,7 +375,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -405,7 +405,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -464,12 +464,12 @@
         }
       }
     },
-    "/tags/{id}": {
+    "/tags/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -499,7 +499,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -529,7 +529,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -556,7 +556,7 @@
         }
       }
     },
-    "/tags/{tagId}/user/{userId}": {
+    "/tags/{tagId}/user/{resId}": {
       "post": {
         "description": "",
         "parameters": [
@@ -569,7 +569,7 @@
             }
           },
           {
-            "name": "userId",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -607,7 +607,7 @@
             }
           },
           {
-            "name": "userId",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -761,12 +761,12 @@
         }
       }
     },
-    "/ideas/{id}": {
+    "/ideas/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -796,7 +796,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -826,7 +826,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -923,12 +923,12 @@
         }
       }
     },
-    "/likes/{id}": {
+    "/likes/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -958,7 +958,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -985,12 +985,12 @@
         }
       }
     },
-    "/likes/idea/{id}": {
+    "/likes/idea/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1020,7 +1020,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1050,7 +1050,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1133,12 +1133,12 @@
         }
       }
     },
-    "/comments/{id}": {
+    "/comments/{resId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1168,7 +1168,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1198,7 +1198,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "resId",
             "in": "path",
             "required": true,
             "schema": {

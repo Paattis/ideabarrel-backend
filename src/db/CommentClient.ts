@@ -1,8 +1,8 @@
-import { User } from '@prisma/client';
 import { log } from '../logger/log';
 import { BadRequest, NoSuchResource } from '../utils/errors';
 import { AbstractClient } from './AbstractClient';
 import { Comments } from './Database';
+import { PublicUser } from './UserClient';
 
 export class CommentsClient extends AbstractClient {
   public readonly TAG = 'comment';
@@ -104,7 +104,7 @@ export class CommentsClient extends AbstractClient {
    * @param user User who we are checking
    * @returns True, if comment belongs to specified user.
    */
-  async userOwns(user: User, commentId: number) {
+  async userOwns(user: PublicUser, commentId: number) {
     try {
       const result = await this.ctx.prisma.comment.findFirst({
         where: { id: commentId },

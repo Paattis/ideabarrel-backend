@@ -8,6 +8,7 @@ import { NextFunction } from 'express';
 import { log } from '../logger/log';
 import { Forbidden, Unauthorized } from './errors';
 import { db } from '../db/Database';
+import { PublicUser } from '../db/UserClient';
 
 const SECRET = getAppEnvVar('ACCESS_TOKEN_SECRET');
 const SALT = 10;
@@ -19,14 +20,12 @@ const options: StrategyOptions = {
 
 const ADMIN_ID = 1;
 
-export const isUserAdmin = (user: { id: number } | undefined) => user?.id === ADMIN_ID;
-
-export type UserPayload = {
-  id: number;
-};
+/*interface User extends User {
+  role: Role
+}*/
 
 passport.use(
-  new JWTStrategy(options, async (payload: UserPayload, done) => {
+  new JWTStrategy(options, async (payload: { id: number }, done) => {
     try {
       const user = await db().users.select(payload.id);
       return done(null, user);
@@ -57,19 +56,19 @@ const required = [
   },
 ];
 
-export type Predicate = (user: User, idParam: number) => Promise<boolean>;
+export type Predicate = (user: PublicUser, idParam: number) => Promise<boolean>;
 
 const userHasAccess = (predicate: Predicate) => {
   return async (req: any, _: any, next: NextFunction) => {
-    const user = req.user as User | null;
+    const user = req.user as PublicUser | null;
     if (user) {
-      if (user.id === ADMIN_ID) {
+      if (user?.role?.id === ADMIN_ID) {
         return next();
       }
 
-      const id = Number.parseInt(req.params.id, 10);
+      const resource = Number.parseInt(req.params.resId, 10);
       try {
-        if (await predicate(user as User, id)) {
+        if (await predicate(user, resource)) {
           return next();
         } else {
           return next(new Forbidden());
@@ -82,7 +81,9 @@ const userHasAccess = (predicate: Predicate) => {
   };
 };
 
-const onlyAdmin = async () => false;
+const onlyAdmin = async () => {
+  return false;
+};
 
 export default {
   hash: createHash,
@@ -92,4 +93,5 @@ export default {
   required,
   userHasAccess,
   onlyAdmin,
+  ADMIN_ID,
 };
