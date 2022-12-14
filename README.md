@@ -1555,3 +1555,6 @@ Admin can remove any like.
 ---
 
 </details>
+
+## License
+[MIT License](https://github.com/Paattis/ideabarrel-backend/blob/master/LICENSE)
